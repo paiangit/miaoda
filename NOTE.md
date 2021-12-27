@@ -104,7 +104,7 @@ npm i @craco/craco craco-less -D
 
 修改package.json：
 
-```json
+```js
 "scripts": {
 -  "start": "react-scripts start",
 -  "build": "react-scripts build",
@@ -150,7 +150,7 @@ module.exports = {
 
 真是分分钟搞定，回过来看上面使用customize-cra react-app-rewired时的各种报错，还Google不到答案，Github上有人提了相关的问题也没解决，真是太浪费时间了。因此，值得给craco 和 Ant Design一个大大的赞（我是在Ant Design的官网上看到用craco的）。
 
-# 添加typescript打包支持
+## 三、添加typescript打包支持
 
 根据CRA官方的相关文档（https://create-react-app.bootcss.com/docs/adding-typescript/），可用如下命令添加：
 
@@ -190,7 +190,7 @@ module.exports = {
 
 `npm run start`查看，发现构建成功。
 
-# 解决 'printPatternCaret' not found 问题
+## 四、解决 'printPatternCaret' not found 问题
 
 但是，在执行`npm run test`的时候，却遇到了如下报错：
 
@@ -207,4 +207,130 @@ module.exports = {
 npm i --exact jest-watch-typeahead@0.6.5
 ```
 
+## 五、引入react-router-dom，初步配置路由
+
+react-router-dom比react-router多了 `<Link>` 、 `<BrowserRouter>` 这样的 DOM 类组件。因此，我们只需引用 react-router-dom 这个包就行了。而且，从版本5开始，官方已经放弃对react-router的维护，而只维护react-router-dom。
+
+例如：
+
+`<Link>` 组件，会渲染一个a标签。
+
+`<BrowserRouter>` 和 `<HashRouter>`组件，前者使用popState事件和pushState构建路由，后者使用hashchange事件和window.location.hash构建路由。
+
+## 1. 安装react-router-dom：
+
+```
+npm i react-router-dom -S
+```
+
+## 2. 新建Root.js
+
+```js
+import React from 'react';
+import {
+  BrowserRouter,
+  Link,
+  Routes,
+  Route
+} from 'react-router-dom';
+
+import App from './App.tsx';
+import Projects from './Projects.tsx';
+import Project from './Project.tsx';
+import Editor from './Editor.tsx';
+
+function Root() {
+  return (
+    <BrowserRouter>
+      <ul>
+        <li><Link to="/">Home</Link></li>
+        <li><Link to="/projects">Projects</Link></li>
+        <li><Link to="/project/1">Project 1</Link></li>
+        <li><Link to="/editor">Editor</Link></li>
+      </ul>
+      <Routes>
+        <Route path="/" element={<App />} />
+        <Route path="/projects" element={<Projects />} />
+        <Route path="/project/:id" element={<Project />} />
+        <Route path="/editor" element={<Editor />} />
+      </Routes>
+    </BrowserRouter>
+  );
+}
+
+export default Root;
+```
+
+## 3. 修改index.tsx
+
+```tsx
+import React from 'react';
+import ReactDOM from 'react-dom';
+-  import App from './App.tsx';
++  import Root from './Root.tsx';
+import reportWebVitals from './reportWebVitals';
+
+/**
+ * StrictMode 是一个用以标记出应用中潜在问题的工具。
+ * 就像 Fragment ，StrictMode 不会渲染任何真实的UI。
+ * 它为其后代元素触发额外的检查和警告。
+ * 注意: 严格模式检查只在开发模式下运行，不会与生产模式冲突。
+ */
+ReactDOM.render(
+  <React.StrictMode>
+-   <App />
++   <Root />
+  </React.StrictMode>,
+  document.getElementById('root')
+);
+
+// If you want to start measuring performance in your app, pass a function
+// to log results (for example: reportWebVitals(console.log))
+// or send to an analytics endpoint. Learn more: https://bit.ly/CRA-vitals
+reportWebVitals();
+```
+
+## 4. 添加Projects.tsx
+```ts
+function Projects() {
+  return (
+    <div className="projects">
+      projects
+    </div>
+  );
+}
+
+export default Projects;
+```
+
+## 5. Project.tsx
+```ts
+import { useParams } from 'react-router-dom';
+
+function Project() {
+  const params = useParams();
+  return (
+    <div className="project" >
+      project {params.id}
+    </div>
+  );
+}
+
+export default Project;
+```
+
+## 6. Editor.tsx
+```
+function Editor() {
+  return (
+    <div className="editor">
+      editor
+    </div>
+  );
+}
+
+export default Editor;
+``
+
+然后执行 `npm start`，可以看到页面可以成功访问。
 
