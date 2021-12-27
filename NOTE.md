@@ -217,13 +217,13 @@ react-router-dom比react-router多了 `<Link>` 、 `<BrowserRouter>` 这样的 D
 
 `<BrowserRouter>` 和 `<HashRouter>`组件，前者使用popState事件和pushState构建路由，后者使用hashchange事件和window.location.hash构建路由。
 
-## 1. 安装react-router-dom：
+### 1. 安装react-router-dom：
 
 ```
 npm i react-router-dom -S
 ```
 
-## 2. 新建Root.js
+### 2. 新建Root.js
 
 ```js
 import React from 'react';
@@ -261,11 +261,12 @@ function Root() {
 export default Root;
 ```
 
-## 3. 修改index.tsx
+### 3. 修改index.tsx
 
 ```tsx
 import React from 'react';
 import ReactDOM from 'react-dom';
+-  import './App.less';
 -  import App from './App.tsx';
 +  import Root from './Root.tsx';
 import reportWebVitals from './reportWebVitals';
@@ -290,7 +291,7 @@ ReactDOM.render(
 reportWebVitals();
 ```
 
-## 4. 添加Projects.tsx
+### 4. 添加Projects.tsx
 ```ts
 function Projects() {
   return (
@@ -303,7 +304,7 @@ function Projects() {
 export default Projects;
 ```
 
-## 5. Project.tsx
+### 5. 添加Project.tsx
 ```ts
 import { useParams } from 'react-router-dom';
 
@@ -319,7 +320,8 @@ function Project() {
 export default Project;
 ```
 
-## 6. Editor.tsx
+### 6. 添加Editor.tsx
+
 ```
 function Editor() {
   return (
@@ -330,7 +332,223 @@ function Editor() {
 }
 
 export default Editor;
-``
+```
 
 然后执行 `npm start`，可以看到页面可以成功访问。
+
+## 六、用 `useRoutes` 将路由改造成数据配置形式
+
+```ts
+import React from 'react';
+import {
+  BrowserRouter,
+  Link,
+  useRoutes,
+} from 'react-router-dom';
+
+import App from './App.tsx';
+import Projects from './Projects.tsx';
+import Project from './Project.tsx';
+import Editor from './Editor.tsx';
+
+function Root() {
+  const mainRoutes = {
+    path: '/',
+    element: '',
+    children: [
+      {
+        path: "/",
+        element: <App />
+      },
+      {
+        path: "projects",
+        element: <Projects />
+      },
+      {
+        path: "project/:id",
+        element: <Project />
+      },
+      {
+        path: "editor",
+        element: <Editor />
+      },
+    ],
+  };
+  const routing = useRoutes([mainRoutes]);
+
+  return (
+    <BrowserRouter>
+      <ul>
+        <li><Link to="/">Home</Link></li>
+        <li><Link to="/projects">Projects</Link></li>
+        <li><Link to="/project/1">Project 1</Link></li>
+        <li><Link to="/editor">Editor</Link></li>
+      </ul>
+      { routing }
+    </BrowserRouter>
+  );
+}
+
+export default Root;
+```
+
+发现报错了：
+
+> Uncaught Error: useRoutes() may be used only in the context of a <Router> component.
+
+意思是说，`useRoutes()` 只能用在一个Router组件内，而现在我们是用在 `<BrowserRouter>` 组件之外的，而不是之内。
+
+所以，我们需要将 `useRoutes()` 降低到 `<BrowserRouter>`的子组件中去使用。
+
+### 1. 首先对Root.tsx做如下修改
+
+```ts
+import React from 'react';
+import {
+  BrowserRouter,
+- Link,
+- Routes,
+- Route
+} from 'react-router-dom';
+
+import App from './App.tsx';
+- import Projects from './Projects.tsx';
+- import Project from './Project.tsx';
+- import Editor from './Editor.tsx';
+
+function Root() {
+  return (
+    <BrowserRouter>
+-     <ul>
+-       <li><Link to="/">Home</Link></li>
+-       <li><Link to="/projects">Projects</Link></li>
+-       <li><Link to="/project/1">Project 1</Link></li>
+-       <li><Link to="/editor">Editor</Link></li>
+-     </ul>
+-     <Routes>
+-       <Route path="/" element={<App />} />
+-       <Route path="/projects" element={<Projects />} />
+-       <Route path="/project/:id" element={<Project />} />
+-       <Route path="/editor" element={<Editor />} />
+-     </Routes>
++     <App/>
+    </BrowserRouter>
+  );
+}
+
+export default Root;
+```
+
+### 2. 将App.tsx修改成如下
+
+useRoutes的使用主要降到了这个文件中。
+
+可以参考：https://typescript.tv/react/upgrade-to-react-router-v6/
+
+```ts
+import {
+  useRoutes,
+} from 'react-router-dom';
+
+import Projects from './Projects.tsx';
+import Project from './Project.tsx';
+import Editor from './Editor.tsx';
+import Layout from './Layout.tsx';
+import Home from './Home.tsx';
+import './App.less';
+
+function App() {
+  const mainRoutes = {
+    path: '/',
+    element: <Layout/>,
+    children: [
+      {
+        path: "/",
+        element: <Home/>
+      },
+      {
+        path: "projects",
+        element: <Projects />
+      },
+      {
+        path: "project/:id",
+        element: <Project />
+      },
+      {
+        path: "editor",
+        element: <Editor />
+      },
+    ],
+  };
+  const routing = useRoutes([mainRoutes]);
+
+  return (
+    <div className="App">
+      { routing }
+    </div>
+  );
+}
+
+export default App;
+```
+
+### 3. 新建Layout.tsx
+
+原来在Root.tsx中的那些路由跳转链接移到了这里，当然，这些链接放在Root.tsx中也是可以的。
+
+注意这里的<Outlet/>，相当于挖了个窟窿，用来渲染子路由对应的内容的。也即上面App.tsx文件中mainRoutes对应的children。
+
+```tsx
+import {
+  Link,
+  Outlet
+} from 'react-router-dom';
+import './Layout.less';
+
+export default function Layout() {
+  return (
+    <div className="layout">
+      <ul>
+        <li><Link to="/">Home</Link></li>
+        <li><Link to="/projects">Projects</Link></li>
+        <li><Link to="/project/1">Project 1</Link></li>
+        <li><Link to="/editor">Editor</Link></li>
+      </ul>
+      <Outlet />
+    </div>
+  );
+}
+```
+
+### 4. 新建Layout.less
+
+```css
+.layout {
+  ul {
+    display: flex;
+  }
+  li {
+    list-style: none;
+    margin: 10px;
+  }
+}
+```
+
+### 5. 新建Home.tsx
+
+```ts
+export default function Home() {
+  return (
+    <div className="home">home</div>
+  )
+}
+```
+
+### 6. 新建home.less
+
+```css
+.home {
+
+}
+```
 

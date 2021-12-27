@@ -1,23 +1,42 @@
-import logo from './logo.svg';
+import {
+  useRoutes,
+} from 'react-router-dom';
+
+import Layout from './Layout.tsx';
+import Home from './Home.tsx';
+import Projects from './Projects.tsx';
+import Project from './Project.tsx';
+import Editor from './Editor.tsx';
 import './App.less';
 
 function App() {
+  const mainRoutes = {
+    path: '/',
+    element: <Layout/>,
+    children: [
+      {
+        path: "/",
+        element: <Home/>
+      },
+      {
+        path: "projects",
+        element: <Projects />
+      },
+      {
+        path: "project/:id",
+        element: <Project />
+      },
+      {
+        path: "editor",
+        element: <Editor />
+      },
+    ],
+  };
+  const routing = useRoutes([mainRoutes]);
+
   return (
     <div className="App">
-      <header className="App-header">
-        <img src={logo} className="App-logo" alt="logo" />
-        <p>
-          Edit <code>src/App.js</code> and save to reload.
-        </p>
-        <a
-          className="App-link"
-          href="https://reactjs.org"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          Learn React
-        </a>
-      </header>
+      { routing }
     </div>
   );
 }
