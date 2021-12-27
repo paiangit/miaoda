@@ -190,3 +190,21 @@ module.exports = {
 
 `npm run start`查看，发现构建成功。
 
+# 解决 'printPatternCaret' not found 问题
+
+但是，在执行`npm run test`的时候，却遇到了如下报错：
+
+> import { PatternPrompt, printPatternCaret, printRestoredPatternCaret } from 'jest-watcher';
+>                            ^^^^^^^^^^^^^^^^^
+> SyntaxError: Named export 'printPatternCaret' not found. The requested module 'jest-watcher' is a CommonJS module, which may not support all module.exports as named exports.
+> CommonJS modules can always be imported via the default export, for example using:
+> import pkg from 'jest-watcher';
+> const { PatternPrompt, printPatternCaret, printRestoredPatternCaret } = pkg;
+
+经过一番查找，在这里（https://github.com/facebook/create-react-app/issues/11792#issue-1083291936 以及 https://github.com/facebook/create-react-app/issues/11043#issuecomment-942472592）找到了答案，原因是跟Node.js版本有关系，我所采用的是14.15.0版本的Node.js（这个版本不支持native ESM，而新版本的jest-watch-typeahead是用native ESM编写的，所以会报错）。其中介绍说升级到Node.js 16版本就没问题了。但是，因为升级可能带来其它的问题，所以我暂时不升级，而是采用了其中提到的如下方法：
+
+```sh
+npm i --exact jest-watch-typeahead@0.6.5
+```
+
+
