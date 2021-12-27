@@ -223,7 +223,118 @@ react-router-dom比react-router多了 `<Link>` 、 `<BrowserRouter>` 这样的 D
 npm i react-router-dom -S
 ```
 
+这里我们安装的是最新版本，6.2.1。
+
+#### react-router-dom 6中常用的组件和hook
+
+这里介绍下react-router-dom 6中常用的组件和hooks。
+
+常用的组件：
+
+- <Routes>：是一组路由，用于代替原有<Switch>，所有子路由都用基础的<Route>作为children来表示。
+- <Route>：基础路由，<Route>内部还可以嵌套<Route>。
+
+比如，
+
+```ts
+function App() {
+  return (
+    <Routes>
+      <Route path="projects" element={<Projects />}>
+        <Route path=":id" element={<Project />} />
+      </Route>
+    </Routes>
+  );
+}
+```
+
+当访问projects/123时，组件树将是渲染成这样：
+
+```
+<App>
+  <Projects>
+    <Project/>
+  </Projects>
+</App>
+```
+
+- <Link>：导航组件，在页面中做为跳转链接使用。只能在Router内部使用。
+- <Outlet/>：自适应渲染组件，根据实际路由URL自动匹配上不同的组件进行渲染，相当于Vue.js中的<router-view>。
+
+常用hooks：
+- useParams：返回当前路由URL参数。
+
+例如，
+
+```ts
+// 注册路由(相当于声明了有什么params参数)：
+<Route path="/project/:id/:title" component={Project}/>
+```
+
+```ts
+// 接收params参数：
+const params = useParams();
+// params参数 => {id: "xxx", title: "yyy"}
+```
+
+- useNavigate：返回当前路由，相当于5.0版本中的useHistoryuse。
+- Outlet：返回根据路由自动生成的element。
+- useLocation：返回当前的location对象。
+- useRoutes：同Routes组件一样，只不过是在JavaScript中用。
+- useSearchParams：用来匹配URL中?后面的query参数。
+
+#### react-router-dom 6 与 版本5的区别
+
+- <Routes> 替代 <Switch>
+
+5.0写法：
+
+```ts
+<Switch>
+  <Route exact path="/">
+    <Home />
+  </Route>
+  <Route path="/projects/:id" children={<Project />} />
+  <Route path="/Editor">
+    <Editor />
+  </Route>
+</Switch>
+```
+
+6.0写法：
+
+```ts
+<Routes>
+  <Route index path="/" element={<Home />} />
+  <Route path="/projects/:id" element={<Project />} />
+  <Route path="Editor" element={<Editor />} />
+</Routes>
+```
+
+- 移除掉了Switch中的<Redirect>，6.0版本中可以用 <Navigate> 实现
+
+5.0写法：
+
+```ts
+<Switch>
+  <Redirect from="xxx" to="yyy"/>
+</Switch>
+```
+
+6.0写法：
+
+```ts
+<Route path="xxx" render={<Navigate to="yyy"/>}
+```
+
+- <Link>的to属性支持相对路径，而5.0版中只支持绝对路径。在6.0中，to如果路径是/开头的则是绝对路由，否则为相对路由，即相对于“当前URL”进行改变。
+
+- useNavigate 代替了 useHistory
+
+
 ### 2. 新建Root.js
+
+全局路由有常用两种路由模式可选：HashRouter 和 BrowserRouter。HashRouter：URL中采用的是hash去创建路由。这里我们采用BrowserRouter来创建路由。
 
 ```js
 import React from 'react';
@@ -496,7 +607,7 @@ export default App;
 
 原来在Root.tsx中的那些路由跳转链接移到了这里，当然，这些链接放在Root.tsx中也是可以的。
 
-注意这里的<Outlet/>，相当于挖了个窟窿，用来渲染子路由对应的内容的。也即上面App.tsx文件中mainRoutes对应的children。
+注意这里的<Outlet/>（该单词的英文意思是出口），相当于挖了个窟窿，用来渲染子路由对应的内容的。也即上面App.tsx文件中mainRoutes对应的children。它会根据实际路由URL自动匹配渲染哪个组件。有点像Vue.js中的<router-view>。
 
 ```tsx
 import {
@@ -552,3 +663,87 @@ export default function Home() {
 }
 ```
 
+## 七、让路由未匹配成功的时候展示404页面
+
+### 1. 新建PageNotFound.tsx
+
+```ts
+import './PageNotFound.less';
+
+export default function PageNotFound() {
+  return (
+    <div>
+      Page not found.
+    </div>
+  )
+}
+```
+
+### 2. 新建PageNotFound.less
+
+```css
+.page-not-found {
+
+}
+```
+
+### 3. 在App.tsx中对路由配置做如下修改
+
+```ts
+import {
+  useRoutes,
+  Navigate,
+} from 'react-router-dom';
+
+import Layout from './Layout.tsx';
+import Home from './Home.tsx';
+import Projects from './Projects.tsx';
+import Project from './Project.tsx';
+import Editor from './Editor.tsx';
++  import PageNotFound from './PageNotFound.tsx';
+import './App.less';
+
+function App() {
+  const mainRoutes = {
+    path: '/',
+    element: <Layout/>,
+    children: [
+      {
+        path: "/",
+        element: <Home/>
+      },
+      {
+        path: "projects",
+        element: <Projects />
+      },
+      {
+        path: "project/:id",
+        element: <Project />
+      },
+      {
+        path: "editor",
+        element: <Editor />
+      },
++     {
++       path: "404",
++       element: <PageNotFound />
++     },
++     {
++       path: '*',
++       element: <Navigate to='/404' />
++     },
+    ],
+  };
+  const routing = useRoutes([mainRoutes]);
+
+  return (
+    <div className="App">
+      { routing }
+    </div>
+  );
+}
+
+export default App;
+```
+
+如此一来，你在访问页面不存在路由的时候，就会跳转到/404这个路由。这里我们用到了 `Navigate` 组件。
