@@ -1,9 +1,15 @@
 import React from 'react';
 import ReactDOM from 'react-dom';
 import './index.less';
-import App from './App';
+import App from './App.tsx';
 import reportWebVitals from './reportWebVitals';
 
+/**
+ * StrictMode 是一个用以标记出应用中潜在问题的工具。
+ * 就像 Fragment ，StrictMode 不会渲染任何真实的UI。
+ * 它为其后代元素触发额外的检查和警告。
+ * 注意: 严格模式检查只在开发模式下运行，不会与生产模式冲突。
+ */
 ReactDOM.render(
   <React.StrictMode>
     <App />
