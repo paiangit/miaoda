@@ -225,6 +225,8 @@ npm i react-router-dom -S
 
 这里我们安装的是最新版本，6.2.1。
 
+关于react-router-dom的使用，可以参考这篇文章：https://zhuanlan.zhihu.com/p/431389907
+
 #### react-router-dom 6中常用的组件和hook
 
 这里介绍下react-router-dom 6中常用的组件和hooks。
@@ -1214,6 +1216,12 @@ export default function CounterPage() {
 
 - 编写store和将所有reducer收集成rootReducer
 
+参考：
+
+redux中文文档：https://www.redux.org.cn/docs/basics/Reducers.html
+
+Rekit: http://rekit.js.org/docs/one-action-one-file.html
+
 ## 十一、用redux-mock-store创建 mock store以进行自动化测试
 
 先安装redux-mock-store模块，然后对test/App.test.tsx进行如下修改：
@@ -1247,3 +1255,49 @@ export default function CounterPage() {
 ``
 
 有了 redux-mock-store 所mock的数据，我们才能顺利继续测试。否则会报错。
+
+## 十二、设计样式文件的组织结构
+
+### 使用normalize.css进行样式初始化
+
+从这里（https://necolas.github.io/normalize.css/latest/normalize.css）下载CSS文件放置入styles文件夹中。
+
+注意：如果后续引入了ant-design库，需要注意样式是否覆盖的问题，因为它也使用了normalize.css，见：https://github.com/ant-design/ant-design/blob/master/components/style/core/global.less
+
+将样式单独归口进行导出，不体现页面样式对组件样式的依赖关系的原因是什么呢？好像不是特别好，以后做组件懒加载的时候，可能不能做到样式懒加载，因此，这个处理有待进一步考虑清楚（TODO）。
+
+### 新建styles/global.less文件
+
+```css
+@import './normalize.css';
+
+body {
+  margin: 0;
+}
+
+ul {
+  padding: 0;
+}
+
+li {
+  display: block;
+}
+```
+
+### 新建styles/index.less 作为样式的总出口文件
+
+```css
+/* 样式的总出口 */
+@import './global';
+```
+
+### 在每个组件中，会有组件文件名同名的less文件来存放样式。features中，每一个feature的文件夹名-组件名就是该组件的样式命名空间。因为feature都在同一个features文件夹下，所以可以保证feature不重名，又因为feature内部的功能都在feature文件夹下，所以可以保证feature内部组件不重名。这样一来，样式命名空间就不会重名。
+
+比如，对于examples这个feature下的Counter组件，该组件最外层容器的className我们给它命名成examples-counter，该组件所有的样式都写在这个命名空间下：
+
+```css
+.examples-counter {
+  /* 这里写组件的具体样式 */
+}
+```
+
