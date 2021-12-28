@@ -935,7 +935,7 @@ function App() {
 export default App;
 ```
 
-## 十、集成redux，并实战演示如何组织action、reducer、hooks
+## 十、集成redux，并实战演示如何组织action、reducer、hooks等
 
 ### 1. 先安装redux：
 
@@ -1213,3 +1213,37 @@ export default function CounterPage() {
 - 按feature编写action、reducer和相关hooks（每一组拆成一个文件），编写辅助文件constants、initialState，将action、reducer、hooks集中到统一的出口。
 
 - 编写store和将所有reducer收集成rootReducer
+
+## 十一、用redux-mock-store创建 mock store以进行自动化测试
+
+先安装redux-mock-store模块，然后对test/App.test.tsx进行如下修改：
+
+```ts
+   import { render, screen } from '@testing-library/react';
+ - import Home from '../src/Home/Home';
+ + import App from '../src/App.tsx';
+ + import { Provider } from 'react-redux';
+ + import configureStore from 'redux-mock-store';
+ + import { BrowserRouter } from 'react-router-dom';
+
+   test('renders root', () => {
+ -   render(<Home />);
+ -   const rootElement = screen.getByText(/home/i);
+ +   const initialState = { count: 10 };
+ +   const mockStore = configureStore();
+ +   let store = mockStore(initialState);
+ +
+ +   render(
+ +     <Provider store={store}>
+ +       <BrowserRouter>
+ +         <App />
+ +       </BrowserRouter>
+ +     </Provider>
+ +   );
+ +
+ +   const rootElement = screen.getByText(/examples/i);
+     expect(rootElement).toBeInTheDocument();
+   });
+``
+
+有了 redux-mock-store 所mock的数据，我们才能顺利继续测试。否则会报错。

@@ -1,8 +1,22 @@
 import { render, screen } from '@testing-library/react';
-import Home from '../src/Home/Home';
+import App from '../src/App.tsx';
+import { Provider } from 'react-redux';
+import configureStore from 'redux-mock-store';
+import { BrowserRouter } from 'react-router-dom';
 
 test('renders root', () => {
-  render(<Home />);
-  const rootElement = screen.getByText(/home/i);
+  const initialState = { count: 10 };
+  const mockStore = configureStore();
+  let store = mockStore(initialState);
+  
+  render(
+    <Provider store={store}>
+      <BrowserRouter>
+        <App />
+      </BrowserRouter>
+    </Provider>
+  );
+
+  const rootElement = screen.getByText(/examples/i);
   expect(rootElement).toBeInTheDocument();
 });
