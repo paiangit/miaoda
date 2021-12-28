@@ -747,3 +747,31 @@ export default App;
 ```
 
 如此一来，你在访问页面不存在路由的时候，就会跳转到/404这个路由。这里我们用到了 `Navigate` 组件。
+
+## 八、将test文件移到根目录下的test目录，修改对应jest配置
+
+调整后需要对应修改craco.config.js文件，以支持npm run test能正确运行。主要是roots、testMatch、setupFilesAfterEnv这三项。
+
+```
+   module.exports = {
+     webpack: {
+ +     alias: {
+ +       "~": path.resolve(__dirname, './src/')
+ +     },
+       configure: {
+         entry: path.resolve(__dirname, './src/index.tsx')
+       },
+     },
+ +   jest: {
+ +     configure: {
+ +       moduleNameMapper: {
+ +         "^~(.*)$": "<rootDir>/src$1",
+ +       },
+ +       roots: ['<rootDir>/src', '<rootDir>/test'],
+ +       testMatch: ['<rootDir>/test/**/*.{spec,test}.{js,jsx,ts,tsx}'],
+ +       setupFilesAfterEnv: "<rootDir>/test/setupTests.ts"
+ +     },
+ +   },
+
+```
+
