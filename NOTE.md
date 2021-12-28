@@ -752,7 +752,7 @@ export default App;
 
 调整后需要对应修改craco.config.js文件，以支持npm run test能正确运行。主要是roots、testMatch、setupFilesAfterEnv这三项。
 
-```
+```ts
    module.exports = {
      webpack: {
  +     alias: {
@@ -934,3 +934,282 @@ function App() {
 
 export default App;
 ```
+
+## 十、集成redux，并实战演示如何组织action、reducer、hooks
+
+### 1. 先安装redux：
+
+```
+npm i redux react-redux -S
+```
+### 2. 引入Provider，挂上store
+
+然后修改src/common/Root.tsx如下：
+
+```tsx
+   import {
+     BrowserRouter,
+   } from 'react-router-dom';
+ + import { Provider } from 'react-redux';
+
+   import App from './App.tsx';
+ + import store from './common/store';
+
+   function Root() {
+     return (
+ -     <BrowserRouter>
+ -       <App/>
+ -     </BrowserRouter>
+ +     <Provider store={store}>
+ +       <BrowserRouter>
+ +         <App/>
+ +       </BrowserRouter>
+ +     </Provider>
+     );
+   }
+```
+
+### 3. 创建src/common/store.ts
+
+```ts
+import { createStore } from 'redux';
+import rootReducer from './rootReducer.ts';
+
+function initStore() {
+  const store = createStore(rootReducer);
+
+  return store;
+}
+
+export default initStore();
+```
+
+### 4. 创建src/common/rootReducer.ts：
+
+```ts
+import { combineReducers } from 'redux';
+import homeReducer from '../features/examples/redux/reducer.ts';
+
+const reducerMap = {
+  home: homeReducer,
+};
+
+export default combineReducers(reducerMap);
+```
+
+### 5. 创建src\features\examples\redux文件夹，其中放置如下七个文件
+
+#### reducer.ts
+
+这个目录下reducer的聚合出口。它会把分别放在这个目录的各个文件中的reducer收集集合到一起。
+
+```ts
+import initialState from './initialState.ts';
+import { reducer as counterPlusOne } from './counterPlusOne.ts';
+import { reducer as counterMinusOne } from './counterMinusOne.ts';
+
+const reducers = [
+  counterPlusOne,
+  counterMinusOne,
+];
+
+export default function reducer(state = initialState, action) {
+  let newState;
+
+  switch (action.type) {
+    // 在这里放置全局reducer
+    default:
+      newState = state;
+      break;
+  }
+
+  // reduce((acc, cur), initialAcc)
+  return reducers.reduce((previousState, reducer) => reducer(previousState, action), newState);
+}
+```
+
+#### actions.ts
+
+这个目录下action的聚合出口。
+
+```ts
+import { counterPlusOne } from './counterPlusOne.ts';
+import { counterMinusOne } from './counterMinusOne.ts';
+
+export default {
+  counterPlusOne,
+  counterMinusOne
+};
+```
+
+#### hooks.ts
+
+这个目录下hooks的聚合出口
+
+```ts
+export { useCounterPlusOne } from './counterPlusOne.ts';
+export { useCounterMinusOne } from './counterMinusOne.ts';
+```
+
+#### counterMinusOne.ts
+
+一个文件只放做一件事情的action、reducer等。这样一个个文件分别拆开。
+
+```ts
+import { useCallback } from 'react';
+import { useDispatch, useSelector } from 'react-redux';
+import { HOME_COUNTER_MINUS_ONE } from './constants.ts';
+
+export function counterMinusOne() {
+  return {
+    type: HOME_COUNTER_MINUS_ONE
+  };
+}
+
+export function useCounterMinusOne() {
+  const dispatch = useDispatch();
+  const count = useSelector(state => state.home.count);
+  const boundAction = useCallback(() => dispatch(counterMinusOne()), [dispatch]);
+
+  return {
+    count,
+    counterMinusOne: boundAction
+  };
+}
+
+export function reducer(state, action) {
+  switch (action.type) {
+    case HOME_COUNTER_MINUS_ONE:
+      return {
+        ...state,
+        count: state.count - 1
+      };
+
+    default:
+      return state;
+  }
+}
+```
+
+#### counterPlusOne.ts
+
+```ts
+import { useCallback } from 'react';
+import { useDispatch, useSelector } from 'react-redux';
+import { HOME_COUNTER_PLUS_ONE } from './constants.ts';
+
+export function counterPlusOne() {
+  return {
+    type: HOME_COUNTER_PLUS_ONE
+  }
+}
+
+export function useCounterPlusOne() {
+  const dispatch = useDispatch();
+  const count = useSelector(state => state.home.count);
+  const boundAction = useCallback(() => dispatch(counterPlusOne()), [dispatch]);
+
+  return {
+    count,
+    counterPlusOne: boundAction
+  };
+}
+
+export function reducer(state, action) {
+  switch (action.type) {
+    case HOME_COUNTER_PLUS_ONE:
+      return {
+        ...state,
+        count: state.count + 1
+      }
+
+    default:
+      return state;
+  }
+}
+```
+
+#### constants.ts
+
+```ts
+export const HOME_COUNTER_PLUS_ONE = 'HOME_COUNTER_PLUS_ONE';
+export const HOME_COUNTER_MINUS_ONE = 'HOME_COUNTER_MINUS_ONE';
+```
+
+#### initialState.ts
+
+```ts
+const initialState = {
+  count: 0,
+};
+
+export default initialState;
+```
+
+其它每个feature下，都应该参照此种分类方式，创建对应的redux文件夹。
+
+### 6. 创建一个Counter组件来使用redux
+
+#### Counter.ts
+
+```ts
+import { useCounterPlusOne, useCounterMinusOne } from './redux/hooks.ts';
+import './Counter.less';
+
+export default function Counter() {
+  const { count, counterPlusOne } = useCounterPlusOne();
+  const { counterMinusOne } = useCounterMinusOne();
+
+  return (
+    <div className='examples-counter'>
+      <div className='count'>计数：{count}</div>
+      <button className='minus-one' onClick={counterMinusOne}>-</button>
+      <button className='plus-one' onClick={counterPlusOne}>+</button>
+    </div>
+  );
+}
+```
+
+#### Counter.less
+```ts
+.examples-counter {
+  margin: 20px;
+
+  .count{
+    margin: 10px 0;
+  }
+
+  .plus-one,
+  .minus-one {
+    background-color: #38b3e4;
+    border: none;
+    width: 50px;
+    height: 30px;
+    color: #fff;
+  }
+  .plus-one {
+    margin-left: 10px;
+  }
+}
+```
+
+#### 引入Counter到CounterPage中
+
+```ts
+import Counter from './Counter.tsx';
+import './CounterPage.less';
+
+export default function CounterPage() {
+  return (
+    <div className="examples-counter-page">
+      <Counter></Counter>
+    </div>
+  );
+}
+```
+
+从redux的组织套路上来说，我们推荐：
+
+- 按feature编写action、reducer和相关hooks（每一组拆成一个文件），编写辅助文件constants、initialState，将action、reducer、hooks集中到统一的出口。
+
+- 编写store和将所有reducer收集成rootReducer

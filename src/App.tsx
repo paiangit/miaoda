@@ -3,16 +3,17 @@ import {
   Navigate,
 } from 'react-router-dom';
 
-import MainLayout from './features/home/MainLayout.tsx';
-import MainPage from './features/home/MainPage.tsx';
-import AppListPage from './features/myApps/AppListPage.tsx';
-import AdminLayout from './features/management/AdminLayout.tsx';
-import ManagementPage from './features/management/ManagementPage.tsx';
-import AppSettingsPage from './features/settings/AppSettingsPage.tsx';
-import AppPublishPage from './features/publish/AppPublishPage.tsx';
-import DesignerPage from './features/design/DesignerPage.tsx';
-import PreviewPage from './features/preview/PreviewPage.tsx';
-import PageNotFound from './features/common/PageNotFound.tsx';
+import { MainLayout } from './features/home/index.tsx';
+import { MainPage } from './features/home/index.tsx';
+import { AppListPage } from './features/myApps/index.tsx';
+import { AdminLayout } from './features/management/index.tsx';
+import { ManagementPage } from './features/management/index.tsx';
+import { AppSettingsPage } from './features/settings/index.tsx';
+import { AppPublishPage } from './features/publish/index.tsx';
+import { DesignerPage } from './features/design/index.tsx';
+import { PreviewPage } from './features/preview/index.tsx';
+import { PageNotFound } from './features/common/index.tsx';
+import { CounterPage } from './features/examples/index.tsx';
 
 function App() {
   const mainRoutes = {
@@ -46,6 +47,10 @@ function App() {
       {
         path: 'app/:appId/preview',
         element: <PreviewPage />
+      },
+      {
+        path: 'examples/counter',
+        element: <CounterPage />
       },
     ],
   };

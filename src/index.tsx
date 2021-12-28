@@ -1,7 +1,7 @@
 import React from 'react';
 import ReactDOM from 'react-dom';
 import Root from './Root.tsx';
-import reportWebVitals from './reportWebVitals';
+import reportWebVitals from './reportWebVitals.ts';
 
 /**
  * StrictMode 是一个用以标记出应用中潜在问题的工具。
