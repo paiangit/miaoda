@@ -1284,7 +1284,7 @@ li {
 }
 ```
 
-### 新建styles/index.less 作为样式的总出口文件
+### 新建styles/index.less 作为样式的总出口文件，并把这个文件引入到src/index.less中
 
 ```css
 /* 样式的总出口 */
@@ -1301,3 +1301,71 @@ li {
 }
 ```
 
+## 十三、引入antd，进行样式引入，并修改语言包为中文
+
+### 安装antd
+
+```sh
+npm install antd --save
+```
+
+antd 默认支持基于 ES modules 的 tree shaking，对于 js 部分，直接引入 import { Button } from 'antd' 就会有按需加载的效果。
+
+antd具体使用请参照文档：https://ant.design/docs/react/getting-started-cn
+
+### 接入图标
+
+```sh
+npm install --save @ant-design/icons
+```
+参照：https://ant.design/components/icon-cn/
+
+### 新建src/styles/themes.less，导入antd的色板less
+
+```
+// import less of antd colors
+// see: https://ant.design/docs/spec/colors-cn#%E5%9C%A8%E4%BB%A3%E7%A0%81%E4%B8%AD%E4%BD%BF%E7%94%A8%E8%89%B2%E6%9D%BF
+@import '~antd/lib/style/themes/default.less';
+```
+
+其中，
+
+@import 导入样式；～作为模块导入。
+
+### 然后针对src/index.tsx做如下修改：
+
+```ts
+  import React from 'react';
+  import ReactDOM from 'react-dom';
+  import Root from './Root.tsx';
++ // 由于 antd 组件的默认文案是英文，所以需要修改为中文
++ import zhCN from 'antd/lib/locale/zh_CN';
++ import moment from 'moment';
++ import 'moment/locale/zh-cn';
++ import { ConfigProvider } from 'antd';
+  import reportWebVitals from './reportWebVitals.ts';
++ import 'antd/dist/antd.css';
++ import './styles/index.less';
++
++ moment.locale('zh-cn');
+
+/**
+ * StrictMode 是一个用以标记出应用中潜在问题的工具。
+ * 就像 Fragment ，StrictMode 不会渲染任何真实的UI。
+ * 它为其后代元素触发额外的检查和警告。
+ * 注意: 严格模式检查只在开发模式下运行，不会与生产模式冲突。
+ */
+ReactDOM.render(
+  <React.StrictMode>
++   <ConfigProvider locale={zhCN}>
+      <Root />
+    </ConfigProvider>
++  </React.StrictMode>,
+  document.getElementById('root')
+);
+
+// If you want to start measuring performance in your app, pass a function
+// to log results (for example: reportWebVitals(console.log))
+// or send to an analytics endpoint. Learn more: https://bit.ly/CRA-vitals
+reportWebVitals();
+```
