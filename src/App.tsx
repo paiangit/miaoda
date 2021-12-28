@@ -3,49 +3,78 @@ import {
   Navigate,
 } from 'react-router-dom';
 
-import Layout from './Layout.tsx';
-import Home from './Home.tsx';
-import Projects from './Projects.tsx';
-import Project from './Project.tsx';
-import Editor from './Editor.tsx';
-import PageNotFound from './PageNotFound.tsx';
-import './App.less';
+import MainLayout from './features/home/MainLayout.tsx';
+import MainPage from './features/home/MainPage.tsx';
+import AppListPage from './features/myApps/AppListPage.tsx';
+import AdminLayout from './features/management/AdminLayout.tsx';
+import ManagementPage from './features/management/ManagementPage.tsx';
+import AppSettingsPage from './features/settings/AppSettingsPage.tsx';
+import AppPublishPage from './features/publish/AppPublishPage.tsx';
+import DesignerPage from './features/design/DesignerPage.tsx';
+import PreviewPage from './features/preview/PreviewPage.tsx';
+import PageNotFound from './features/common/PageNotFound.tsx';
 
 function App() {
   const mainRoutes = {
     path: '/',
-    element: <Layout/>,
+    element: <MainLayout/>,
     children: [
-      {
-        path: "/",
-        element: <Home/>
-      },
-      {
-        path: "projects",
-        element: <Projects />
-      },
-      {
-        path: "project/:id",
-        element: <Project />
-      },
-      {
-        path: "editor",
-        element: <Editor />
-      },
-      {
-        path: "404",
-        element: <PageNotFound />
-      },
       {
         path: '*',
         element: <Navigate to='/404' />
       },
+      {
+        path: "/",
+        element: <MainPage/>
+      },
+      {
+        path: '404',
+        element: <PageNotFound />
+      },
+      {
+        path: 'myApps',
+        element: <AppListPage />
+      },
+      {
+        path: 'app/:appId/admin',
+        element: <Navigate to=':pageId' />
+      },
+      {
+        path: 'app/:appId/design',
+        element: <DesignerPage />
+      },
+      {
+        path: 'app/:appId/preview',
+        element: <PreviewPage />
+      },
     ],
   };
-  const routing = useRoutes([mainRoutes]);
+  const adminRoutes = {
+    path: 'app/:appId/admin/',
+    element: <AdminLayout/>,
+    children: [
+      {
+        path: '*',
+        element: <Navigate to='/404'/>
+      },
+      {
+        path: ':pageId',
+        element: <ManagementPage />
+      },
+      {
+        path: 'appPublish',
+        element: <AppPublishPage />
+      },
+      {
+        path: 'appSettings',
+        element: <AppSettingsPage />
+      },
+    ]
+  };
+  const routing = useRoutes([mainRoutes, adminRoutes]);
 
   return (
-    <div className="App">
+    <div className="app">
       { routing }
     </div>
   );

@@ -775,3 +775,162 @@ export default App;
 
 ```
 
+## 九、按feature规整目录，配置动态路由、嵌套路由
+
+1. 按feature规整目录，对应调整路由
+
+规整后目录如下：
+
+.\miaoda
+├─.gitignore
+├─craco.config.js
+├─package-lock.json
+├─package.json
+├─README.md
+├─test
+|  ├─App.test.tsx
+|  └setupTests.ts
+├─src
+|  ├─App.tsx
+|  ├─index.tsx
+|  ├─reportWebVitals.js
+|  ├─Root.tsx
+|  ├─styles
+|  ├─images
+|  ├─features
+|  |    ├─settings
+|  |    |    ├─AppSettingsPage.less
+|  |    |    ├─AppSettingsPage.tsx   应用设置
+|  |    |    ├─index.ts
+|  |    |    └route.tsx
+|  |    ├─publish
+|  |    |    ├─AppPublishPage.less
+|  |    |    ├─AppPublishPage.tsx    应用发布
+|  |    |    ├─index.ts
+|  |    ├─preview
+|  |    |    ├─index.ts
+|  |    |    ├─PreviewPage.less
+|  |    |    ├─PreviewPage.tsx       页面预览
+|  |    ├─myApps
+|  |    |   ├─AppListPage.less
+|  |    |   ├─AppListPage.tsx        我的应用
+|  |    |   ├─index.ts
+|  |    ├─management
+|  |    |     ├─AdminLayout.less
+|  |    |     ├─AdminLayout.tsx
+|  |    |     ├─index.ts
+|  |    |     ├─ManagementPage.less
+|  |    |     ├─ManagementPage.tsx   页面管理
+|  |    ├─home
+|  |    |  ├─index.ts
+|  |    |  ├─MainLayout.less
+|  |    |  ├─MainLayout.tsx
+|  |    |  ├─MainPage.less
+|  |    |  ├─MainPage.tsx            首页
+|  |    ├─design
+|  |    |   ├─DesignerPage.less
+|  |    |   ├─DesignerPage.tsx       页面设计器
+|  |    |   ├─index.ts
+|  |    ├─common
+|  |    |   ├─index.ts
+|  |    |   ├─PageNotFound.less
+|  |    |   ├─PageNotFound.tsx       404页面
+|  ├─common
+├─public
+|   ├─favicon.ico
+|   ├─index.html
+|   ├─logo192.png
+|   ├─logo512.png
+|   ├─manifest.json
+|   └robots.txt
+
+改造后的路由文件如下：
+
+```
+// src/App.tsx
+import {
+  useRoutes,
+  Navigate,
+} from 'react-router-dom';
+
+import MainLayout from './features/home/MainLayout.tsx';
+import MainPage from './features/home/MainPage.tsx';
+import AppListPage from './features/myApps/AppListPage.tsx';
+import AdminLayout from './features/management/AdminLayout.tsx';
+import ManagementPage from './features/management/ManagementPage.tsx';
+import AppSettingsPage from './features/settings/AppSettingsPage.tsx';
+import AppPublishPage from './features/publish/AppPublishPage.tsx';
+import DesignerPage from './features/design/DesignerPage.tsx';
+import PreviewPage from './features/preview/PreviewPage.tsx';
+import PageNotFound from './features/common/PageNotFound.tsx';
+// import routeConfig from './common/routeConfig.tsx';
+
+function App() {
+  const mainRoutes = {
+    path: '/',
+    element: <MainLayout/>,
+    children: [
+      {
+        path: '*',
+        element: <Navigate to='/404' />
+      },
+      {
+        path: "/",
+        element: <MainPage/>
+      },
+      {
+        path: '404',
+        element: <PageNotFound />
+      },
+      {
+        path: 'myApps',
+        element: <AppListPage />
+      },
+      {
+        path: 'app/:appId/admin',
+        element: <Navigate to=':pageId' />
+      },
+      {
+        path: 'app/:appId/design',
+        element: <DesignerPage />
+      },
+      {
+        path: 'app/:appId/preview',
+        element: <PreviewPage />
+      },
+    ],
+  };
+  const adminRoutes = {
+    path: 'app/:appId/admin/',
+    element: <AdminLayout/>,
+    children: [
+      {
+        path: '*',
+        element: <Navigate to='/404'/>
+      },
+      {
+        path: ':pageId',
+        element: <ManagementPage />
+      },
+      {
+        path: 'appPublish',
+        element: <AppPublishPage />
+      },
+      {
+        path: 'appSettings',
+        element: <AppSettingsPage />
+      },
+    ]
+  };
+  const routing = useRoutes([mainRoutes, adminRoutes]);
+  // const routing = useRoutes([routeConfig]);
+
+  return (
+    <div className="app">
+      { routing }
+    </div>
+  );
+}
+
+export default App;
+```
