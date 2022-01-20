@@ -12,8 +12,11 @@ import { AppSettingsPage } from './features/settings/index.tsx';
 import { AppPublishPage } from './features/publish/index.tsx';
 import { DesignerPage } from './features/design/index.tsx';
 import { PreviewPage } from './features/preview/index.tsx';
+import { RegisterPage } from './features/authority/index.tsx';
+import { SignInPage } from './features/authority/index.tsx';
 import { PageNotFound } from './features/common/index.tsx';
 import { CounterPage } from './features/examples/index.tsx';
+// import routeConfig from './common/routeConfig.js';
 
 function App() {
   const mainRoutes = {
@@ -49,6 +52,14 @@ function App() {
         element: <PreviewPage />
       },
       {
+        path: 'authority/register',
+        element: <RegisterPage />
+      },
+      {
+        path: 'authority/signIn',
+        element: <SignInPage />
+      },
+      {
         path: 'examples/counter',
         element: <CounterPage />
       },
@@ -77,6 +88,7 @@ function App() {
     ]
   };
   const routing = useRoutes([mainRoutes, adminRoutes]);
+  // const routing = useRoutes([routeConfig]);
 
   return (
     <div className="app">

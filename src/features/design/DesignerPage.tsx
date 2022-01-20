@@ -2,6 +2,11 @@ import {
   useParams,
   useSearchParams,
 } from 'react-router-dom';
+import { Button } from 'antd';
+import { DesktopOutlined, MobileOutlined } from '@ant-design/icons';
+import LeftArea from './LeftArea.tsx';
+import CenterArea from './CenterArea.tsx';
+import RightArea from './RightArea.tsx';
 import './DesignerPage.less';
 
 export default function DesignerPage() {
@@ -11,7 +16,15 @@ export default function DesignerPage() {
 
   return (
     <div className="design-designer-page">
-      Design app {params.appId} page {pageId}
+      <div className="designer-header">
+        <Button>预览</Button>
+        <Button type="primary">保存</Button>
+      </div>
+      <div className="designer-body">
+        <LeftArea></LeftArea>
+        <CenterArea></CenterArea>
+        <RightArea></RightArea>
+      </div>
     </div>
   );
 }

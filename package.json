@@ -7,23 +7,19 @@
     "@testing-library/jest-dom": "^5.16.1",
     "@testing-library/react": "^12.1.2",
     "@testing-library/user-event": "^13.5.0",
-    "@types/jest": "^27.0.3",
-    "@types/node": "^17.0.5",
-    "@types/react": "^17.0.38",
-    "@types/react-dom": "^17.0.11",
     "antd": "^4.18.0",
-    "jest-watch-typeahead": "^0.6.5",
+    "axios": "^0.25.0",
+    "moment": "^2.29.1",
     "react": "^17.0.2",
     "react-dom": "^17.0.2",
     "react-redux": "^7.2.6",
     "react-router-dom": "^6.2.1",
     "react-scripts": "5.0.0",
     "redux": "^4.1.2",
-    "typescript": "^4.5.4",
     "web-vitals": "^2.1.2"
   },
   "scripts": {
-    "start": "craco start",
+    "start": "cross-env PORT=80 craco start",
     "build": "craco build",
     "test": "craco test",
     "eject": "react-scripts eject"
@@ -48,7 +44,13 @@
   },
   "devDependencies": {
     "@craco/craco": "^6.4.3",
+    "@types/jest": "^27.0.3",
+    "@types/node": "^17.0.5",
+    "@types/react": "^17.0.38",
+    "@types/react-dom": "^17.0.11",
     "craco-less": "^2.0.0",
-    "redux-mock-store": "^1.5.4"
+    "jest-watch-typeahead": "^0.6.5",
+    "redux-mock-store": "^1.5.4",
+    "typescript": "^4.5.4"
   }
 }

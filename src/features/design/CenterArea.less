@@ -1,0 +1,30 @@
+@import '../../styles/themes';
+@import '../../styles/mixins';
+
+.design-center-area {
+  flex: 1;
+  .toolbar {
+    text-align: center;
+    padding: 5px;
+  }
+  .simulator{
+    position: relative;
+    width: 100%;
+    height: 100%;
+    background-color: #edeff3;
+  }
+  .simulator-content {
+    @gap: 16px;
+    position: absolute;
+    left: @gap;
+    top: @gap;
+    right: @gap;
+    bottom: @gap;
+    background-color: #fff;
+  }
+  .simulator-canvas {
+    width: 100%;
+    height: 100%;
+    border: 0;
+  }
+}

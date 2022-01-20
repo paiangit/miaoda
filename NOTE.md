@@ -16,6 +16,14 @@ CRA的文档见：https://create-react-app.bootcss.com/
 # miaoda
 ```
 
+如果需要修改npm start时的启动端口（默认是3000），可以在package.json中修改环境变量PORT，如下所示：
+
+```js
+"scripts": {
+-  "start": "react-scripts start",
++  "start": "cross-env PORT=4000 react-scripts start",
+```
+
 因为CRA创建的项目只有很基础的功能，很多配置的工作还需要自己来添加。下面我们一步步将项目搭建起来。
 
 ## 二、添加对Less打包的支持
@@ -1334,6 +1342,10 @@ npm install --save @ant-design/icons
 
 ### 然后针对src/index.tsx做如下修改：
 
+```sh
+npm i moment -S
+```
+
 ```ts
   import React from 'react';
   import ReactDOM from 'react-dom';
@@ -1368,4 +1380,261 @@ ReactDOM.render(
 // to log results (for example: reportWebVitals(console.log))
 // or send to an analytics endpoint. Learn more: https://bit.ly/CRA-vitals
 reportWebVitals();
+```
+## 十四、注意React中事件绑定时容易犯的一个错误
+
+如果你将一个如下所示的普通传递给JSX的属性，会报错：
+
+```ts
+function clickHandler(index: number, e) {
+  setActiveIndex(index, e);
+}
+```
+
+```ts
+onClick={clickHandler(index)}
+```
+
+错误提示为：
+
+> 不能将类型“void”分配给类型“MouseEventHandler<HTMLLIElement>”
+
+这时，
+
+第一种做法：
+
+修改事件函数为：
+
+```ts
+function clickHandler(index: number) {
+  return (e) => {
+    setActiveIndex(index);
+  }
+}
+```
+
+第二种做法：
+
+修改使用处为：
+
+```ts
+onClick={clickHandler.bind(null, index)}
+```
+
+第三种做法：
+
+修改使用处为：
+
+```ts
+onClick={(e) => clickHandler(index, e)}
+```
+
+上面说的是函数式组件里面的写法，而类组件里面也类似，不过要注意this绑定的处理。
+
+可参见：https://blog.csdn.net/weixin_41615439/article/details/110237818
+
+# 环境变量配置与获取
+
+安装依赖：
+
+```sh
+npm i dotenv -S
+```
+
+然后在入口文件index.tsx文件中引入：
+```ts
+import { config } from 'dotenv';
+
+config({ path: '.dev' });
+```
+
+然而，发现并不好用，webpack报如下错误：
+> Module not found: Error: Can't resolve 'path' in '\miaoda\node_modules\dotenv\lib'
+参见：https://github.com/motdotla/dotenv/issues/581
+
+这是因为：
+process.env is not polyfilled in Webpack 5+, leading to errors in environments where process is null (browsers).
+https://github.com/mrsteele/dotenv-webpack/blob/master/README.md
+
+最后，我发现其实react-scripts背后本身就已经使用了dotenv这个库的，我们只需要：
+
+1）在项目的根目录中创建xxx.env文件
+2）在xxx.env文件中配置以REACT_APP_开头的环境变量
+3）在项目中通过process.env.REACT_APP_...访问它
+
+所以根本不需要自己安装和配置dotenv。
+参见：https://stackoverflow.com/questions/42182577/is-it-possible-to-use-dotenv-in-a-react-project/56668716#56668716
+
+在create-react-app中，除了内置的环境变量，如NODE_ENV、PUBLIC_URL外，其余环境变量需要用REACT_APP_作为前缀。
+
+env文件的优先级如下：
+
+优先级如下：
+
+`npm start`: `.env.development.local` > `.env.development` > `.env.local` > `.env`
+
+`npm run build`: `.env.production.local` > `.env.production` > `.env.local` > `.env`
+
+`npm test`: `.env.test.local` > `.env.test` > `.env`
+
+
+
+# 请求后台数据
+
+```sh
+npm i axios
+```
+
+## 封装common/request.ts
+
+```ts
+import axios from 'axios';
+import { message } from 'antd';
+
+const axiosInstance = axios.create(getDefaultOptions());
+
+axiosInstance.interceptors.request.use(
+  (config) => {
+    const token = getToken();
+    token && (config.headers.common['x-midao-token'] = token);
+    // config.headers.post['content-Type'] = 'application/x-www-form-urlencoded';
+    config.headers['Content-Type'] = 'application/json';
+    // 注意这里要return
+    return config;
+  },
+  (err) => {
+    console.log(err);
+    // 注意这里要return
+    return Promise.reject(err);
+  },
+);
+
+axiosInstance.interceptors.response.use(
+  (res: any) => {
+    // 注意这里要return
+    return Promise.resolve(res.data);
+  },
+  (err) => {
+    const showError = message.error;
+
+    if (err.message) {
+      const msg = err.response?.data?.message || err.message;
+      showError(msg);
+    }
+    // 注意这里要return
+    return Promise.reject(err);
+  },
+);
+
+function getDefaultOptions() {
+  // API基地址
+  const baseURL =
+    `${window.location.protocol}//${process.env.REACT_APP_API_HOST}:${process.env.REACT_APP_API_PORT}${process.env.REACT_APP_API_PREFIX}`;
+  // 超时时间
+  const timeout = 60000;
+
+  return {
+    baseURL,
+    timeout,
+  }
+}
+
+function getToken() {
+  let token = '';
+  // TODO
+  return token;
+}
+
+export default axiosInstance;
+```
+
+这里因为忘记return的问题导致调试了好一会儿。所以特地都加上了注释，防止你忘记。
+
+## 封装请求API：features/authority/api.ts
+
+```ts
+import request from '../../common/request.ts';
+
+export default {
+  createUser(data) {
+    return request({
+      method: 'post',
+      url: '/user/create',
+      data,
+    });
+  },
+  getUser(id) {
+    return request({
+      method: 'get',
+      url: `/user/${id}`,
+    });
+  },
+  signIn(data) {
+    return request({
+      method: 'post',
+      url: '/auth/signIn',
+      data,
+    });
+  },
+}
+```
+
+## 在注册、登录等页面直接调用就好了
+
+features/authority/RegisterPage.tsx
+
+```ts
+import { useRef } from 'react';
+import { Button } from 'antd';
+import { useNavigate } from 'react-router-dom';
+import api from './api.ts';
+import './RegisterPage.less';
+
+export default function RegisterPage() {
+  const registerForm = useRef();
+  const navigate = useNavigate();
+
+  function clickHandler(e) {
+    e.preventDefault();
+    const username = registerForm.current.username.value;
+    const password = registerForm.current.password.value;
+    const retypePassword = registerForm.current.retypePassword.value;
+    const email = registerForm.current.email.value;
+
+    if (retypePassword !== password) return;
+
+    api
+      .createUser({
+        username,
+        password,
+        email,
+      })
+      .then(res => {
+        console.log(res);
+        if (res.code === 0) {
+          navigate('/authority/signIn');
+        }
+      }).catch(err => {
+        console.log(err);
+      });
+  };
+
+  return (
+    <div className="authority-register-page">
+      <h2 className="title">Register</h2>
+      <form ref={registerForm}>
+        <label className="label" htmlFor="username">Username</label>
+        <input type="text" name="username" id="username"></input>
+        <label className="label" htmlFor="password">Password</label>
+        <input type="password" name="password" id="password"></input>
+        <label className="label" htmlFor="retypePassword">Retype password</label>
+        <input type="password" name="retypePassword" id="retypePassword"></input>
+        <label className="label" htmlFor="email">Email address</label>
+        <input type="text" name="email" id="email"></input>
+
+        <Button className="register" type="primary" onClick={clickHandler}>Register</Button>
+      </form>
+    </div>
+  );
+}
 ```
