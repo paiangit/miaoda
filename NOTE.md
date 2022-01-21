@@ -1477,8 +1477,6 @@ env文件的优先级如下：
 
 `npm test`: `.env.test.local` > `.env.test` > `.env`
 
-
-
 # 请求后台数据
 
 ```sh
@@ -1638,3 +1636,30 @@ export default function RegisterPage() {
   );
 }
 ```
+
+## 修改应用标题
+
+修改public/index.html的title为：
+
+```
+<title>秒搭</title>
+```
+
+## 使用JWT
+
+在登录时访问user/signIn接口，接口会返回token，我们将token存在localStorage中。为了让保存和读取时的值一致，我们在项目根目录下新建一个.env文件来保存其键值。
+
+```
+# 各个环境公用的环境变量
+
+## ======localStorage的键值======
+# 登录token存储在localStorage中的key
+REACT_APP_ACCESS_TOKEN_NAME=miaodaAccessToken
+```
+
+然后，在读和写的地方都通过process.env.REACT_APP_ACCESS_TOKEN_NAME来取得该键值。
+
+在下次请求的时候，通过在请求头中设置Authorization这个请求头，其value就是 `Bearer ${token}` ，即把localStorage中存的token取出来，在前面拼上Bearer加空格。这是JWT要求的格式。
+
+这样返回给服务器端之后，服务器就能正常地解析和验证JWT是否有效。
+

@@ -6,8 +6,7 @@ const axiosInstance = axios.create(getDefaultOptions());
 axiosInstance.interceptors.request.use(
   (config) => {
     const token = getToken();
-    token && (config.headers.common['x-midao-token'] = token);
-    // config.headers.post['content-Type'] = 'application/x-www-form-urlencoded';
+    token && (config.headers.common['Authorization'] = token);
     config.headers['Content-Type'] = 'application/json';
     // 注意这里要return
     return config;
@@ -78,9 +77,9 @@ function getDefaultOptions() {
 }
 
 function getToken() {
-  let token = '';
-  // TODO
-  return token;
+  const token = window.localStorage.getItem(process.env.REACT_APP_ACCESS_TOKEN_NAME);
+
+  return token ? `Bearer ${token}` : '';
 }
 
 export default axiosInstance;

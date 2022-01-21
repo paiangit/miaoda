@@ -1,10 +1,12 @@
 import { useRef } from 'react';
 import { Button, message } from 'antd';
+import { useNavigate } from 'react-router-dom';
 import './SignInPage.less';
 import api from './api.ts';
 
 export default function SignInPage() {
   const signInFormRef = useRef();
+  const navigate = useNavigate();
 
   function clickHandler() {
     return (e) => {
@@ -20,7 +22,17 @@ export default function SignInPage() {
         })
         .then((res) => {
           if (res.code === 0) {
-            message.success('登录成功');
+            let {
+              token,
+              id,
+            } = res.data;
+            if (token) {
+              window.localStorage.setItem(process.env.REACT_APP_ACCESS_TOKEN_NAME, token);
+              message.success('登录成功');
+              setTimeout(() => {
+                navigate(`/user/${id}/profile`);
+              }, 3000);
+            }
           }
         });
     };

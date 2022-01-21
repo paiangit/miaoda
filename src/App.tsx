@@ -3,17 +3,24 @@ import {
   Navigate,
 } from 'react-router-dom';
 
-import { MainLayout } from './features/home/index.tsx';
-import { MainPage } from './features/home/index.tsx';
+import {
+  MainLayout,
+  MainPage,
+} from './features/home/index.tsx';
 import { AppListPage } from './features/myApps/index.tsx';
-import { AdminLayout } from './features/management/index.tsx';
-import { ManagementPage } from './features/management/index.tsx';
+import {
+  AdminLayout,
+  ManagementPage,
+} from './features/management/index.tsx';
 import { AppSettingsPage } from './features/settings/index.tsx';
 import { AppPublishPage } from './features/publish/index.tsx';
 import { DesignerPage } from './features/design/index.tsx';
 import { PreviewPage } from './features/preview/index.tsx';
-import { RegisterPage } from './features/authority/index.tsx';
-import { SignInPage } from './features/authority/index.tsx';
+import {
+  RegisterPage,
+  SignInPage,
+} from './features/authority/index.tsx';
+import { ProfilePage } from './features/user/index.tsx';
 import { PageNotFound } from './features/common/index.tsx';
 import { CounterPage } from './features/examples/index.tsx';
 // import routeConfig from './common/routeConfig.js';
@@ -58,6 +65,10 @@ function App() {
       {
         path: 'authority/signIn',
         element: <SignInPage />
+      },
+      {
+        path: 'user/:userId/profile',
+        element: <ProfilePage />
       },
       {
         path: 'examples/counter',

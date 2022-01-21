@@ -15,9 +15,10 @@ export default function MainLayout() {
         <li><Link to="/app/1/admin/appSettings">Settings for app 1</Link></li>
         <li><Link to="/app/1/design?pageId=123">Design app 1 page 123</Link></li>
         <li><Link to="/app/1/preview?pageId=123">Preview app 1 page 123</Link></li>
-        <li><Link to="authority/register">register</Link></li>
-        <li><Link to="authority/signIn">sign in</Link></li>
-        <li><Link to="examples/counter">examples counter</Link></li>
+        <li><Link to="/authority/register">register</Link></li>
+        <li><Link to="/authority/signIn">sign in</Link></li>
+        <li><Link to="/user/39/profile">profile</Link></li>
+        <li><Link to="/examples/counter">examples counter</Link></li>
       </ul>
       <Outlet />
     </div>

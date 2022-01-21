@@ -8,12 +8,6 @@ export default {
       data,
     });
   },
-  getUser(id) {
-    return request({
-      method: 'get',
-      url: `/user/${id}`,
-    });
-  },
   signIn(data) {
     return request({
       method: 'post',
