@@ -17,7 +17,7 @@ export default function RegisterPage() {
 
     if (retypePassword !== password) return;
 
-    // 移除登录token
+    // 注册之前移除登录token
     window.localStorage.removeItem(process.env.REACT_APP_ACCESS_TOKEN_NAME);
 
     api
