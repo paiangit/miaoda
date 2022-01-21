@@ -17,6 +17,7 @@ export default function ProfilePage() {
     id: '',
     gender: 0,
     // avatar: '',
+    email: '',
   });
   const genderMap = [
     '保密',
@@ -50,6 +51,9 @@ export default function ProfilePage() {
         </Form.Item>
         <Form.Item label="id">
           <div>{userProfile.id}</div>
+        </Form.Item>
+        <Form.Item label="email">
+          <div>{userProfile.email}</div>
         </Form.Item>
         <Form.Item label="gender">
           <div>{genderMap[userProfile.gender]}</div>
