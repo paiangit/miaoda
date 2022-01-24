@@ -1668,3 +1668,78 @@ REACT_APP_ACCESS_TOKEN_NAME=miaodaAccessToken
 因为Layout组件无参数，所以可以用React.memo第二个参数传return false的函数来直接优化。
 
 export default React.memo(MainLayout, () => false);
+
+## 将公共组件分成三类，在common目录下分目录管理
+
+basic 基础组件
+container 容器组件
+hoc 高阶组件
+
+## 编写检查登录的高阶组件
+
+common/hoc/CheckLogin.tsx：
+
+```tsx
+import { useEffect } from 'react';
+import { useNavigate } from 'react-router-dom';
+import api from './CheckLoginApi.ts';
+
+// 登录高阶组件
+export default function CheckLogin(Component) {
+  const navigate = useNavigate();
+
+  useEffect(() => {
+    api
+      .checkLogin()
+      .then(res => {
+        console.log('已登录', res);
+      })
+      .catch(err => {
+        // console.log('未登录', err);
+        navigate('/auth/login');
+      });
+  }, []);
+
+  return function () {
+    return (<Component />);
+  }
+}
+```
+
+common/hoc/CheckLoginApi.ts：
+
+```ts
+import request from '../../../common/request.ts';
+
+export default {
+  checkLogin() {
+    return request({
+      method: 'post',
+      url: '/auth/checkLogin',
+    });
+  },
+}
+```
+
+这个组件将会检查是否登录（本质上是调用服务端接口，校验其token是否合法），如果发现没有登录，则会自动跳转到登录页面。
+
+然后，我们就可以将这个高阶组件分别用于包裹每一个需要登录的页面，示例如下：
+
+```tsx
++ import { CheckLogin } from '../common/index.tsx';
+  import './MainPage.less';
+
+  function MainPage() {
+    return (
+      <div className="home-main-page">
+        home
+      </div>
+    );
+  }
+
++  export default function() {
++    const WrappedMainPage = CheckLogin(MainPage);
++
++    return <WrappedMainPage/>;
++  }
+```
