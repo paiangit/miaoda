@@ -1548,7 +1548,7 @@ export default axiosInstance;
 
 这里因为忘记return的问题导致调试了好一会儿。所以特地都加上了注释，防止你忘记。
 
-## 封装请求API：features/authority/api.ts
+## 封装请求API：features/auth/api.ts
 
 ```ts
 import request from '../../common/request.ts';
@@ -1567,10 +1567,10 @@ export default {
       url: `/user/${id}`,
     });
   },
-  signIn(data) {
+  login(data) {
     return request({
       method: 'post',
-      url: '/auth/signIn',
+      url: '/auth/login',
       data,
     });
   },
@@ -1579,7 +1579,7 @@ export default {
 
 ## 在注册、登录等页面直接调用就好了
 
-features/authority/RegisterPage.tsx
+features/auth/RegisterPage.tsx
 
 ```ts
 import { useRef } from 'react';
@@ -1610,7 +1610,7 @@ export default function RegisterPage() {
       .then(res => {
         console.log(res);
         if (res.code === 0) {
-          navigate('/authority/signIn');
+          navigate('/auth/login');
         }
       }).catch(err => {
         console.log(err);
@@ -1618,7 +1618,7 @@ export default function RegisterPage() {
   };
 
   return (
-    <div className="authority-register-page">
+    <div className="auth-register-page">
       <h2 className="title">Register</h2>
       <form ref={registerForm}>
         <label className="label" htmlFor="username">Username</label>
@@ -1647,7 +1647,7 @@ export default function RegisterPage() {
 
 ## 使用JWT
 
-在登录时访问user/signIn接口，接口会返回token，我们将token存在localStorage中。为了让保存和读取时的值一致，我们在项目根目录下新建一个.env文件来保存其键值。
+在登录时访问user/login接口，接口会返回token，我们将token存在localStorage中。为了让保存和读取时的值一致，我们在项目根目录下新建一个.env文件来保存其键值。
 
 ```
 # 各个环境公用的环境变量

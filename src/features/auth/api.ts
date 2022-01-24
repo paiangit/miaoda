@@ -8,10 +8,10 @@ export default {
       data,
     });
   },
-  signIn(data) {
+  login(data) {
     return request({
       method: 'post',
-      url: '/auth/signIn',
+      url: '/auth/login',
       data,
     });
   },

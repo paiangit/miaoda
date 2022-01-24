@@ -18,8 +18,8 @@ import { DesignerPage } from './features/design/index.tsx';
 import { PreviewPage } from './features/preview/index.tsx';
 import {
   RegisterPage,
-  SignInPage,
-} from './features/authority/index.tsx';
+  LoginPage,
+} from './features/auth/index.tsx';
 import { ProfilePage } from './features/user/index.tsx';
 import { PageNotFound } from './features/common/index.tsx';
 import { CounterPage } from './features/examples/index.tsx';
@@ -59,12 +59,12 @@ function App() {
         element: <PreviewPage />
       },
       {
-        path: 'authority/register',
+        path: 'auth/register',
         element: <RegisterPage />
       },
       {
-        path: 'authority/signIn',
-        element: <SignInPage />
+        path: 'auth/login',
+        element: <LoginPage />
       },
       {
         path: 'user/:userId/profile',

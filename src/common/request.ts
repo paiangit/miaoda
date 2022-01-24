@@ -27,7 +27,7 @@ axiosInstance.interceptors.response.use(
     //   case 401:
     //     msg = '您的登录已过期，请重新登录';
     //     setTimeout(() => {
-    //       const redirectURL = `https://localhost/authority/login?redirect=${encodeURIComponent(window.location.href)}`;
+    //       const redirectURL = `https://localhost/auth/login?redirect=${encodeURIComponent(window.location.href)}`;
     //       window.location.href = redirectURL;
     //     }, 1000);
     //     break;

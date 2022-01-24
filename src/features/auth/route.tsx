@@ -1,18 +1,18 @@
 import {
   RegisterPage,
-  SignInPage,
+  LoginPage,
 } from './index.tsx';
 
 export default {
-  path: 'authority',
+  path: 'auth',
   children: [
     {
       path: 'register',
       element: <RegisterPage />,
     },
     {
-      path: 'signIn',
-      element: <SignInPage />,
+      path: 'login',
+      element: <LoginPage />,
     },
   ],
 }

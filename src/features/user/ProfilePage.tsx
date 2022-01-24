@@ -37,7 +37,7 @@ export default function ProfilePage() {
       .catch(err => {
         console.log(err.message);
         setTimeout(() => {
-          navigate('/authority/signIn');
+          navigate('/auth/login');
         }, 3000);
       });
   }, []);

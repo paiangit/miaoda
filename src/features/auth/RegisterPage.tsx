@@ -29,7 +29,7 @@ export default function RegisterPage() {
       .then(res => {
         console.log(res);
         if (res.code === 0) {
-          navigate('/authority/signIn');
+          navigate('/auth/login');
         }
       }).catch(err => {
         console.log(err);
@@ -37,7 +37,7 @@ export default function RegisterPage() {
   };
 
   return (
-    <div className="authority-register-page">
+    <div className="auth-register-page">
       <h2 className="title">Register</h2>
       <form ref={registerForm}>
         <label className="label" htmlFor="username">Username</label>
