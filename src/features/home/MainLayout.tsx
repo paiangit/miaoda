@@ -1,10 +1,11 @@
+import React from 'react';
 import {
   Link,
   Outlet
 } from 'react-router-dom';
 import './MainLayout.less';
 
-export default function MainLayout() {
+function MainLayout() {
   return (
     <div className="home-main-layout">
       <ul className="demo-nav">
@@ -24,3 +25,5 @@ export default function MainLayout() {
     </div>
   );
 }
+
+export default React.memo(MainLayout, () => false);

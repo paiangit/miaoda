@@ -1663,3 +1663,8 @@ REACT_APP_ACCESS_TOKEN_NAME=miaodaAccessToken
 
 这样返回给服务器端之后，服务器就能正常地解析和验证JWT是否有效。
 
+## 性能优化
+
+因为Layout组件无参数，所以可以用React.memo第二个参数传return false的函数来直接优化。
+
+export default React.memo(MainLayout, () => false);
