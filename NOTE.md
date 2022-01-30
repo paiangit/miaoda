@@ -1879,3 +1879,23 @@ module.exports = {
 
 npx --no -- commitlint --edit $1
 ```
+
+## 想要合并或修改某几次提交的 commit message，怎么做？
+
+```sh
+git rebase -i HEAD~n
+```
+
+其中，n 替换成最近的几次。比如，如果你想合并最近的两次提交的 commit message，那么 n 就是 2。
+
+然后，输入 i 才可进行输入。在合并时注意最顶上那个 commit 必须是 pick，不过其 commit message 的内容是可以修改的。其它的不需要的则可以是 squash。处理完成后按 esc 键，输入 wq 保存。如果发现操作错误，可以执行如下命令放弃，然后再重来一遍：
+
+```sh
+git rebase --abort
+```
+
+接着执行如下命令即完成合并：
+
+```sh
+git rebase --continue
+```
