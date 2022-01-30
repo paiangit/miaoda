@@ -80,13 +80,13 @@ npm i customize-cra react-app-rewired less less-loader -D
 在项目根目录下创建 config-overrides.js 文件：
 
 ```js
-const { override, addLessLoader } = require("customize-cra");
+const { override, addLessLoader } = require('customize-cra');
 module.exports = override(
   addLessLoader({
     // 若 less-loader 版本小于 6.0，请移除 lessOptions 这一级，直接配置选项。
     lessOptions: {
       javascriptEnabled: true,
-      ModifyVars: { "@primary-color": "#eee" },
+      ModifyVars: { '@primary-color': '#eee' },
       sourceMap: true,
     },
   })
@@ -137,7 +137,7 @@ npm i @craco/craco craco-less -D
 然后在项目根目录创建一个 craco.config.js 用于修改默认配置。
 
 ```js
-const CracoLessPlugin = require("craco-less");
+const CracoLessPlugin = require('craco-less');
 
 module.exports = {
   plugins: [
@@ -358,13 +358,13 @@ const params = useParams();
 全局路由有常用两种路由模式可选：HashRouter 和 BrowserRouter。HashRouter：URL 中采用的是 hash 去创建路由。这里我们采用 BrowserRouter 来创建路由。
 
 ```js
-import React from "react";
-import { BrowserRouter, Link, Routes, Route } from "react-router-dom";
+import React from 'react';
+import { BrowserRouter, Link, Routes, Route } from 'react-router-dom';
 
-import App from "./App.tsx";
-import Projects from "./Projects.tsx";
-import Project from "./Project.tsx";
-import Editor from "./Editor.tsx";
+import App from './App.tsx';
+import Projects from './Projects.tsx';
+import Project from './Project.tsx';
+import Editor from './Editor.tsx';
 
 function Root() {
   return (
@@ -439,7 +439,7 @@ export default Projects;
 ### 5. 添加 Project.tsx
 
 ```ts
-import { useParams } from "react-router-dom";
+import { useParams } from 'react-router-dom';
 
 function Project() {
   const params = useParams();
@@ -468,33 +468,33 @@ export default Editor;
 ## 六、用 `useRoutes` 将路由改造成数据配置形式
 
 ```ts
-import React from "react";
-import { BrowserRouter, Link, useRoutes } from "react-router-dom";
+import React from 'react';
+import { BrowserRouter, Link, useRoutes } from 'react-router-dom';
 
-import App from "./App.tsx";
-import Projects from "./Projects.tsx";
-import Project from "./Project.tsx";
-import Editor from "./Editor.tsx";
+import App from './App.tsx';
+import Projects from './Projects.tsx';
+import Project from './Project.tsx';
+import Editor from './Editor.tsx';
 
 function Root() {
   const mainRoutes = {
-    path: "/",
-    element: "",
+    path: '/',
+    element: '',
     children: [
       {
-        path: "/",
+        path: '/',
         element: <App />,
       },
       {
-        path: "projects",
+        path: 'projects',
         element: <Projects />,
       },
       {
-        path: "project/:id",
+        path: 'project/:id',
         element: <Project />,
       },
       {
-        path: "editor",
+        path: 'editor',
         element: <Editor />,
       },
     ],
@@ -579,34 +579,34 @@ useRoutes 的使用主要降到了这个文件中。
 可以参考：https://typescript.tv/react/upgrade-to-react-router-v6/
 
 ```ts
-import { useRoutes } from "react-router-dom";
+import { useRoutes } from 'react-router-dom';
 
-import Projects from "./Projects.tsx";
-import Project from "./Project.tsx";
-import Editor from "./Editor.tsx";
-import Layout from "./Layout.tsx";
-import Home from "./Home.tsx";
-import "./App.less";
+import Projects from './Projects.tsx';
+import Project from './Project.tsx';
+import Editor from './Editor.tsx';
+import Layout from './Layout.tsx';
+import Home from './Home.tsx';
+import './App.less';
 
 function App() {
   const mainRoutes = {
-    path: "/",
+    path: '/',
     element: <Layout />,
     children: [
       {
-        path: "/",
+        path: '/',
         element: <Home />,
       },
       {
-        path: "projects",
+        path: 'projects',
         element: <Projects />,
       },
       {
-        path: "project/:id",
+        path: 'project/:id',
         element: <Project />,
       },
       {
-        path: "editor",
+        path: 'editor',
         element: <Editor />,
       },
     ],
@@ -626,8 +626,8 @@ export default App;
 注意这里的<Outlet/>（该单词的英文意思是出口），相当于挖了个窟窿，用来渲染子路由对应的内容的。也即上面 App.tsx 文件中 mainRoutes 对应的 children。它会根据实际路由 URL 自动匹配渲染哪个组件。有点像 Vue.js 中的<router-view>。
 
 ```tsx
-import { Link, Outlet } from "react-router-dom";
-import "./Layout.less";
+import { Link, Outlet } from 'react-router-dom';
+import './Layout.less';
 
 export default function Layout() {
   return (
@@ -686,7 +686,7 @@ export default function Home() {
 ### 1. 新建 PageNotFound.tsx
 
 ```ts
-import "./PageNotFound.less";
+import './PageNotFound.less';
 
 export default function PageNotFound() {
   return <div>Page not found.</div>;
@@ -986,8 +986,8 @@ npm i redux react-redux -S
 ### 3. 创建 src/common/store.ts
 
 ```ts
-import { createStore } from "redux";
-import rootReducer from "./rootReducer.ts";
+import { createStore } from 'redux';
+import rootReducer from './rootReducer.ts';
 
 function initStore() {
   const store = createStore(rootReducer);
@@ -1001,8 +1001,8 @@ export default initStore();
 ### 4. 创建 src/common/rootReducer.ts：
 
 ```ts
-import { combineReducers } from "redux";
-import homeReducer from "../features/examples/redux/reducer.ts";
+import { combineReducers } from 'redux';
+import homeReducer from '../features/examples/redux/reducer.ts';
 
 const reducerMap = {
   home: homeReducer,
@@ -1018,9 +1018,9 @@ export default combineReducers(reducerMap);
 这个目录下 reducer 的聚合出口。它会把分别放在这个目录的各个文件中的 reducer 收集集合到一起。
 
 ```ts
-import initialState from "./initialState.ts";
-import { reducer as counterPlusOne } from "./counterPlusOne.ts";
-import { reducer as counterMinusOne } from "./counterMinusOne.ts";
+import initialState from './initialState.ts';
+import { reducer as counterPlusOne } from './counterPlusOne.ts';
+import { reducer as counterMinusOne } from './counterMinusOne.ts';
 
 const reducers = [counterPlusOne, counterMinusOne];
 
@@ -1047,8 +1047,8 @@ export default function reducer(state = initialState, action) {
 这个目录下 action 的聚合出口。
 
 ```ts
-import { counterPlusOne } from "./counterPlusOne.ts";
-import { counterMinusOne } from "./counterMinusOne.ts";
+import { counterPlusOne } from './counterPlusOne.ts';
+import { counterMinusOne } from './counterMinusOne.ts';
 
 export default {
   counterPlusOne,
@@ -1061,8 +1061,8 @@ export default {
 这个目录下 hooks 的聚合出口
 
 ```ts
-export { useCounterPlusOne } from "./counterPlusOne.ts";
-export { useCounterMinusOne } from "./counterMinusOne.ts";
+export { useCounterPlusOne } from './counterPlusOne.ts';
+export { useCounterMinusOne } from './counterMinusOne.ts';
 ```
 
 #### counterMinusOne.ts
@@ -1070,9 +1070,9 @@ export { useCounterMinusOne } from "./counterMinusOne.ts";
 一个文件只放做一件事情的 action、reducer 等。这样一个个文件分别拆开。
 
 ```ts
-import { useCallback } from "react";
-import { useDispatch, useSelector } from "react-redux";
-import { HOME_COUNTER_MINUS_ONE } from "./constants.ts";
+import { useCallback } from 'react';
+import { useDispatch, useSelector } from 'react-redux';
+import { HOME_COUNTER_MINUS_ONE } from './constants.ts';
 
 export function counterMinusOne() {
   return {
@@ -1111,9 +1111,9 @@ export function reducer(state, action) {
 #### counterPlusOne.ts
 
 ```ts
-import { useCallback } from "react";
-import { useDispatch, useSelector } from "react-redux";
-import { HOME_COUNTER_PLUS_ONE } from "./constants.ts";
+import { useCallback } from 'react';
+import { useDispatch, useSelector } from 'react-redux';
+import { HOME_COUNTER_PLUS_ONE } from './constants.ts';
 
 export function counterPlusOne() {
   return {
@@ -1149,8 +1149,8 @@ export function reducer(state, action) {
 #### constants.ts
 
 ```ts
-export const HOME_COUNTER_PLUS_ONE = "HOME_COUNTER_PLUS_ONE";
-export const HOME_COUNTER_MINUS_ONE = "HOME_COUNTER_MINUS_ONE";
+export const HOME_COUNTER_PLUS_ONE = 'HOME_COUNTER_PLUS_ONE';
+export const HOME_COUNTER_MINUS_ONE = 'HOME_COUNTER_MINUS_ONE';
 ```
 
 #### initialState.ts
@@ -1170,8 +1170,8 @@ export default initialState;
 #### Counter.ts
 
 ```ts
-import { useCounterPlusOne, useCounterMinusOne } from "./redux/hooks.ts";
-import "./Counter.less";
+import { useCounterPlusOne, useCounterMinusOne } from './redux/hooks.ts';
+import './Counter.less';
 
 export default function Counter() {
   const { count, counterPlusOne } = useCounterPlusOne();
@@ -1218,8 +1218,8 @@ export default function Counter() {
 #### 引入 Counter 到 CounterPage 中
 
 ```ts
-import Counter from "./Counter.tsx";
-import "./CounterPage.less";
+import Counter from './Counter.tsx';
+import './CounterPage.less';
 
 export default function CounterPage() {
   return (
@@ -1308,7 +1308,7 @@ li {
 
 ```css
 /* 样式的总出口 */
-@import "./global";
+@import './global';
 ```
 
 ### 在每个组件中，会有组件文件名同名的 less 文件来存放样式。features 中，每一个 feature 的文件夹名-组件名就是该组件的样式命名空间。因为 feature 都在同一个 features 文件夹下，所以可以保证 feature 不重名，又因为 feature 内部的功能都在 feature 文件夹下，所以可以保证 feature 内部组件不重名。这样一来，样式命名空间就不会重名。
@@ -1458,9 +1458,9 @@ npm i dotenv -S
 然后在入口文件 index.tsx 文件中引入：
 
 ```ts
-import { config } from "dotenv";
+import { config } from 'dotenv';
 
-config({ path: ".dev" });
+config({ path: '.dev' });
 ```
 
 然而，发现并不好用，webpack 报如下错误：
@@ -1502,17 +1502,17 @@ npm i axios
 ## 封装 common/request.ts
 
 ```ts
-import axios from "axios";
-import { message } from "antd";
+import axios from 'axios';
+import { message } from 'antd';
 
 const axiosInstance = axios.create(getDefaultOptions());
 
 axiosInstance.interceptors.request.use(
   (config) => {
     const token = getToken();
-    token && (config.headers.common["x-midao-token"] = token);
+    token && (config.headers.common['x-midao-token'] = token);
     // config.headers.post['content-Type'] = 'application/x-www-form-urlencoded';
-    config.headers["Content-Type"] = "application/json";
+    config.headers['Content-Type'] = 'application/json';
     // 注意这里要return
     return config;
   },
@@ -1553,7 +1553,7 @@ function getDefaultOptions() {
 }
 
 function getToken() {
-  let token = "";
+  let token = '';
   // TODO
   return token;
 }
@@ -1566,26 +1566,26 @@ export default axiosInstance;
 ## 封装请求 API：features/auth/api.ts
 
 ```ts
-import request from "../../common/request.ts";
+import request from '../../common/request.ts';
 
 export default {
   createUser(data) {
     return request({
-      method: "post",
-      url: "/user/create",
+      method: 'post',
+      url: '/user/create',
       data,
     });
   },
   getUser(id) {
     return request({
-      method: "get",
+      method: 'get',
       url: `/user/${id}`,
     });
   },
   login(data) {
     return request({
-      method: "post",
-      url: "/auth/login",
+      method: 'post',
+      url: '/auth/login',
       data,
     });
   },
@@ -1597,11 +1597,11 @@ export default {
 features/auth/RegisterPage.tsx
 
 ```ts
-import { useRef } from "react";
-import { Button } from "antd";
-import { useNavigate } from "react-router-dom";
-import api from "./api.ts";
-import "./RegisterPage.less";
+import { useRef } from 'react';
+import { Button } from 'antd';
+import { useNavigate } from 'react-router-dom';
+import api from './api.ts';
+import './RegisterPage.less';
 
 export default function RegisterPage() {
   const registerForm = useRef();
@@ -1625,7 +1625,7 @@ export default function RegisterPage() {
       .then((res) => {
         console.log(res);
         if (res.code === 0) {
-          navigate("/auth/login");
+          navigate('/auth/login');
         }
       })
       .catch((err) => {
@@ -1710,9 +1710,9 @@ hoc 高阶组件
 common/hoc/CheckLogin.tsx：
 
 ```tsx
-import { useEffect } from "react";
-import { useNavigate } from "react-router-dom";
-import api from "./CheckLoginApi.ts";
+import { useEffect } from 'react';
+import { useNavigate } from 'react-router-dom';
+import api from './CheckLoginApi.ts';
 
 // 登录高阶组件
 export default function CheckLogin(Component) {
@@ -1722,11 +1722,11 @@ export default function CheckLogin(Component) {
     api
       .checkLogin()
       .then((res) => {
-        console.log("已登录", res);
+        console.log('已登录', res);
       })
       .catch((err) => {
         // console.log('未登录', err);
-        navigate("/auth/login");
+        navigate('/auth/login');
       });
   }, []);
 
@@ -1739,13 +1739,13 @@ export default function CheckLogin(Component) {
 common/hoc/CheckLoginApi.ts：
 
 ```ts
-import request from "../../../common/request.ts";
+import request from '../../../common/request.ts';
 
 export default {
   checkLogin() {
     return request({
-      method: "post",
-      url: "/auth/checkLogin",
+      method: 'post',
+      url: '/auth/checkLogin',
     });
   },
 };
@@ -1774,27 +1774,37 @@ export default {
 +  }
 ```
 
-## 配置 prettier
+## 配置 prettier，使得每次代码提交时自动用 prettier 格式化代码
+
+我们的目的是希望每次提交之前，都用 prettier 对代码进行格式化。
 
 参考文档：
 https://www.prettier.cn/docs/install.html
+
+首先安装 prettier：
 
 ```sh
 pnpm add --save-dev --save-exact prettier
 ```
 
+创建.prettierrc.json，配置格式化的格式：
+
 ```sh
-echo {}> .prettierrc.json
+{
+  "singleQuote": true
+}
 ```
 
-创建.prettierignore
+创建.prettierignore，指定执行格式化时那些东西不用格式化：
 
 ```
 build
 coverage
 ```
 
-## 安装配置 husky 和 lint-staged
+为了能够在 git commit 之前自动执行，需要用到 git hooks，在 pre-commit 这个 git hook 里面去执行 prettier 格式化的动作。为了完成这一点，要用到两个 npm 包：husky 和 lint-staged。
+
+husky 是一个方便的 git hook 助手。lint-staged 是一个只对 git 暂存文件运行 linters 检查的工具（用它可以避免每次修改一个文件就给所有文件执行一次 lint 检查）。
 
 参见文档：https://www.npmjs.com/package/lint-staged
 
@@ -1829,7 +1839,7 @@ create-react-app 创建的项目，是自动安装了 eslint 的，eslint 的配
 },
 ```
 
-因为 eslint 的配置和 prettier 会有一些冲突，所有我们需要安装 eslint-config-prettier 来解决这种冲突。然后在上面代码中增加如下一行，意思是用 prettier 的配置覆盖部分 eslint 的配置：
+因为 eslint 和 prettier 一起工作的时候，会有一些冲突，所有我们需要安装 eslint-config-prettier 来解决这种冲突。然后在上面代码中增加如下“prettier”那一行，意思是用 prettier 的配置覆盖部分 eslint 的配置：
 
 ```json
 "eslintConfig": {
@@ -1839,4 +1849,33 @@ create-react-app 创建的项目，是自动安装了 eslint 的，eslint 的配
 +   "prettier"
   ]
 },
+```
+
+## 配置 commitlint，以支持对 commit message 进行标准化管理
+
+参见文档：https://commitlint.js.org/#/guides-local-setup
+
+安装 commitlint 和 commitlint-config-\*您选择的一个作为 devDependency 并配置 commitlint 为使用它。
+
+```sh
+# Install and configure if needed
+pnpm add --save-dev @commitlint/{cli,config-conventional}
+# For Windows:
+pnpm add --save-dev @commitlint/config-conventional @commitlint/cli
+```
+
+新建 commitlint.config.js：
+
+```js
+module.exports = {
+  extends: ['@commitlint/config-conventional'],
+};
+```
+
+新建.husky/commit-msg 文件：
+
+```
+#!/bin/sh
+
+npx --no -- commitlint --edit $1
 ```
