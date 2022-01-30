@@ -1,16 +1,16 @@
-import React from 'react';
-import ReactDOM from 'react-dom';
-import Root from './Root.tsx';
+import React from "react";
+import ReactDOM from "react-dom";
+import Root from "./Root.tsx";
 // 由于 antd 组件的默认文案是英文，所以需要修改为中文
-import zhCN from 'antd/lib/locale/zh_CN';
-import moment from 'moment';
-import 'moment/locale/zh-cn';
-import { ConfigProvider } from 'antd';
-import reportWebVitals from './reportWebVitals.ts';
-import 'antd/dist/antd.css';
-import './styles/index.less';
+import zhCN from "antd/lib/locale/zh_CN";
+import moment from "moment";
+import "moment/locale/zh-cn";
+import { ConfigProvider } from "antd";
+import reportWebVitals from "./reportWebVitals.ts";
+import "antd/dist/antd.css";
+import "./styles/index.less";
 
-moment.locale('zh-cn');
+moment.locale("zh-cn");
 
 /**
  * StrictMode 是一个用以标记出应用中潜在问题的工具。
@@ -20,12 +20,11 @@ moment.locale('zh-cn');
  */
 ReactDOM.render(
   <React.StrictMode>
-    <ConfigProvider   locale={zhCN
-    }>
+    <ConfigProvider locale={zhCN}>
       <Root />
     </ConfigProvider>
   </React.StrictMode>,
-  document.getElementById('root')
+  document.getElementById("root")
 );
 
 // If you want to start measuring performance in your app, pass a function
