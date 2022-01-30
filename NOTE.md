@@ -1899,3 +1899,79 @@ git rebase --abort
 ```sh
 git rebase --continue
 ```
+
+## Mock 数据
+
+### 方式 1：直接在代码中写死 Mock 数据或请求本地的 JSON 文件
+
+缺点：与真实 Server 环境的切换非常麻烦，会侵入代码，不推荐
+
+### 方式 2：请求拦截，代表是 Mock.js
+
+```js
+Mock.mock(/\/api\/visitor\/list/, 'get', {
+  code: 200,
+  msg: 'ok',
+  'data|10': [
+    'id|+1': 6,
+    'name': 'csentence(5)',
+    'tag': '@integer(6, 9)-integer(10, 14)岁 @cword('零有', 1)基础',
+    'lesson_image': 'https://images.com/aaa.jpg',
+    'lesson_package': 'L1基础课',
+    'done': '@integer(10000, 99999)'
+  ]
+});
+```
+
+优点：与前端代码分离；可生成随机数据
+
+缺点：数据都是动态生成的假数据，无法真实模拟增删改查的情况；只支持 ajax，不支持 fetch
+
+### 方式 3：接口管理工具，代表：rap、swagger、moco、yapi
+
+优点：配置功能强大，接口管理与 Mock 一体，后端修改接口 Mock 也跟着修改，可靠
+
+缺点：配置复杂，依赖后端，可能会出现后端不愿出手，或者等配置完了，接口也开发出来了的情况；一般会作为大团队的基础建设而存在，没有这个条件的话慎重考虑
+
+### 方式 4：本地 node 服务器，代表：json-server
+
+优点：配置简单，json-server 甚至可以 0 代码 30 秒启动一个 REST API SERVER；自定义程度高，一切尽在掌握中；增删改查真实模拟
+缺点：与接口管理工具相比，无法随着后端 API 的修改而自动修改
+
+安装：
+
+```sh
+npm i json-server -g
+```
+
+然后在项目根目录新建一个文件:**json_server_mock**/db.json
+
+```json
+{
+  "users": []
+}
+```
+
+启动：
+
+```sh
+json-server __json_server_mock__/db.json --watch
+```
+
+然后，就可以按如下 RESTful API 的形式去访问了（比如用 postman 测试和前端调用使用）。真的是极其的方便。
+
+### RESTful API
+
+一句话总结：URI 代表资源/对象，METHOD 代表行为
+
+- GET /users // 列表
+
+- GET /users/1 // 详情
+
+- POST /users // 增加
+
+- PUT /users/1 // 整个替换
+
+- PATCH /users/1 // 修改部分属性
+
+- DELETE /users/1 // 删除
