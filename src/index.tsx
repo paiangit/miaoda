@@ -20,7 +20,7 @@ moment.locale('zh-cn');
  */
 ReactDOM.render(
   <React.StrictMode>
-    <ConfigProvider locale={zhCN
+    <ConfigProvider   locale={zhCN
     }>
       <Root />
     </ConfigProvider>
