@@ -22,12 +22,22 @@
     "start": "cross-env PORT=80 craco start",
     "build": "craco build",
     "test": "craco test",
-    "eject": "react-scripts eject"
+    "eject": "react-scripts eject",
+    "prepare": "husky install"
+  },
+  "husky": {
+    "hooks": {
+      "pre-commit": "lint-staged"
+    }
+  },
+  "lint-staged": {
+    "*.{js,css,md,tsx,ts}": "prettier --write"
   },
   "eslintConfig": {
     "extends": [
       "react-app",
-      "react-app/jest"
+      "react-app/jest",
+      "prettier"
     ]
   },
   "browserslist": {
@@ -49,7 +59,11 @@
     "@types/react": "^17.0.38",
     "@types/react-dom": "^17.0.11",
     "craco-less": "^2.0.0",
+    "eslint-config-prettier": "^8.3.0",
+    "husky": "^7.0.4",
     "jest-watch-typeahead": "^0.6.5",
+    "lint-staged": "^12.3.2",
+    "prettier": "2.5.1",
     "redux-mock-store": "^1.5.4",
     "typescript": "^4.5.4"
   }
