@@ -7,7 +7,7 @@ import moment from 'moment';
 import 'moment/locale/zh-cn';
 import { ConfigProvider } from 'antd';
 import reportWebVitals from './reportWebVitals.ts';
-import 'antd/dist/antd.css';
+import 'antd/dist/antd.less';
 import './styles/index.less';
 
 moment.locale('zh-cn');

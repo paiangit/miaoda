@@ -1975,3 +1975,39 @@ json-server __json_server_mock__/db.json --watch
 - PATCH /users/1 // 修改部分属性
 
 - DELETE /users/1 // 删除
+
+## 修改 Ant Design 的主题样式
+
+关于这一点，Ant Design 的官网有详细的说明：
+https://ant.design/docs/react/customize-theme-cn#header
+
+因为我们这个项目是基于 create-react-app 创建的，所以主要参照这个部分的指引进行配置即可：
+https://ant.design/docs/react/use-with-create-react-app-cn
+
+此外，一个是需要将原来的：
+
+import 'antd/dist/antd.css';
+
+这一行改成：
+
+import 'antd/dist/antd.less';
+
+另一个是，在 craco.config.js 中配置下面这行：
+
+```js
+modifyVars: {
+  'border-radius-base': '6px',
+},
+```
+
+以达到我们想要修改主题中圆角大小的目的。
+
+然后，我们在 styles/themes.less 文件中引入 default.less 这个文件：
+
+@import '~antd/lib/style/themes/default.less';
+
+就可以在组件的样式中引入
+
+@import '../../styles/themes';
+
+接下来我们就可以在组件中正常地使用@border-radius-base 这个来自主题的变量了。
