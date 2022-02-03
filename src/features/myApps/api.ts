@@ -8,4 +8,18 @@ export default {
       data,
     });
   },
+  getAppList(params) {
+    return request({
+      method: 'get',
+      url: '/app/list',
+      params,
+    });
+  },
+
+  deleteApp(id) {
+    return request({
+      method: 'delete',
+      url: `/app/${id}`,
+    });
+  },
 };
