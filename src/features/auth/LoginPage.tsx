@@ -22,12 +22,16 @@ export default function LoginPage() {
         })
         .then((res) => {
           if (res.code === 0) {
-            let {
-              token,
-              id,
-            } = res.data;
+            let { token, id, username } = res.data;
             if (token) {
-              window.localStorage.setItem(process.env.REACT_APP_ACCESS_TOKEN_NAME, token);
+              window.localStorage.setItem(
+                process.env.REACT_APP_ACCESS_TOKEN_KEY,
+                token
+              );
+              window.localStorage.setItem(
+                process.env.REACT_APP_USER_INFO_KEY,
+                JSON.stringify({ id, username })
+              );
               message.success('登录成功');
               setTimeout(() => {
                 navigate(`/user/${id}/profile`);
@@ -42,12 +46,18 @@ export default function LoginPage() {
     <div className="auth-sign-in-page">
       <h2 className="title">Login</h2>
       <form ref={loginFormRef}>
-        <label className="label" htmlFor="username">Username</label>
+        <label className="label" htmlFor="username">
+          Username
+        </label>
         <input type="text" name="username" id="username"></input>
-        <label className="label" htmlFor="password">Password</label>
+        <label className="label" htmlFor="password">
+          Password
+        </label>
         <input type="password" name="password" id="password"></input>
 
-        <Button className="sign-in" type="primary" onClick={clickHandler()}>Login</Button>
+        <Button className="sign-in" type="primary" onClick={clickHandler()}>
+          Login
+        </Button>
       </form>
     </div>
   );

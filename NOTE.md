@@ -1684,10 +1684,10 @@ export default function RegisterPage() {
 
 ## ======localStorage的键值======
 # 登录token存储在localStorage中的key
-REACT_APP_ACCESS_TOKEN_NAME=miaodaAccessToken
+REACT_APP_ACCESS_TOKEN_KEY=miaodaAccessToken
 ```
 
-然后，在读和写的地方都通过 process.env.REACT_APP_ACCESS_TOKEN_NAME 来取得该键值。
+然后，在读和写的地方都通过 process.env.REACT_APP_ACCESS_TOKEN_KEY 来取得该键值。
 
 在下次请求的时候，通过在请求头中设置 Authorization 这个请求头，其 value 就是 `Bearer ${token}` ，即把 localStorage 中存的 token 取出来，在前面拼上 Bearer 加空格。这是 JWT 要求的格式。
 

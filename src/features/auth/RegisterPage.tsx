@@ -18,7 +18,7 @@ export default function RegisterPage() {
     if (retypePassword !== password) return;
 
     // 注册之前移除登录token
-    window.localStorage.removeItem(process.env.REACT_APP_ACCESS_TOKEN_NAME);
+    window.localStorage.removeItem(process.env.REACT_APP_ACCESS_TOKEN_KEY);
 
     api
       .createUser({
@@ -26,30 +26,45 @@ export default function RegisterPage() {
         password,
         email,
       })
-      .then(res => {
+      .then((res) => {
         console.log(res);
         if (res.code === 0) {
           navigate('/auth/login');
         }
-      }).catch(err => {
+      })
+      .catch((err) => {
         console.log(err);
       });
-  };
+  }
 
   return (
     <div className="auth-register-page">
       <h2 className="title">Register</h2>
       <form ref={registerForm}>
-        <label className="label" htmlFor="username">Username</label>
+        <label className="label" htmlFor="username">
+          Username
+        </label>
         <input type="text" name="username" id="username"></input>
-        <label className="label" htmlFor="password">Password</label>
+        <label className="label" htmlFor="password">
+          Password
+        </label>
         <input type="password" name="password" id="password"></input>
-        <label className="label" htmlFor="retypePassword">Retype password</label>
-        <input type="password" name="retypePassword" id="retypePassword"></input>
-        <label className="label" htmlFor="email">Email address</label>
+        <label className="label" htmlFor="retypePassword">
+          Retype password
+        </label>
+        <input
+          type="password"
+          name="retypePassword"
+          id="retypePassword"
+        ></input>
+        <label className="label" htmlFor="email">
+          Email address
+        </label>
         <input type="text" name="email" id="email"></input>
 
-        <Button className="register" type="primary" onClick={clickHandler}>Register</Button>
+        <Button className="register" type="primary" onClick={clickHandler}>
+          Register
+        </Button>
       </form>
     </div>
   );
