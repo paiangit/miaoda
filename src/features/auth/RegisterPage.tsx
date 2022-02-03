@@ -1,19 +1,15 @@
 import { useRef } from 'react';
-import { Button } from 'antd';
+import { Form, Button, Input, message } from 'antd';
 import { useNavigate } from 'react-router-dom';
 import api from './api.ts';
 import './RegisterPage.less';
 
 export default function RegisterPage() {
-  const registerForm = useRef();
+  const [form] = Form.useForm();
   const navigate = useNavigate();
 
-  function clickHandler(e) {
-    e.preventDefault();
-    const username = registerForm.current.username.value;
-    const password = registerForm.current.password.value;
-    const retypePassword = registerForm.current.retypePassword.value;
-    const email = registerForm.current.email.value;
+  function handleFinish(values) {
+    const { username, email, password, retypePassword } = values;
 
     if (retypePassword !== password) return;
 
@@ -29,7 +25,10 @@ export default function RegisterPage() {
       .then((res) => {
         console.log(res);
         if (res.code === 0) {
-          navigate('/auth/login');
+          message.success('注册成功！');
+          setTimeout(() => {
+            navigate('/auth/login');
+          }, 3000);
         }
       })
       .catch((err) => {
@@ -37,35 +36,74 @@ export default function RegisterPage() {
       });
   }
 
+  const layout = {
+    labelCol: { span: 8 },
+    wrapperCol: { span: 8 },
+  };
+
   return (
     <div className="auth-register-page">
-      <h2 className="title">注册</h2>
-      <form ref={registerForm}>
-        <label className="label" htmlFor="username">
-          用户名
-        </label>
-        <input type="text" name="username" id="username"></input>
-        <label className="label" htmlFor="password">
-          密码
-        </label>
-        <input type="password" name="password" id="password"></input>
-        <label className="label" htmlFor="retypePassword">
-          再次输入密码
-        </label>
-        <input
-          type="password"
+      <h2 className="title">用户注册</h2>
+      <Form {...layout} form={form} onFinish={handleFinish}>
+        <Form.Item
+          label="用户名"
+          name="username"
+          rules={[
+            {
+              required: true,
+              message: '请输入用户名',
+            },
+          ]}
+        >
+          <Input maxLength={14} />
+        </Form.Item>
+        <Form.Item
+          label="密码"
+          name="password"
+          rules={[
+            {
+              required: true,
+              message: '请输入密码',
+            },
+          ]}
+        >
+          <Input.Password maxLength={14} />
+        </Form.Item>
+        <Form.Item
+          label="确认密码"
           name="retypePassword"
-          id="retypePassword"
-        ></input>
-        <label className="label" htmlFor="email">
-          Email地址
-        </label>
-        <input type="text" name="email" id="email"></input>
+          rules={[
+            {
+              required: true,
+              message: '请输入确认密码',
+            },
+          ]}
+        >
+          <Input.Password maxLength={14} />
+        </Form.Item>
+        <Form.Item
+          label="E-mail"
+          name="email"
+          rules={[
+            {
+              required: true,
+              message: '请输入你的E-mail',
+            },
+            {
+              type: 'email',
+              message: '不是合法的E-mail',
+            },
+          ]}
+        >
+          <Input />
+        </Form.Item>
 
-        <Button className="register" type="primary" onClick={clickHandler}>
-          注册
-        </Button>
-      </form>
+        <Form.Item wrapperCol={{ ...layout.wrapperCol, offset: 8 }}>
+          <Button type="primary" htmlType="submit">
+            注册
+          </Button>
+        </Form.Item>
+      </Form>
     </div>
   );
 }
