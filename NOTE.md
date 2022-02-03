@@ -2011,3 +2011,33 @@ modifyVars: {
 @import '../../styles/themes';
 
 接下来我们就可以在组件中正常地使用@border-radius-base 这个来自主题的变量了。
+
+## 自定义 Hook
+
+```ts
+import { useEffect } from 'react';
+
+export const useMount = (callback) => {
+  useEffect(() => {
+    callback();
+  }, []);
+};
+```
+
+```ts
+import { useEffect, useState } from 'react';
+
+export const useDebounce = (value, delay) => {
+  const [debouncedValue, setDebouncedValue] = useState(value);
+
+  useEffect(() => {
+    const timer = setTimeout(() => {
+      setDebouncedValue(value);
+    }, delay);
+
+    return () => clearTimeout(timer);
+  }, [value, delay]);
+
+  return debouncedValue;
+};
+```
