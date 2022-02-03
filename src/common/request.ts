@@ -1,7 +1,7 @@
-import axios from 'axios';
+import axios, { AxiosInstance } from 'axios';
 import { message } from 'antd';
 
-const axiosInstance = axios.create(getDefaultOptions());
+const axiosInstance: AxiosInstance = axios.create(getDefaultOptions());
 
 axiosInstance.interceptors.request.use(
   (config) => {
@@ -15,7 +15,7 @@ axiosInstance.interceptors.request.use(
     console.log(err);
     // 注意这里要return
     return Promise.reject(err);
-  },
+  }
 );
 
 axiosInstance.interceptors.response.use(
@@ -60,24 +60,25 @@ axiosInstance.interceptors.response.use(
     }
     // 注意这里要return
     return Promise.reject(err);
-  },
+  }
 );
 
 function getDefaultOptions() {
   // API基地址
-  const baseURL =
-    `${window.location.protocol}//${process.env.REACT_APP_API_HOST}:${process.env.REACT_APP_API_PORT}${process.env.REACT_APP_API_PREFIX}`;
+  const baseURL = `${window.location.protocol}//${process.env.REACT_APP_API_HOST}:${process.env.REACT_APP_API_PORT}${process.env.REACT_APP_API_PREFIX}`;
   // 超时时间
   const timeout = 60000;
 
   return {
     baseURL,
     timeout,
-  }
+  };
 }
 
 function getToken() {
-  const token = window.localStorage.getItem(process.env.REACT_APP_ACCESS_TOKEN_NAME);
+  const token = window.localStorage.getItem(
+    process.env.REACT_APP_ACCESS_TOKEN_KEY
+  );
 
   return token ? `Bearer ${token}` : '';
 }

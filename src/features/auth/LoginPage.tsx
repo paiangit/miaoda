@@ -47,16 +47,16 @@ export default function LoginPage() {
       <h2 className="title">Login</h2>
       <form ref={loginFormRef}>
         <label className="label" htmlFor="username">
-          Username
+          用户名
         </label>
         <input type="text" name="username" id="username"></input>
         <label className="label" htmlFor="password">
-          Password
+          密码
         </label>
         <input type="password" name="password" id="password"></input>
 
         <Button className="sign-in" type="primary" onClick={clickHandler()}>
-          Login
+          登录
         </Button>
       </form>
     </div>

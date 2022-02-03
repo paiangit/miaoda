@@ -39,18 +39,18 @@ export default function RegisterPage() {
 
   return (
     <div className="auth-register-page">
-      <h2 className="title">Register</h2>
+      <h2 className="title">注册</h2>
       <form ref={registerForm}>
         <label className="label" htmlFor="username">
-          Username
+          用户名
         </label>
         <input type="text" name="username" id="username"></input>
         <label className="label" htmlFor="password">
-          Password
+          密码
         </label>
         <input type="password" name="password" id="password"></input>
         <label className="label" htmlFor="retypePassword">
-          Retype password
+          再次输入密码
         </label>
         <input
           type="password"
@@ -58,12 +58,12 @@ export default function RegisterPage() {
           id="retypePassword"
         ></input>
         <label className="label" htmlFor="email">
-          Email address
+          Email地址
         </label>
         <input type="text" name="email" id="email"></input>
 
         <Button className="register" type="primary" onClick={clickHandler}>
-          Register
+          注册
         </Button>
       </form>
     </div>
