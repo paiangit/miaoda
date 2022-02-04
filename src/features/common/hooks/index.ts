@@ -1,2 +1,2 @@
-export { useMount } from './useMount.ts';
-export { useDebounce } from './useDebounce.ts';
+export { useMount } from './useMount';
+export { useDebounce } from './useDebounce';

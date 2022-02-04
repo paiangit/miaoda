@@ -1,6 +1,4 @@
-import {
-  ProfilePage,
-} from './index.tsx';
+import { ProfilePage } from './index';
 
 export default {
   path: 'user/:userId',
@@ -10,4 +8,4 @@ export default {
       element: <ProfilePage />,
     },
   ],
-}
+};

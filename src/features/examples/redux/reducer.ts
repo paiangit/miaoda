@@ -1,11 +1,8 @@
-import initialState from './initialState.ts';
-import { reducer as counterPlusOne } from './counterPlusOne.ts';
-import { reducer as counterMinusOne } from './counterMinusOne.ts';
+import initialState from './initialState';
+import { reducer as counterPlusOne } from './counterPlusOne';
+import { reducer as counterMinusOne } from './counterMinusOne';
 
-const reducers = [
-  counterPlusOne,
-  counterMinusOne,
-];
+const reducers = [counterPlusOne, counterMinusOne];
 
 export default function reducer(state = initialState, action) {
   let newState;
@@ -18,5 +15,8 @@ export default function reducer(state = initialState, action) {
   }
 
   // reduce((acc, cur), initialAcc)
-  return reducers.reduce((previousState, reducer) => reducer(previousState, action), newState);
+  return reducers.reduce(
+    (previousState, reducer) => reducer(previousState, action),
+    newState
+  );
 }

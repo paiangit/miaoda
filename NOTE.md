@@ -209,6 +209,34 @@ module.exports = {
 
 `npm run start`查看，发现构建成功。
 
+为了支持在 import .ts 和 .tsx 文件时不用写后缀，需要修改 Webpack 的配置，在 craco.config.js 文件中添加下面这几行：
+
+```js
+const CracoLessPlugin = require('craco-less');
+const path = require('path');
+
+module.exports = {
+  webpack: {
+    alias: {
+      '~': path.resolve(__dirname, './src/'),
+    },
+    configure: {
+      entry: path.resolve(__dirname, './src/index.tsx'),
+    },
+    configure: (webpackConfig, { env, paths }) => {
+       webpackConfig.entry = path.resolve(__dirname, './src/index.tsx'),
++      webpackConfig.resolve.extensions = [
++        '.tsx',
++        '.ts',
++        ...webpackConfig.resolve.extensions,
++      ];
++      // console.log('webpackConfig', webpackConfig);
++      return webpackConfig;
+    },
+  },
+};
+```
+
 ## 四、解决 'printPatternCaret' not found 问题
 
 但是，在执行`npm run test`的时候，却遇到了如下报错：

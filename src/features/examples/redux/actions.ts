@@ -1,7 +1,7 @@
-import { counterPlusOne } from './counterPlusOne.ts';
-import { counterMinusOne } from './counterMinusOne.ts';
+import { counterPlusOne } from './counterPlusOne';
+import { counterMinusOne } from './counterMinusOne';
 
 export default {
   counterPlusOne,
-  counterMinusOne
+  counterMinusOne,
 };

@@ -1,7 +1,7 @@
 import { useRef } from 'react';
 import { Form, Button, Input, message } from 'antd';
 import { useNavigate } from 'react-router-dom';
-import api from './api.ts';
+import api from './api';
 import './RegisterPage.less';
 
 export default function RegisterPage() {

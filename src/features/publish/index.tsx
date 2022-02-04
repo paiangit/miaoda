@@ -1,1 +1,1 @@
-export { default as AppPublishPage } from './AppPublishPage.tsx';
+export { default as AppPublishPage } from './AppPublishPage';

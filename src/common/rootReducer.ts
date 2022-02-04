@@ -1,5 +1,5 @@
 import { combineReducers } from 'redux';
-import homeReducer from '../features/examples/redux/reducer.ts';
+import homeReducer from '../features/examples/redux/reducer';
 
 const reducerMap = {
   home: homeReducer,

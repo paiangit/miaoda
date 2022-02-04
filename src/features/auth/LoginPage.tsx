@@ -2,7 +2,7 @@ import { useRef } from 'react';
 import { Form, Button, message, Input } from 'antd';
 import { useNavigate } from 'react-router-dom';
 import './LoginPage.less';
-import api from './api.ts';
+import api from './api';
 
 export default function LoginPage() {
   const loginFormRef = useRef();

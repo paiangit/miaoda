@@ -1,4 +1,4 @@
-import { AppPublishPage } from './index.tsx';
+import { AppPublishPage } from './index';
 
 export default {
   path: 'app/:appId/admin',
@@ -6,6 +6,6 @@ export default {
     {
       path: 'appPublish',
       element: <AppPublishPage />,
-    }
+    },
   ],
-}
+};

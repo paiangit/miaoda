@@ -1,2 +1,2 @@
-export { default as ManagementPage } from './ManagementPage.tsx';
-export { default as AdminLayout } from './AdminLayout.tsx';
+export { default as ManagementPage } from './ManagementPage';
+export { default as AdminLayout } from './AdminLayout';

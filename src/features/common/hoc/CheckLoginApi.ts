@@ -1,4 +1,4 @@
-import request from '../../../common/request.ts';
+import request from '../../../common/request';
 
 export default {
   checkLogin() {
@@ -7,4 +7,4 @@ export default {
       url: '/auth/checkLogin',
     });
   },
-}
+};

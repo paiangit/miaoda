@@ -1,12 +1,12 @@
-import { AdminLayout, ManagementPage } from './index.tsx';
+import { AdminLayout, ManagementPage } from './index';
 
 export default {
   path: 'app/:appId/admin',
-  element: <AdminLayout/>,
+  element: <AdminLayout />,
   children: [
     {
       path: ':pageId',
-      element: <ManagementPage />
+      element: <ManagementPage />,
     },
   ],
-}
+};

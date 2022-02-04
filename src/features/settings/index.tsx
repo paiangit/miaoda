@@ -1,1 +1,1 @@
-export { default as AppSettingsPage } from './AppSettingsPage.tsx';
+export { default as AppSettingsPage } from './AppSettingsPage';

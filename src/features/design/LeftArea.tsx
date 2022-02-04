@@ -1,5 +1,5 @@
 // import React, { useState } from 'react';
-import LeftAreaNav from './LeftAreaNav.tsx';
+import LeftAreaNav from './LeftAreaNav';
 import './LeftArea.less';
 
 export default function LeftArea() {
@@ -7,5 +7,5 @@ export default function LeftArea() {
     <div className="design-left-area">
       <LeftAreaNav></LeftAreaNav>
     </div>
-  )
+  );
 }

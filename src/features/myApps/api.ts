@@ -1,4 +1,4 @@
-import request from '../../common/request.ts';
+import request from '../../common/request';
 
 export default {
   createApp(data) {

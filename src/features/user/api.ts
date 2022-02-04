@@ -1,4 +1,4 @@
-import request from '../../common/request.ts';
+import request from '../../common/request';
 
 export default {
   getUser(id) {
@@ -7,4 +7,4 @@ export default {
       url: `/user/${id}`,
     });
   },
-}
+};

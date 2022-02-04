@@ -1,7 +1,7 @@
 import { useState } from 'react';
-import AppList from './AppList.tsx';
-import SearchPanel from './SearchPanel.tsx';
-import CreateAppModal from './CreateAppModal.tsx';
+import AppList from './AppList';
+import SearchPanel from './SearchPanel';
+import CreateAppModal from './CreateAppModal';
 import './AppListPage.less';
 
 export default function AppListPage() {

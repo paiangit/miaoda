@@ -1,12 +1,9 @@
-import {
-  useParams,
-  useSearchParams,
-} from 'react-router-dom';
+import { useParams, useSearchParams } from 'react-router-dom';
 import { Button } from 'antd';
 import { DesktopOutlined, MobileOutlined } from '@ant-design/icons';
-import LeftArea from './LeftArea.tsx';
-import CenterArea from './CenterArea.tsx';
-import RightArea from './RightArea.tsx';
+import LeftArea from './LeftArea';
+import CenterArea from './CenterArea';
+import RightArea from './RightArea';
 import './DesignerPage.less';
 
 export default function DesignerPage() {

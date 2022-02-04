@@ -1,1 +1,1 @@
-export { default as DesignerPage } from './DesignerPage.tsx';
+export { default as DesignerPage } from './DesignerPage';

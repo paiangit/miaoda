@@ -1,4 +1,4 @@
-import Counter from './Counter.tsx';
+import Counter from './Counter';
 import './CounterPage.less';
 
 export default function CounterPage() {

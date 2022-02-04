@@ -1,8 +1,8 @@
 import { useState, useEffect } from 'react';
 import { useParams } from 'react-router-dom';
 import { Form, Input, Radio, Button, message } from 'antd';
-import api from './api.ts';
-import { useMount } from '../common/hooks/index.ts';
+import api from './api';
+import { useMount } from '../common/hooks/index';
 import './AppSettingsPage.less';
 
 export default function AppSettingsPage() {

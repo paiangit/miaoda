@@ -1,4 +1,4 @@
-import { AppSettingsPage } from './index.ts';
+import { AppSettingsPage } from './index';
 
 export default {
   path: 'app/:appId/admin',
@@ -6,6 +6,6 @@ export default {
     {
       path: 'appSettings',
       element: <AppSettingsPage />,
-    }
+    },
   ],
-}
+};

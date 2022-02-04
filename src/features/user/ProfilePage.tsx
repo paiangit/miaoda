@@ -2,7 +2,7 @@ import { useParams, useNavigate } from 'react-router-dom';
 import { useEffect, useState } from 'react';
 import { Form } from 'antd';
 import './ProfilePage.less';
-import api from './api.ts';
+import api from './api';
 
 export default function ProfilePage() {
   const params = useParams();

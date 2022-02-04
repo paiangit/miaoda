@@ -6,8 +6,15 @@ module.exports = {
     alias: {
       '~': path.resolve(__dirname, './src/'),
     },
-    configure: {
-      entry: path.resolve(__dirname, './src/index.tsx'),
+    configure: (webpackConfig, { env, paths }) => {
+      (webpackConfig.entry = path.resolve(__dirname, './src/index.tsx')),
+        (webpackConfig.resolve.extensions = [
+          '.tsx',
+          '.ts',
+          ...webpackConfig.resolve.extensions,
+        ]);
+      // console.log('webpackConfig', webpackConfig);
+      return webpackConfig;
     },
   },
   jest: {

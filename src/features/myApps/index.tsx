@@ -1,1 +1,1 @@
-export { default as AppListPage } from './AppListPage.tsx';
+export { default as AppListPage } from './AppListPage';

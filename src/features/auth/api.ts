@@ -1,4 +1,4 @@
-import request from '../../common/request.ts';
+import request from '../../common/request';
 
 export default {
   createUser(data) {
@@ -15,4 +15,4 @@ export default {
       data,
     });
   },
-}
+};

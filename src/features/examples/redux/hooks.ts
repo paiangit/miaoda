@@ -1,2 +1,2 @@
-export { useCounterPlusOne } from './counterPlusOne.ts';
-export { useCounterMinusOne } from './counterMinusOne.ts';
+export { useCounterPlusOne } from './counterPlusOne';
+export { useCounterMinusOne } from './counterMinusOne';

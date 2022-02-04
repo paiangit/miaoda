@@ -9,7 +9,7 @@ import {
 } from '@ant-design/icons';
 import { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
-import api from './api.ts';
+import api from './api';
 import './AppList.less';
 
 interface AppListProps {

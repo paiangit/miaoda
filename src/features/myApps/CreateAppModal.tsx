@@ -1,6 +1,6 @@
 import { Button, Modal, Form, Input, Radio, message } from 'antd';
 import { useState } from 'react';
-import api from './api.ts';
+import api from './api';
 import './CreateAppModal.less';
 
 export default function CreateAppModal() {

@@ -1,4 +1,4 @@
-import { useCounterPlusOne, useCounterMinusOne } from './redux/hooks.ts';
+import { useCounterPlusOne, useCounterMinusOne } from './redux/hooks';
 import './Counter.less';
 
 export default function Counter() {
@@ -6,10 +6,14 @@ export default function Counter() {
   const { counterMinusOne } = useCounterMinusOne();
 
   return (
-    <div className='examples-counter'>
-      <div className='count'>计数：{count}</div>
-      <button className='minus-one' onClick={counterMinusOne}>-</button>
-      <button className='plus-one' onClick={counterPlusOne}>+</button>
+    <div className="examples-counter">
+      <div className="count">计数：{count}</div>
+      <button className="minus-one" onClick={counterMinusOne}>
+        -
+      </button>
+      <button className="plus-one" onClick={counterPlusOne}>
+        +
+      </button>
     </div>
   );
 }

@@ -1,111 +1,95 @@
-import {
-  useRoutes,
-  Navigate,
-} from 'react-router-dom';
+import { useRoutes, Navigate } from 'react-router-dom';
 
-import {
-  MainLayout,
-  MainPage,
-} from './features/home/index.tsx';
-import { AppListPage } from './features/myApps/index.tsx';
-import {
-  AdminLayout,
-  ManagementPage,
-} from './features/management/index.tsx';
-import { AppSettingsPage } from './features/settings/index.tsx';
-import { AppPublishPage } from './features/publish/index.tsx';
-import { DesignerPage } from './features/design/index.tsx';
-import { PreviewPage } from './features/preview/index.tsx';
-import {
-  RegisterPage,
-  LoginPage,
-} from './features/auth/index.tsx';
-import { ProfilePage } from './features/user/index.tsx';
-import { PageNotFound } from './features/common/index.tsx';
-import { CounterPage } from './features/examples/index.tsx';
+import { MainLayout, MainPage } from './features/home/index';
+import { AppListPage } from './features/myApps/index';
+import { AdminLayout, ManagementPage } from './features/management/index';
+import { AppSettingsPage } from './features/settings/index';
+import { AppPublishPage } from './features/publish/index';
+import { DesignerPage } from './features/design/index';
+import { PreviewPage } from './features/preview/index';
+import { RegisterPage, LoginPage } from './features/auth/index';
+import { ProfilePage } from './features/user/index';
+import { PageNotFound } from './features/common/index';
+import { CounterPage } from './features/examples/index';
 // import routeConfig from './common/routeConfig.js';
 
 function App() {
   const mainRoutes = {
     path: '/',
-    element: <MainLayout/>,
+    element: <MainLayout />,
     children: [
       {
         path: '*',
-        element: <Navigate to='/404' />
+        element: <Navigate to="/404" />,
       },
       {
-        path: "/",
-        element: <MainPage/>
+        path: '/',
+        element: <MainPage />,
       },
       {
         path: '404',
-        element: <PageNotFound />
+        element: <PageNotFound />,
       },
       {
         path: 'myApps',
-        element: <AppListPage />
+        element: <AppListPage />,
       },
       {
         path: 'app/:appId/admin',
-        element: <Navigate to=':pageId' />
+        element: <Navigate to=":pageId" />,
       },
       {
         path: 'app/:appId/design',
-        element: <DesignerPage />
+        element: <DesignerPage />,
       },
       {
         path: 'app/:appId/preview',
-        element: <PreviewPage />
+        element: <PreviewPage />,
       },
       {
         path: 'auth/register',
-        element: <RegisterPage />
+        element: <RegisterPage />,
       },
       {
         path: 'auth/login',
-        element: <LoginPage />
+        element: <LoginPage />,
       },
       {
         path: 'user/:userId/profile',
-        element: <ProfilePage />
+        element: <ProfilePage />,
       },
       {
         path: 'examples/counter',
-        element: <CounterPage />
+        element: <CounterPage />,
       },
     ],
   };
   const adminRoutes = {
     path: 'app/:appId/admin/',
-    element: <AdminLayout/>,
+    element: <AdminLayout />,
     children: [
       {
         path: '*',
-        element: <Navigate to='/404'/>
+        element: <Navigate to="/404" />,
       },
       {
         path: ':pageId',
-        element: <ManagementPage />
+        element: <ManagementPage />,
       },
       {
         path: 'appPublish',
-        element: <AppPublishPage />
+        element: <AppPublishPage />,
       },
       {
         path: 'appSettings',
-        element: <AppSettingsPage />
+        element: <AppSettingsPage />,
       },
-    ]
+    ],
   };
   const routing = useRoutes([mainRoutes, adminRoutes]);
   // const routing = useRoutes([routeConfig]);
 
-  return (
-    <div className="app">
-      { routing }
-    </div>
-  );
+  return <div className="app">{routing}</div>;
 }
 
 export default App;

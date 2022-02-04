@@ -1,7 +1,4 @@
-import {
-  RegisterPage,
-  LoginPage,
-} from './index.tsx';
+import { RegisterPage, LoginPage } from './index';
 
 export default {
   path: 'auth',
@@ -15,4 +12,4 @@ export default {
       element: <LoginPage />,
     },
   ],
-}
+};

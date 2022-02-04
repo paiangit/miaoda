@@ -1,12 +1,12 @@
-import { MainLayout, MainPage } from './index.tsx';
+import { MainLayout, MainPage } from './index';
 
 export default {
   path: '/',
   element: <MainLayout />,
   children: [
     {
-      path: "/",
-      element: <MainPage />
+      path: '/',
+      element: <MainPage />,
     },
   ],
-}
+};
