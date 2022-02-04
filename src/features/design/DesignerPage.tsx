@@ -1,13 +1,11 @@
-import { useParams, useSearchParams } from 'react-router-dom';
+import { useSearchParams } from 'react-router-dom';
 import { Button } from 'antd';
-import { DesktopOutlined, MobileOutlined } from '@ant-design/icons';
 import LeftArea from './LeftArea';
 import CenterArea from './CenterArea';
 import RightArea from './RightArea';
 import './DesignerPage.less';
 
 export default function DesignerPage() {
-  const params = useParams();
   const [searchParams] = useSearchParams();
   const pageId = searchParams.get('pageId');
 

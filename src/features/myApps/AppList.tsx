@@ -16,8 +16,7 @@ interface AppListProps {
   keyword: string;
 }
 
-export default function AppList(props: AppListProps) {
-  const { keyword } = props;
+export default function AppList({ keyword }: AppListProps) {
   const [list, setList] = useState([]);
 
   useEffect(() => {
@@ -76,11 +75,13 @@ export default function AppList(props: AppListProps) {
     }
   };
 
-  const handleEllipsisClick = (evt) => {
+  const handleEllipsisClick = (
+    evt: React.MouseEvent<HTMLElement, MouseEvent>
+  ) => {
     evt.preventDefault();
   };
 
-  const getMenu = (id) => (
+  const getMenu = (id: string) => (
     <Menu onClick={handleMenuClick} data-id={id}>
       <Menu.Item key="1" icon={<SettingOutlined />}>
         应用设置

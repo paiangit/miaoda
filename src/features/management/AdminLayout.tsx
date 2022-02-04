@@ -12,7 +12,7 @@ export default function AdminLayout() {
       <Outlet />
       <br />
       <button>
-        <a onClick={handleClick}>Back</a>
+        <a onClick={handleClick}>返回</a>
       </button>
     </div>
   );

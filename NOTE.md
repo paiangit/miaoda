@@ -2004,6 +2004,93 @@ json-server __json_server_mock__/db.json --watch
 
 - DELETE /users/1 // 删除
 
+### 模拟非 RESTful 的 API
+
+上面，json-server 只能模拟 RESTful 的 API，但是，实际使用中，并不是所有接口都能符合 RESTful 规范的。这时候，我们就需要给 json-server 添加中间件来实现模拟了。
+
+```js
+// middleware.js
+module.exports = (req, res, next) => {
+  if (req.method === 'POST' && req.path === '/login') {
+    if (req.body.username === 'POST' && req.body.password === '111111') {
+      return res.status(200).json({
+        user: {
+          token: '123',
+        },
+      });
+    } else {
+      return res.status(400).json({
+        message: '用户名或密码错误',
+      });
+    }
+  }
+  next();
+};
+```
+
+```sh
+json-server __json_server_mock__/db.json --watch --port 3001 --middlewares ./__json_server_mock__/middleware.js
+```
+
+## 一个假的后端服务工具
+
+https://www.npmjs.com/package/jira-dev-tool
+
+https://github.com/sindu12jun/imooc-jira
+
+1）分布式，稳定可靠，控制方便：
+
+传统教学项目后端服务的两大问题：
+
+服务脆弱，请求次数有限，不稳定，如果老师的后端服务 down 掉，学员就没法使用了；
+
+学员对后端数据库的控制有限，比如没法轻易地重置数据库；
+
+这个开发者工具用 MSW 以 Service Worker 为原理实现了"分布式后端"。
+
+即：
+
+所有请求被 Service Worker 代理；
+
+后端逻辑处理后，以 localStorage 为数据库进行增删改查操作；
+
+这样每个同学的浏览器上都安装了一个独立的后端服务和数据库，再也不受任何中心化服务的影响。点击'清空数据库'便可以重置后端服务。
+
+2）HTTP 请求精准控制
+
+项目的健壮性被很多教学项目忽视，而作为一个最佳实践的项目，健壮性是一个被重点关注的点
+
+这个开发者工具可以精准地控制 HTTP 请求的时间、失败概率、失败规则
+
+安装：
+
+```sh
+npx imooc-jira-tool
+```
+
+接入：
+
+```ts
+import { loadDevtools } from 'jira-dev-tool';
+
+loadDevtools(() =>
+  ReactDOM.render(
+    <React.strictMode>
+      <App />
+    </React.strictMode>,
+    document.getElementById('root')
+  )
+);
+```
+
+这样页面运行之后，请求就被这个开发者工具接管了。
+
+如果你在运行项目的时候出现了 [MSW] Detected outdated Service Worker 错误，则需要执行
+
+```sh
+npx msw init public
+```
+
 ## 修改 Ant Design 的主题样式
 
 关于这一点，Ant Design 的官网有详细的说明：
@@ -2067,5 +2154,27 @@ export const useDebounce = (value, delay) => {
   }, [value, delay]);
 
   return debouncedValue;
+};
+```
+
+## 解决 lodash 没有.d.ts 文件的问题
+
+```sh
+pnpm add @types/lodash -D
+```
+
+## 标记事件的类型，以便 TS 进行类型检查
+
+```ts
+const handleEllipsisClick = (
+  evt: React.MouseEvent<HTMLElement, MouseEvent>
+) => {
+  evt.preventDefault();
+};
+```
+
+```ts
+const handleChange = (evt: React.ChangeEvent<HTMLInputElement>) => {
+  setTitle(evt.target.value);
 };
 ```

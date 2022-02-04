@@ -1,10 +1,16 @@
-import axios, { AxiosInstance } from 'axios';
+import axios, { AxiosInstance, AxiosRequestConfig, AxiosResponse } from 'axios';
 import { message } from 'antd';
+
+export interface ResponseData {
+  data: object;
+  code: number;
+  message: string;
+}
 
 const axiosInstance: AxiosInstance = axios.create(getDefaultOptions());
 
 axiosInstance.interceptors.request.use(
-  (config) => {
+  (config: AxiosRequestConfig): AxiosRequestConfig => {
     const token = getToken();
     token && (config.headers.common['Authorization'] = token);
     config.headers['Content-Type'] = 'application/json';
@@ -19,7 +25,7 @@ axiosInstance.interceptors.request.use(
 );
 
 axiosInstance.interceptors.response.use(
-  (res: any) => {
+  (res: AxiosResponse<ResponseData>) => {
     // const { status, data, message } = res;
     // let msg = '';
 
@@ -75,7 +81,7 @@ function getDefaultOptions() {
   };
 }
 
-function getToken() {
+function getToken(): string {
   const token = window.localStorage.getItem(
     process.env.REACT_APP_ACCESS_TOKEN_KEY
   );

@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react';
+import React, { MouseEvent, useEffect, useState } from 'react';
 import { Form, Input } from 'antd';
 import { useDebounce } from '../common/hooks/index';
 import './SearchPanel.less';
@@ -8,15 +8,14 @@ interface SearchPanelProps {
   setKeyword: (keyword: string) => void;
 }
 
-export default function SearchPanel(props: SearchPanelProps) {
-  const { Search } = Input;
-  const { keyword, setKeyword } = props;
+export default function SearchPanel({ keyword, setKeyword }: SearchPanelProps) {
   const [title, setTitle] = useState(keyword);
 
-  const handleSearch = (value) => {
+  const handleSearch = (value: string) => {
     setTitle(value);
   };
-  const handleChange = (evt) => {
+
+  const handleChange = (evt: React.ChangeEvent<HTMLInputElement>) => {
     setTitle(evt.target.value);
   };
 
@@ -29,7 +28,7 @@ export default function SearchPanel(props: SearchPanelProps) {
 
   return (
     <Form className="my-apps-search-panel">
-      <Search
+      <Input.Search
         className="search-input"
         placeholder="请输入应用名称"
         allowClear

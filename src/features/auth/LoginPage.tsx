@@ -5,7 +5,6 @@ import './LoginPage.less';
 import api from './api';
 
 export default function LoginPage() {
-  const loginFormRef = useRef();
   const navigate = useNavigate();
 
   const handleFinish = (values) => {
