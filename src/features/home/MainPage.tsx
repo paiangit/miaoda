@@ -1,4 +1,5 @@
 import { CheckLogin } from '../common/index';
+import { useDocumentTitle } from '../common/hooks/useDocumentTitle';
 import './MainPage.less';
 
 function MainPage() {
@@ -8,6 +9,8 @@ function MainPage() {
 }
 
 export default function () {
+  useDocumentTitle('首页');
+
   const WrappedMainPage = CheckLogin(MainPage);
 
   return <WrappedMainPage />;

@@ -2,9 +2,12 @@ import { useRef } from 'react';
 import { Form, Button, Input, message } from 'antd';
 import { useNavigate } from 'react-router-dom';
 import api from './api';
+import { useDocumentTitle } from '../common/hooks/useDocumentTitle';
 import './RegisterPage.less';
 
 export default function RegisterPage() {
+  useDocumentTitle('用户注册');
+
   const [form] = Form.useForm();
   const navigate = useNavigate();
 

@@ -3,9 +3,12 @@ import { useParams } from 'react-router-dom';
 import { Form, Input, Radio, Button, message } from 'antd';
 import api from './api';
 import { useMount } from '../common/hooks/index';
+import { useDocumentTitle } from '../common/hooks/useDocumentTitle';
 import './AppSettingsPage.less';
 
 export default function AppSettingsPage() {
+  useDocumentTitle('设置应用');
+
   const params = useParams();
   const [initialInfo, setInitialInfo] = useState({});
   const [form] = Form.useForm();

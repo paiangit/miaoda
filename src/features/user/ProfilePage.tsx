@@ -1,8 +1,9 @@
 import { useParams, useNavigate } from 'react-router-dom';
 import { useEffect, useState } from 'react';
 import { Form } from 'antd';
-import './ProfilePage.less';
 import api from './api';
+import { useDocumentTitle } from '../common/hooks/useDocumentTitle';
+import './ProfilePage.less';
 
 export default function ProfilePage() {
   const params = useParams();
@@ -15,6 +16,8 @@ export default function ProfilePage() {
     email: '',
   });
   const genderMap = ['保密', '男', '女'];
+
+  useDocumentTitle('我的档案', false);
 
   useEffect(() => {
     api

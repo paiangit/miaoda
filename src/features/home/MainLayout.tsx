@@ -35,7 +35,7 @@ function MainLayout() {
           <Link to="/user/1/profile">我的档案</Link>
         </li>
         <li>
-          <Link to="/examples/counter">Counter例子</Link>
+          <Link to="/examples/counter">计数器例子</Link>
         </li>
       </ul>
       <Outlet />
