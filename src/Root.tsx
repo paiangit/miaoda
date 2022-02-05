@@ -6,7 +6,7 @@ import { Button } from 'antd';
 
 import App from './App';
 import store from './common/store';
-import { ErrorFallback } from './common/component/error-fallback';
+import { ErrorFallback } from './common/containers/ErrorFallback';
 
 function Root() {
   const handleReset = () => {

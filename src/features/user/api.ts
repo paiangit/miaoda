@@ -1,4 +1,4 @@
-import request from '../../common/request';
+import { request } from '../../common/utils/request';
 
 export default {
   getUser(id: string) {

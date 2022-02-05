@@ -1,5 +1,5 @@
 import { useParams, useSearchParams } from 'react-router-dom';
-import { useDocumentTitle } from '../common/hooks/useDocumentTitle';
+import { useDocumentTitle } from '../../common/hooks';
 import './PreviewPage.less';
 
 export default function PreviewPage() {

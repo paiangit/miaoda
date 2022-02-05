@@ -1,6 +1,6 @@
-import React, { MouseEvent, useEffect, useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { Form, Input } from 'antd';
-import { useDebounce } from '../common/hooks/index';
+import { useDebounce } from '../../common/hooks';
 import './SearchPanel.less';
 
 interface SearchPanelProps {

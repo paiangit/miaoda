@@ -1,5 +1,5 @@
-import { CheckLogin } from '../common/index';
-import { useDocumentTitle } from '../common/hooks/useDocumentTitle';
+import { CheckLogin } from '../../common/hocs';
+import { useDocumentTitle } from '../../common/hooks';
 import './MainPage.less';
 
 function MainPage() {

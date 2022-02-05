@@ -1,5 +1,5 @@
 import { Button, Card } from 'antd';
-import './error-fallback.less';
+import './ErrorFallback.less';
 
 export function ErrorFallback({ error, resetErrorBoundary }) {
   return (

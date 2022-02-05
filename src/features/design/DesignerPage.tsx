@@ -3,7 +3,7 @@ import { Button } from 'antd';
 import LeftArea from './LeftArea';
 import CenterArea from './CenterArea';
 import RightArea from './RightArea';
-import { useDocumentTitle } from '../common/hooks/useDocumentTitle';
+import { useDocumentTitle } from '../../common/hooks';
 import './DesignerPage.less';
 
 export default function DesignerPage() {

@@ -1,7 +1,7 @@
 import { useRef } from 'react';
 import { Form, Button, message, Input } from 'antd';
 import { useNavigate } from 'react-router-dom';
-import { useDocumentTitle } from '../common/hooks/useDocumentTitle';
+import { useDocumentTitle } from '../../common/hooks';
 import api from './api';
 import './LoginPage.less';
 

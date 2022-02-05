@@ -2,7 +2,7 @@ import { useParams, useNavigate } from 'react-router-dom';
 import { useEffect, useState } from 'react';
 import { Form } from 'antd';
 import api from './api';
-import { useDocumentTitle } from '../common/hooks/useDocumentTitle';
+import { useDocumentTitle } from '../../common/hooks';
 import './ProfilePage.less';
 
 export default function ProfilePage() {

@@ -1,9 +1,9 @@
 import { useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
-import api from './CheckLoginApi';
+import api from './api';
 
 // 登录高阶组件
-export default function CheckLogin(Component) {
+export function CheckLogin(Component) {
   const navigate = useNavigate();
 
   useEffect(() => {

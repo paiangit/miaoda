@@ -7,9 +7,9 @@ export interface ResponseData {
   message: string;
 }
 
-const axiosInstance: AxiosInstance = axios.create(getDefaultOptions());
+const instance: AxiosInstance = axios.create(getDefaultOptions());
 
-axiosInstance.interceptors.request.use(
+instance.interceptors.request.use(
   (config: AxiosRequestConfig): AxiosRequestConfig => {
     const token = getToken();
     token && (config.headers.common['Authorization'] = token);
@@ -24,7 +24,7 @@ axiosInstance.interceptors.request.use(
   }
 );
 
-axiosInstance.interceptors.response.use(
+instance.interceptors.response.use(
   (res: AxiosResponse<ResponseData>) => {
     // const { status, data, message } = res;
     // let msg = '';
@@ -89,4 +89,4 @@ function getToken(): string {
   return token ? `Bearer ${token}` : '';
 }
 
-export default axiosInstance;
+export const request = instance;

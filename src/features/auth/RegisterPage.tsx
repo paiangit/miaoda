@@ -2,7 +2,7 @@ import { useRef } from 'react';
 import { Form, Button, Input, message } from 'antd';
 import { useNavigate } from 'react-router-dom';
 import api from './api';
-import { useDocumentTitle } from '../common/hooks/useDocumentTitle';
+import { useDocumentTitle } from '../../common/hooks';
 import './RegisterPage.less';
 
 export default function RegisterPage() {

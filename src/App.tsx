@@ -1,16 +1,16 @@
 import { useRoutes, Navigate } from 'react-router-dom';
 
-import { MainLayout, MainPage } from './features/home/index';
-import { AppListPage } from './features/myApps/index';
-import { AdminLayout, ManagementPage } from './features/management/index';
-import { AppSettingsPage } from './features/settings/index';
-import { AppPublishPage } from './features/publish/index';
-import { DesignerPage } from './features/design/index';
-import { PreviewPage } from './features/preview/index';
-import { RegisterPage, LoginPage } from './features/auth/index';
-import { ProfilePage } from './features/user/index';
-import { PageNotFound } from './features/common/index';
-import { CounterPage } from './features/examples/index';
+import { MainLayout, MainPage } from './features/home';
+import { AppListPage } from './features/myApps';
+import { AdminLayout, ManagementPage } from './features/management';
+import { AppSettingsPage } from './features/settings';
+import { AppPublishPage } from './features/publish';
+import { DesignerPage } from './features/design';
+import { PreviewPage } from './features/preview';
+import { RegisterPage, LoginPage } from './features/auth';
+import { ProfilePage } from './features/user';
+import { PageNotFound } from './common/containers';
+import { CounterPage } from './features/examples';
 // import routeConfig from './common/routeConfig.js';
 
 function App() {

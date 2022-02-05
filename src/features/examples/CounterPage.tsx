@@ -1,5 +1,5 @@
 import Counter from './Counter';
-import { useDocumentTitle } from '../common/hooks/useDocumentTitle';
+import { useDocumentTitle } from '../../common/hooks';
 import './CounterPage.less';
 
 export default function CounterPage() {

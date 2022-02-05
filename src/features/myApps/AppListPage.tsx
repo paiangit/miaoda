@@ -2,7 +2,7 @@ import { useState } from 'react';
 import AppList from './AppList';
 import SearchPanel from './SearchPanel';
 import CreateAppModal from './CreateAppModal';
-import { useDocumentTitle } from '../common/hooks/useDocumentTitle';
+import { useDocumentTitle } from '../../common/hooks';
 import './AppListPage.less';
 
 export default function AppListPage() {
