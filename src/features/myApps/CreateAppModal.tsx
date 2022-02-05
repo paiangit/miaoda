@@ -1,7 +1,15 @@
 import { Button, Modal, Form, Input, Radio, message } from 'antd';
 import { useState } from 'react';
 import api from './api';
+// import { AppThemeColor } from './type';
 import './CreateAppModal.less';
+
+// interface App {
+//   title: string,
+//   icon: string,
+//   description: string,
+//   themeColor: AppThemeColor,
+// }
 
 export default function CreateAppModal() {
   const [form] = Form.useForm();

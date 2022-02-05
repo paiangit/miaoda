@@ -2032,7 +2032,7 @@ module.exports = (req, res, next) => {
 json-server __json_server_mock__/db.json --watch --port 3001 --middlewares ./__json_server_mock__/middleware.js
 ```
 
-## 一个假的后端服务工具
+## 一个假的后端服务工具（仅供思路上作参考）
 
 https://www.npmjs.com/package/jira-dev-tool
 
@@ -2065,7 +2065,7 @@ https://github.com/sindu12jun/imooc-jira
 安装：
 
 ```sh
-npx imooc-jira-tool
+pnpm add jira-dev-tool@next
 ```
 
 接入：
@@ -2177,4 +2177,17 @@ const handleEllipsisClick = (
 const handleChange = (evt: React.ChangeEvent<HTMLInputElement>) => {
   setTitle(evt.target.value);
 };
+```
+
+## 发部正式环境的时候，别忘了配置环境变量
+
+比如，如果你忘记了配置 API 接口地址和端口等环境变量，请求接口会报如下错误：
+
+> Uncaught (in promise) DOMException: Failed to execute 'open' on 'XMLHttpRequest': Invalid URL
+
+要想预览正式环境的效果，可以执行如下命令：
+
+```sh
+pnpm build
+serve -s build --port 80
 ```
