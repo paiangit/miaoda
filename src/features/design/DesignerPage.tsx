@@ -1,16 +1,17 @@
-import { useSearchParams } from 'react-router-dom';
+import { useParams } from 'react-router-dom';
 import { Button } from 'antd';
 import LeftArea from './LeftArea';
 import CenterArea from './CenterArea';
 import RightArea from './RightArea';
-import { useDocumentTitle } from '../../common/hooks';
+import { useDocumentTitle, useUrlQueryParams } from '../../common/hooks';
 import './DesignerPage.less';
 
 export default function DesignerPage() {
   useDocumentTitle('编辑应用');
 
-  const [searchParams] = useSearchParams();
-  const pageId = searchParams.get('pageId');
+  const params = useParams();
+  const [{ pageId }] = useUrlQueryParams(['pageId']);
+  console.log(params.appId, pageId);
 
   return (
     <div className="design-designer-page">

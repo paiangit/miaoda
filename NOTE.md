@@ -1735,7 +1735,7 @@ hoc 高阶组件
 
 ## 编写检查登录的高阶组件
 
-common/hoc/CheckLogin.tsx：
+common/hocs/CheckLogin.tsx：
 
 ```tsx
 import { useEffect } from 'react';
@@ -1764,7 +1764,7 @@ export default function CheckLogin(Component) {
 }
 ```
 
-common/hoc/CheckLoginApi.ts：
+common/hocs/CheckLoginApi.ts：
 
 ```ts
 import request from '../../../common/request.ts';
@@ -2123,7 +2123,7 @@ modifyVars: {
 
 就可以在组件的样式中引入
 
-@import '../../styles/themes';
+@import '../../styles/themes.less';
 
 接下来我们就可以在组件中正常地使用@border-radius-base 这个来自主题的变量了。
 
@@ -2205,7 +2205,7 @@ import { Button } from 'antd';
 
 import App from './App';
 import store from './common/store';
-+ import { ErrorFallback } from './common/component/error-fallback';
++ import { ErrorFallback } from './common/containers/ErrorFallback';
 
 function Root() {
 +  const handleReset = () => {
@@ -2226,11 +2226,11 @@ function Root() {
 export default Root;
 ```
 
-error-fallback.tsx
+ErrorFallback.tsx
 
 ```ts
 import { Button, Card } from 'antd';
-import './error-fallback.less';
+import './ErrorFallback.less';
 
 export function ErrorFallback({ error, resetErrorBoundary }) {
   return (
@@ -2369,3 +2369,40 @@ const a = {};
 useEffect(() => {}, [a]);
 
 这个就会导致无限循环渲染，因为 a 是个普通对象。
+
+## 自定义 hook 返回 Url 中指定键的参数值的
+
+```ts
+import { useMemo } from 'react';
+import { URLSearchParamsInit, useSearchParams } from 'react-router-dom';
+import { cleanObject } from '../utils';
+
+/**
+ * 返回Url中指定键的参数值
+ */
+export function useUrlQueryParams<T extends string>(keys: T[]) {
+  const [searchParams, setSearchParams] = useSearchParams();
+
+  return [
+    useMemo(
+      () =>
+        keys.reduce((accumulator, currentValue) => {
+          return {
+            ...accumulator,
+            [currentValue]: searchParams.get(currentValue),
+          };
+        }, {} as { [key in string]: string }),
+      [searchParams]
+    ),
+    (params: Partial<{ [key in T]: unknown }>) => {
+      // 下面的Object.forEntries(searchParams)是用来把实现了迭代器的对象，这里是searchParams，里面的键和值读取出来变成一个普通对象
+      // 参见：https://developer.mozilla.org/zh-CN/docs/Web/JavaScript/Reference/Global_Objects/Object/fromEntries
+      const o = cleanObject({
+        ...Object.fromEntries(searchParams),
+        ...params,
+      }) as URLSearchParamsInit;
+      return setSearchParams(o);
+    },
+  ] as const; // 这里的as const，即TypeScript中的const断言。const断言会告诉编译器为表达式推断最窄的*或最具体的类型。如果您不使用as const，编译器将使用其默认类型推断行为，这可能会导致更广泛或更通用的类型。
+}
+```
