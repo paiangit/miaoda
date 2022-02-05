@@ -2325,3 +2325,47 @@ export function useDocumentTitle(title: string, keepOnUnmount: boolean = true) {
   }, [oldTitle, keepOnUnmount]);
 }
 ```
+
+## 用 why-did-you-render 排查是什么原因导致循环渲染的
+
+开发中我们很容易遇到循环渲染的情况，怎么排查原因呢？
+
+```sh
+pnpm add @welldone-software/why-did-you-render -D
+```
+
+新建 wdyr.ts
+
+```ts
+import React from 'react';
+
+if (process.env.NODE_ENV === 'development') {
+  const whyDidYouRender = require('@welldone-software/why-did-you-render');
+  whyDidYouRender(React, {
+    trackAllPureComponents: false, // 是否对所有组件进行追踪
+  });
+}
+```
+
+然后在 index.tsx 的最开头添加：
+
+```ts
+import './wdyr'; // <--- first import
+```
+
+然后在你想追踪的那个组件上挂上.whyDidYouRender = true
+
+```ts
+xxxComponent.whyDidYouRender = true;
+```
+
+这样，在控制台中就可以看到是什么原因导致无限循环了。
+
+注意，对于简单数据类型 和 state（组件状态），加入到 hook 的第二个参数中作为依赖时，不会导致无限循环渲染，但是，对于普通的引用类型，加入到 hook 的第二个参数中作为依赖，则会导致循环渲染。
+
+比如：
+
+const a = {};
+useEffect(() => {}, [a]);
+
+这个就会导致无限循环渲染，因为 a 是个普通对象。
