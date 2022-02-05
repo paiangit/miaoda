@@ -2191,3 +2191,91 @@ const handleChange = (evt: React.ChangeEvent<HTMLInputElement>) => {
 pnpm build
 serve -s build --port 80
 ```
+
+## 使用 react-error-boundary 处理错误
+
+参见：https://github.com/bvaughn/react-error-boundary
+
+```ts
+import React from 'react';
+import { BrowserRouter } from 'react-router-dom';
+import { Provider } from 'react-redux';
++ import { ErrorBoundary } from 'react-error-boundary';
+import { Button } from 'antd';
+
+import App from './App';
+import store from './common/store';
++ import { ErrorFallback } from './common/component/error-fallback';
+
+function Root() {
++  const handleReset = () => {
++    window.location.reload();
++  };
+
+  return (
++    <ErrorBoundary FallbackComponent={ErrorFallback} onReset={handleReset}>
+      <Provider store={store}>
+        <BrowserRouter>
+          <App />
+        </BrowserRouter>
+      </Provider>
++    </ErrorBoundary>
+  );
+}
+
+export default Root;
+```
+
+error-fallback.tsx
+
+```ts
+import { Button, Card } from 'antd';
+import './error-fallback.less';
+
+export function ErrorFallback({ error, resetErrorBoundary }) {
+  return (
+    <div className="common-error-fallback">
+      <Card className="inner">
+        <p className="title">出错了</p>
+        <pre className="message">{error.message}</pre>
+        <Button className="button" type="primary" onClick={resetErrorBoundary}>
+          重试
+        </Button>
+      </Card>
+    </div>
+  );
+}
+```
+
+那么，如何自己实现一个类似 react-error-boundary 的组件呢？
+
+可以参照官方文档：https://reactjs.org/docs/error-boundaries.html
+
+下面是一个例子：
+
+```tsx
+import React from 'react';
+
+type FallbackRender = (props: { error: Error | null }) => React.ReactElement;
+
+export class ErrorBoundary extends React.Component<
+  React.PropsWithChildren<{ fallbackRender: FallbackRender }>,
+  { error: Error | null }
+> {
+  state = { error: null };
+
+  // 当子组件抛出异常，这里会接收到并且调用
+  static getDerivedStateFromError(error: Error) {
+    return { error };
+  }
+
+  render() {
+    const { error } = this.state;
+    const { fallbackRender, children } = this.props;
+    if (error) {
+      return fallbackRender({ error });
+    }
+    return children;
+  }
+}
+```
