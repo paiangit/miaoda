@@ -2196,34 +2196,51 @@ serve -s build --port 80
 
 参见：https://github.com/bvaughn/react-error-boundary
 
+index.tsx
+
 ```ts
+import './wdyr';
 import React from 'react';
-import { BrowserRouter } from 'react-router-dom';
-import { Provider } from 'react-redux';
+import ReactDOM from 'react-dom';
 + import { ErrorBoundary } from 'react-error-boundary';
-import { Button } from 'antd';
-
-import App from './App';
-import store from './common/store';
+// 由于 antd 组件的默认文案是英文，所以需要修改为中文
+import zhCN from 'antd/lib/locale/zh_CN';
+import moment from 'moment';
+import 'moment/locale/zh-cn';
+import { ConfigProvider } from 'antd';
+// import reportWebVitals from './reportWebVitals';
+import 'antd/dist/antd.less';
 + import { ErrorFallback } from './common/containers/ErrorFallback';
+import Root from './Root';
+import './styles/index.less';
 
-function Root() {
-+  const handleReset = () => {
-+    window.location.reload();
-+  };
+moment.locale('zh-cn');
 
-  return (
-+    <ErrorBoundary FallbackComponent={ErrorFallback} onReset={handleReset}>
-      <Provider store={store}>
-        <BrowserRouter>
-          <App />
-        </BrowserRouter>
-      </Provider>
-+    </ErrorBoundary>
-  );
-}
++ const handleReset = () => {
++   window.location.reload();
++ };
 
-export default Root;
+/**
+ * StrictMode 是一个用以标记出应用中潜在问题的工具。
+ * 就像 Fragment ，StrictMode 不会渲染任何真实的UI。
+ * 它为其后代元素触发额外的检查和警告。
+ * 注意: 严格模式检查只在开发模式下运行，不会与生产模式冲突。
+ */
+ReactDOM.render(
+  <React.StrictMode>
++     <ErrorBoundary FallbackComponent={ErrorFallback} onReset={handleReset}>
+        <ConfigProvider locale={zhCN}>
+          <Root />
+        </ConfigProvider>
++     </ErrorBoundary>
+  </React.StrictMode>,
+  document.getElementById('root')
+);
+
+// If you want to start measuring performance in your app, pass a function
+// to log results (for example: reportWebVitals(console.log))
+// or send to an analytics endpoint. Learn more: https://bit.ly/CRA-vitals
+// reportWebVitals();
 ```
 
 ErrorFallback.tsx
