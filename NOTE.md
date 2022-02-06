@@ -2406,3 +2406,95 @@ export function useUrlQueryParams<T extends string>(keys: T[]) {
   ] as const; // 这里的as const，即TypeScript中的const断言。const断言会告诉编译器为表达式推断最窄的*或最具体的类型。如果您不使用as const，编译器将使用其默认类型推断行为，这可能会导致更广泛或更通用的类型。
 }
 ```
+
+## 获取某组件上的属性的类型
+
+```ts
+React.ComponentProps<typeof xxx>
+```
+
+例如：
+
+```ts
+import { Select } from 'antd';
+
+type SelectProps = React.ComponentProps<typeof Select>;
+```
+
+然后，我们就可以通过 extends 所获得的这个属性，从而实现在新封装的组件中对于原有组件的属性的透传。另外，因为我们新扩展上去的属性与原有的属性类型有冲突，所以我们可以用 Omit 过滤掉原组件那几个属性，从而直接使用我们新扩展的属性。
+
+```tsx
+IdSelect.tsx;
+import React from 'react';
+import { Raw } from './types';
+import { Select } from 'antd';
+import { toNumber } from 'lodash';
+
+type SelectProps = React.ComponentProps<typeof Select>;
+
+interface IdSelectProps
+  extends Omit<SelectProps, 'value' | 'onChange' | 'options'> {
+  value: Raw | null | undefined;
+  onChange: (value?: number) => void;
+  defaultOptionName?: string;
+  options?: { name: string; id: number }[];
+}
+
+/**
+ * value可以传入多种类型的值
+ * onChange只会回调number | undefined类型
+ * 当isNaN(Number(value))为true的时候，代表选择默认类型
+ * 当选择默认类型的时候，onChange会回调undefined
+ * @param props
+ * @constructor
+ */
+export function IdSelect({
+  value,
+  onChange,
+  defaultOptionName,
+  options,
+}: IdSelectProps) {
+  return (
+    <Select
+      value={toNumber(value)}
+      onChange={(value) => onChange(toNumber(value) || undefined)}
+    >
+      {defaultOptionName ? (
+        <Select.Option value={0}>{defaultOptionName}</Select.Option>
+      ) : undefined}
+    </Select>
+  );
+}
+```
+
+types.ts
+
+```ts
+export type Raw = 'number' | 'string';
+```
+
+## Url 中数字类型参数的治理
+
+Url 中的 appId、pageId 等字段，因为从 Url 字符串中解析出来，就变成了字符串，但是，从后端接口中返回来的却通常是数字类型，这样，就有了类型不一致的情况。我们可以封装 hook 来解决这个问题：
+
+```ts
+// 下面两个hook分别将Url中的appId和pageId转成number类型
+// url的格式为：http://localhost/app/${appId}/preview?pageId=${pageId}
+const usePreviewParams = () => {
+  const params = useParams();
+  return { ...params, appId: Number(params.appId) || undefined };
+};
+const usePreviewSearchParams = () => {
+  const [params] = useUrlQueryParams(['pageId']);
+  return { ...params, pageId: Number(params.pageId) || undefined };
+};
+
+const params = usePreviewParams();
+const searchParams = usePreviewSearchParams();
+console.log(
+  params.appId,
+  typeof params.appId,
+  searchParams.pageId,
+  typeof searchParams.pageId
+);
+```
