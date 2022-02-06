@@ -1,7 +1,7 @@
 import { useState, useEffect } from 'react';
 import { useParams } from 'react-router-dom';
 import { Form, Input, Radio, Button, message } from 'antd';
-import api from './api';
+import apis from './apis';
 import { useMount, useDocumentTitle } from '../../common/hooks';
 import './AppSettingsPage.less';
 
@@ -13,7 +13,7 @@ export default function AppSettingsPage() {
   const [form] = Form.useForm();
 
   useMount(() => {
-    api
+    apis
       .getApp(params.appId)
       .then((res) => {
         console.log(res.data);

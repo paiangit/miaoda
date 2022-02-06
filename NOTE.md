@@ -1591,7 +1591,7 @@ export default axiosInstance;
 
 这里因为忘记 return 的问题导致调试了好一会儿。所以特地都加上了注释，防止你忘记。
 
-## 封装请求 API：features/auth/api.ts
+## 封装请求 API：features/auth/apis.ts
 
 ```ts
 import request from '../../common/request.ts';
@@ -1628,7 +1628,7 @@ features/auth/RegisterPage.tsx
 import { useRef } from 'react';
 import { Button } from 'antd';
 import { useNavigate } from 'react-router-dom';
-import api from './api.ts';
+import apis from './api.ts';
 import './RegisterPage.less';
 
 export default function RegisterPage() {
@@ -1644,7 +1644,7 @@ export default function RegisterPage() {
 
     if (retypePassword !== password) return;
 
-    api
+    apis
       .createUser({
         username,
         password,
@@ -1740,14 +1740,14 @@ common/hocs/CheckLogin.tsx：
 ```tsx
 import { useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
-import api from './CheckLoginApi.ts';
+import apis from './CheckLoginApi.ts';
 
 // 登录高阶组件
 export default function CheckLogin(Component) {
   const navigate = useNavigate();
 
   useEffect(() => {
-    api
+    apis
       .checkLogin()
       .then((res) => {
         console.log('已登录', res);

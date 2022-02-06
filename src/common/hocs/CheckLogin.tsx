@@ -1,13 +1,13 @@
 import { useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
-import api from './api';
+import apis from './apis';
 
 // 登录高阶组件
 export function CheckLogin(Component) {
   const navigate = useNavigate();
 
   useEffect(() => {
-    api
+    apis
       .checkLogin()
       .then((res) => {
         console.log('已登录', res);

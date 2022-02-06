@@ -9,7 +9,7 @@ import {
 } from '@ant-design/icons';
 import { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
-import api from './api';
+import apis from './apis';
 import './AppList.less';
 
 interface AppListProps {
@@ -28,7 +28,7 @@ export default function AppList({ keyword }: AppListProps) {
   }, [keyword]);
 
   const getData = (params) => {
-    api
+    apis
       .getAppList(params)
       .then((res) => {
         if (res.code === 0) {

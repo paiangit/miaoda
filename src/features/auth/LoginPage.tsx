@@ -2,7 +2,7 @@ import { useRef } from 'react';
 import { Form, Button, message, Input } from 'antd';
 import { useNavigate } from 'react-router-dom';
 import { useDocumentTitle } from '../../common/hooks';
-import api from './api';
+import apis from './apis';
 import './LoginPage.less';
 
 export default function LoginPage() {
@@ -11,7 +11,7 @@ export default function LoginPage() {
   const navigate = useNavigate();
 
   const handleFinish = (values) => {
-    api.login(values).then((res) => {
+    apis.login(values).then((res) => {
       if (res.code === 0) {
         let { token, id, username } = res.data;
         if (token) {

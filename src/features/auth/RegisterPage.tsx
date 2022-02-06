@@ -1,7 +1,7 @@
 import { useRef } from 'react';
 import { Form, Button, Input, message } from 'antd';
 import { useNavigate } from 'react-router-dom';
-import api from './api';
+import apis from './apis';
 import { useDocumentTitle } from '../../common/hooks';
 import './RegisterPage.less';
 
@@ -19,7 +19,7 @@ export default function RegisterPage() {
     // 注册之前移除登录token
     window.localStorage.removeItem(process.env.REACT_APP_ACCESS_TOKEN_KEY);
 
-    api
+    apis
       .createUser({
         username,
         password,

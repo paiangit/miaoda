@@ -1,7 +1,7 @@
 import { Button, Modal, Form, Input, Radio, message } from 'antd';
 import { useState } from 'react';
-import api from './api';
-// import { AppThemeColor } from './type';
+import api from './apis';
+// import { AppThemeColor } from './types';
 import './CreateAppModal.less';
 
 // interface App {
