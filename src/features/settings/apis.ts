@@ -1,4 +1,4 @@
-import { request } from '../../common/utils/request';
+import { request } from '../../common/utils';
 
 export default {
   getApp(id: string) {

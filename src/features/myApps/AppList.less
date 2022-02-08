@@ -5,6 +5,24 @@
   display: flex;
   flex-wrap: wrap;
   gap: 16px;
+
+  .loading {
+    width: 100%;
+    height: 182px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+
+  .error-tip {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 100%;
+    height: 182px;
+    color: #a2a3a5;
+  }
+
   .app-card {
     border: 1px solid #eaebed;
     padding: 24px;
@@ -12,14 +30,17 @@
     display: inline-block;
     vertical-align: top;
     border-radius: @border-radius-base;
-    &:hover{
+
+    &:hover {
       box-shadow: 0 4px 16px 0 rgb(140 140 140 / 20%);
     }
   }
+
   .header {
     display: flex;
     align-items: center;
   }
+
   .icon {
     display: inline-block;
     width: 40px;
@@ -29,7 +50,8 @@
     display: flex;
     align-items: center;
     justify-content: center;
-    .anticon{
+
+    .anticon {
       color: #fff;
       font-size: 24px;
     }
@@ -41,6 +63,7 @@
     color: #171a1d;
     line-height: 1.3;
   }
+
   .description {
     margin-top: 12px;
     color: #a2a3a5;
@@ -54,16 +77,19 @@
     -webkit-line-clamp: 2;
     overflow: hidden;
   }
+
   .ant-empty {
     margin-top: 60px;
     margin-left: auto;
     margin-right: auto;
   }
+
   .footer {
     margin-top: 12px;
     display: flex;
     align-items: center;
     justify-content: space-between;
+
     .anticon {
       display: flex;
       align-items: center;
@@ -74,25 +100,30 @@
       border-radius: @border-radius-base;
       color: #878f95;
       text-align: center;
+
       &:hover {
         background-color: #f1f2f3;
       }
     }
   }
+
   .ant-tag {
     border: none;
     height: 24px;
     line-height: 24px;
     border-radius: 4px;
   }
+
   .online {
     background-color: rgba(0, 176, 66, .12);
     color: #00b042;
   }
+
   .offline {
     background: rgba(255, 146, 0, .12);
     color: #ff9200;
   }
+
   .deleted {
     background: rgb(82 82 82 / 12%);
     color: #939393;

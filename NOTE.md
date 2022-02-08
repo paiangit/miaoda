@@ -2515,3 +2515,664 @@ console.log(
   typeof searchParams.pageId
 );
 ```
+
+## react-query 的使用
+
+```sh
+pnpm add react-query -S
+```
+
+然后，我们引入 react-query 的的 QueryClientProvider 来包裹我们的应用：
+
+root.tsx
+
+```ts
+import React from 'react';
+import { BrowserRouter } from 'react-router-dom';
+import { Provider } from 'react-redux';
++ import { QueryClientProvider, QueryClient } from 'react-query';
+
+import App from './App';
+import store from './common/store';
+
+function Root() {
++ const queryClient = new QueryClient();
+
+  return (
+    <Provider store={store}>
+      {/* 将 queryClient 对象传递到下层组件 */}
++     <QueryClientProvider client={queryClient}>
+        <BrowserRouter>
+          <App />
+        </BrowserRouter>
++     </QueryClientProvider>
+    </Provider>
+  );
+}
+
+export default Root;
+```
+
+首先来看一个简单的使用：
+
+```tsx
+import { useQuery } from 'react-query';
+import axios from 'axios';
+
+const fetchAppList = () => {
+  return axios.get('http://localhost:3000/api/app/list');
+};
+
+export const AppList = () => {
+  const { isLoading, data, isError, error } = useQuery('app-list', fetchAppList);
+
+  if (isLoading) {
+    return <div>loading</div>
+  }
+
+  if (isError) {
+    return <div>{error.message}</div>
+  }
+
+  return (
+    <>
+      <h2>App List</h2>
+      { data?.data.map(app => {
+        return <div key={app.id}>{app.name}</div>
+      }) }
+    </h2>
+  )
+}
+```
+
+可见，它让请求不再需要写在 useEffect 中，而是完成了封装。另外，isLoading 等直接可用。省去 setIsLoading、setData、setError 等不用 react-query 时需要手工编码完成的操作。简化了我们的编码。
+
+其中，useQuery 接收至少两个参数：
+
+第一个参数是一个表示这个 Query 的唯一 key。这个唯一 key 可以是 string、array、object 类型。比如：
+['todos']、['todo', 3]、['todo', 3, { preview: true }] 均可。Query key 唯一的要求就是可以被序列化。
+
+第二个参数是一个真正执行请求并返回数据的异步方法，要求返回 then-able 的函数，通常来说就说要求返回 Promise。
+
+请求时，如果有参数怎么传递呢？
+
+当 Query 的唯一 key 是数组或对象时通常都包含了查询参数。
+
+```ts
+const queryInfo = useQuery(['todos', { status: 1, page: 1 }], fetchTodoList);
+
+// 函数参数
+// key -> “todos”
+// status -> 1；page -> 1
+function fetchTodoList(key, { status, page }) {
+  return new Promise();
+  // ...
+}
+```
+
+另外，react-query 还为我们提供了非常好用的调试工具 react-query/devtools，通过如下方式引入：
+
+```ts
+import React from 'react';
+import { BrowserRouter } from 'react-router-dom';
+import { Provider } from 'react-redux';
+import { QueryClientProvider, QueryClient } from 'react-query';
++ import { ReactQueryDevtools } from 'react-query/devtools';
+
+import App from './App';
+import store from './common/store';
+
+function Root() {
+  const queryClient = new QueryClient();
+
+  return (
+    <Provider store={store}>
+      <QueryClientProvider client={queryClient}>
+        <BrowserRouter>
+          <App />
+        </BrowserRouter>
++       <ReactQueryDevtools initialIsOpen={false} position="bottom-right"/>
+      </QueryClientProvider>
+    </Provider>
+  );
+}
+
+export default Root;
+```
+
+其中，initialIsOpen={false}参数表示默认不展开开发者调试工具面板，position="bottom-right"表示将在页面右下角显示一个调试工具的进入按钮。
+
+react-query 给我们提供了请求 cache 功能，默认情况下，请求将会缓存 5 分钟。所以，初次请求的时候，isLoading 将会为 true，接下来在缓存失效之前，isLoading 将会一直是 false。这是因为，第一次请求之后，react-query 会将请求结果以我们在 useQuery 中指定的第一个参数（即 unique key）为 key 缓存起来，下次再失效之前再请求该接口时，会直接将缓存立即返回，所以就不会出现 isLoading 为 true 的状态，相应的用户也就不用每次都看到 Loading 状态，从而改善了用户体验。不过，这个时候 react-query 同时还是会向服务器发起真实的请求的，等请求结果回来，如果数据相比缓存有变化，则会用新数据更新前端展现。react-query 提供了另一个变量来表示是否真的在向服务器进行请求，即 isFetching。与 isLoading 不同，每次发起请求时，isFetching 都是 true，不管是不是第一次。
+
+上面，我们提到，默认情况下，react-query 会将请求结果缓存 5 分钟。一般情况下，我们用这个默认值就好了，但如果你想改变这个缓存时间的话，只需要给 useQuery 传入第三个参数{cacheTime: 3000}，注意 cacheTime 是以毫秒为单位的。
+
+当然，有的时候，你可能很清楚某个接口的数据变更不频繁，此时可以允许在某个时间段内，如果 react-query 有缓存没过期的话，就直接用缓存，而无需再向服务器发起请求，这个时候，你就可以通过在第三个参数传入{staleTime: xxx}来设定在一次请求之后的多长时间内直接用缓存，而无需向后台发起真实请求。这种情况下，二次请求时 isFetching 也就将是 false。staleTime 的单位也是毫秒。
+
+常用的不仅上面两个参数，常用的参数有：
+
+- retry 失败重试次数，默认 3 次。在请求发生错误时，默认会重试 3 次，如果请求还是不成功 isError 为真。可以通过 retry 配置项更改重试次数或者禁用重试 ( false )。重试次数会增加服务器的压力，这一点务必注意！
+- refetchOnWindowFocus 当浏览器窗口重新获取焦点时，重新向服务器端发送请求同步最新状态。默认 false
+- refetchOnReconnect 网络重新连接时进行数据重新获取
+- refetchOnMount 组件挂载完成后进行数据重新获取
+- enabled 如果为“false”的话，“useQuery”不会触发，需要使用其返回的“refetch”来触发操作
+- staleTime 状态的保质期。在同步状态时，如果状态仍然在保质期内，直接从缓存中获取状态，不会在后台发送真实的请求来更新状态缓存。
+- placeholderData 在服务端状态没有加载完成前，可以使用占位符状态填充客户端缓存以提升用户体验。
+- refetchInterval 指定轮询的间隔时间，false 为不轮询。
+
+那么，如何对这些参数进行全局配置，使得对于整个应用的所有请求都生效呢？如下所示：
+
+```ts
+import { ReactQueryConfigProvider, ReactQueryProviderConfig } from 'react-query';
+
+const queryConfig: ReactQueryProviderConfig = {
+  queries: {
+    refetchOnWindowFocus: true,
+    staleTime: 2 * 60 * 1000,
+    retry: 0
+  },
+};
+
+ReactDOM.render(
+  <ReactQueryConfigProvider config={queryConfig}>
+    <App />
+  </ReactQueryConfigProvider>
+  document.getElementById('root')
+);
+```
+
+当然，这是一个非常简单的情况，更复杂的可以参考如下：
+
+```ts
+const queryClient = new QueryClient({
+  defaultOptions: {
+    // 作用于useQuery（Get方法）
+    queries: {
+      // React 节点挂载时是否重新请求
+      refetchOnMount: true,
+      // 系统网络重连之后是否重新请求
+      refetchOnReconnect: false,
+      // 当浏览器窗口重新获取焦点时，重新向服务器端发送请求同步最新状态。
+      refetchOnWindowFocus: false,
+      // 请求是否需要在固定间隔时间内再次发起，默认false
+      refetchInterval: false,
+      // react-query中Get请求的缓存时间。在这个时间之内，再次执行这个Query请求时，会先直接返回缓存的结果，同时再向服务器发出真实请求（会不会向服务器，取决于下面的staleTime的配置），请求得到的新数据回来后，有更新的话会更新UI上的数据呈现。单位，毫秒。
+      cacheTime: +process.env.REACT_APP_CACHE_TIME,
+      // 请求结果的保质期。如果请求结果仍然在保质期内，直接从缓存中获取结果，不会在后台发送真实的请求来更新请求结果的缓存。单位，毫秒。
+      staleTime: +process.env.REACT_APP_STALE_TIME,
+      // 请求失败后重试次数。注意，修改此值时需要考虑重试次数对服务器QPS的影响！
+      retry: +process.env.REACT_APP_RETRY_TIMES,
+      // 请求失败后过多久再重试。单位，毫秒。
+      retryDelay: +process.env.REACT_APP_RETRY_DELAY,
+      /**
+       * Query results by default are structurally shared to detect if data has actually changed and if not,
+       * the data reference remains unchanged to better help with value stabilization with regards to
+       * useMemo and useCallback. If this concept sounds foreign, then don't worry about it! 99.9%
+       * of the time you will not need to disable this and it makes your app more performant at zero cost to you.
+       */
+      structuralSharing: true,
+      // 统一报错入口
+      onError(error) {
+        if (error) {
+          console.error(error as Error);
+        }
+        // 可以在这里做错误的统一拦截处理
+      },
+    },
+    // 作用域useMutation（作用域Post、Put、Patch、Delete方法）
+    mutations: {
+      // 请求失败后重试次数。注意，修改此值时需要考虑重试次数对服务器QPS的影响！
+      retry: +process.env.REACT_APP_RETRY_TIMES,
+      // 请求失败后过多久再重试。单位，毫秒。
+      retryDelay: +process.env.REACT_APP_RETRY_DELAY,
+      // 统一报错入口
+      onError(error) {
+        if (error) {
+          console.error(error as Error);
+        }
+        // 可以在这里做错误的统一拦截处理
+      },
+    },
+  },
+});
+```
+
+useQuery 返回的结果中还有更多的内容，可参考如下：
+
+```ts
+const query = useQuery('myAPIName', api.returnPromise, {
+  // 初始化数据
+  initialData: {},
+  // 和上面初始化数据类似，但不会被引擎缓存
+  placeholder: {},
+});
+
+// queryObject
+const {
+  status, // loading | error | success | idle
+  isLoading,
+  isError,
+  // not start request yet
+  isIdle,
+  isSuccess,
+  // In any state, if the query is fetching at any time (including background refetching) isFetching will be true
+  isFetching,
+  error, // reject error
+  data,
+} = query;
+
+// queryCacheByKey
+// Query Keys are hashed deterministically!
+const q1 = useQuery('myAPIName', () => axios.get());
+const q2 = useQuery(['myAPIName', reqParams, appState], () =>
+  axios.get(reqParams, appState)
+);
+```
+
+在 react-query 的 DevConsole 里面可以看到 Query 的四个状态：
+
+- fresh：当前 Query 是「新鲜」的，重复命中 Query 不会重复发起请求
+- fetching：当前 Query 是正在执行请求中
+- stale：当前 Query 已然过期了，下次执行 Query 会发送请求
+- inactive：当前 Query 没有激活，默认 5 分钟后会被回收掉（从内存中移除）
+
+### 分页查询
+
+react-query 让分页变得非常的简单，同时 Cache 了数据：
+
+https://react-query.tanstack.com/guides/paginated-queries
+
+```ts
+function Todos() {
+  const [page, setPage] = React.useState(0);
+  const fetchProjects = (page: number) => axios.get('/todos');
+
+  const { isLoading, isError, error, data, isFetching, isPreviousData } =
+    useQuery(['projects', page], () => fetchProjects(page), {
+      keepPreviousData: true,
+    });
+
+  return (
+    <div>
+      {isLoading ? (
+        <div>Loading...</div>
+      ) : isError ? (
+        <div>Error: {error.message}</div>
+      ) : (
+        <div>
+          {data.projects.map((project) => (
+            <p key={project.id}>{project.name}</p>
+          ))}
+        </div>
+      )}
+      <span>Current Page: {page + 1}</span>
+      <button
+        onClick={() => setPage((old) => Math.max(old - 1, 0))}
+        disabled={page === 0}
+      >
+        Previous Page
+      </button>{' '}
+      <button
+        onClick={() => {
+          if (!isPreviousData && data.hasMore) {
+            setPage((old) => old + 1);
+          }
+        }}
+        // Disable the Next Page button until we know a next page is available
+        disabled={isPreviousData || !data?.hasMore}
+      >
+        Next Page
+      </button>
+      {isFetching ? <span> Loading...</span> : null}{' '}
+    </div>
+  );
+}
+```
+
+### 无限滚动查询
+
+https://react-query.tanstack.com/guides/infinite-queries
+
+```ts
+import { useInfiniteQuery } from 'react-query';
+
+function Projects() {
+  const fetchProjects = ({ pageParam = 0 }) =>
+    fetch('/api/projects?cursor=' + pageParam);
+
+  const {
+    data,
+    error,
+    fetchNextPage,
+    hasNextPage,
+    isFetching,
+    isFetchingNextPage,
+    status,
+  } = useInfiniteQuery('projects', fetchProjects, {
+    getNextPageParam: (lastPage, pages) => lastPage.nextCursor,
+  });
+
+  return status === 'loading' ? (
+    <p>Loading...</p>
+  ) : status === 'error' ? (
+    <p>Error: {error.message}</p>
+  ) : (
+    <>
+      {data.pages.map((group, i) => (
+        <React.Fragment key={i}>
+          {group.projects.map((project) => (
+            <p key={project.id}>{project.name}</p>
+          ))}
+        </React.Fragment>
+      ))}
+      <div>
+        <button
+          onClick={() => fetchNextPage()}
+          disabled={!hasNextPage || isFetchingNextPage}
+        >
+          {isFetchingNextPage
+            ? 'Loading more...'
+            : hasNextPage
+            ? 'Load More'
+            : 'Nothing more to load'}
+        </button>
+      </div>
+      <div>{isFetching && !isFetchingNextPage ? 'Fetching...' : null}</div>
+    </>
+  );
+}
+```
+
+上面讲的 useQuery 只能用于 Get 请求，那么，其它类型的请求怎么办呢？可以用 useMutation 操作数据，如 Post、Delete、Patch、Put 都可以用 useMutation。
+
+useMutation 的参数通常包含一个真正执行请求的异步方法，返回值第一项为逻辑完备的 mutate 异步方法。
+
+```ts
+export const useData = () => {
+  // ......
+
+  // 这是一个异步任务
+  const asyncApi = useMutation(
+    // 第一个参数为异步函数
+    async () => {
+      const res = await sleep();
+      return res.data;
+    },
+    // 第二个参数是一个配置对象，在其中处理生命周期
+    {
+      // ↓ 请求前的处理
+      onMutate: (variables) => {
+        // ↑ variables 为执行该异步任务传入的参数
+
+        // ...
+
+        // ↓ 返回值将挂载到整个生命周期的 context 上下文中
+        return { key: 'value' };
+      },
+
+      // ↓ 请求成功的处理
+      onSuccess: (data, variables, context) => {
+        // ↓ data 为异步函数的返回结果，即上文的 res.data 也就是 'result'
+        const newData = setData({
+          key2: data,
+        });
+
+        // ↓ variables 为执行该异步任务传入的参数
+        console.log('variables: ', variables);
+
+        // ↓ context 为贯穿于生命周期的上下文对象，我们在请求前的生命周期 onMutate 中给其挂载了 { key: 'value' }
+        console.log('context: ', context.key);
+      },
+
+      // ↓ 发生错误时进入的生命周期
+      onError: (err, variables, context) => {},
+
+      // ↓ 无论结果如何最后都会进入的生命周期
+      onSettled: (data, error, variables, context) => {},
+    }
+  );
+
+  return {
+    data,
+    setData,
+    asyncApi,
+  };
+};
+```
+
+### 应用实践
+
+在使用时，注意将接口的封装和 hook 的封装分层处理，这样层次清晰。
+第一层是对于 axios 或者 fetch 的封装；
+第二层是基于第二层的封装所做的接口的封装；
+第三层是基于第二层用 useQuery 或 useMutation 将接口封装成一个个的 hook。每个文件一个 hook。
+
+src\features\myApps\hooks\useGetAppList.ts
+
+```tsx
+import { useQuery } from 'react-query';
+import { request } from '../../../common/utils';
+import { prefix } from './prefix';
+
+// 类型声明
+export interface GetAppListParams {
+  title: string;
+  pageSize: number;
+  offset: number;
+}
+
+export interface GetAppListResult {
+  data: {
+    title: string;
+    description: string;
+    icon: string;
+    themeColor: number;
+    status: number;
+    id: number;
+  }[];
+  offset: number;
+  pageSize: number;
+}
+
+// 接口封装层
+export const getAppList = async (params: GetAppListParams) => {
+  const res = await request({
+    method: 'get',
+    url: '/app/list',
+    params,
+  });
+
+  return res.data as GetAppListResult | undefined;
+};
+
+// hook封装层
+export const useGetAppList = (params: GetAppListParams) => {
+  return useQuery([prefix('getAppList'), params], async () => {
+    return await getAppList(params);
+  });
+};
+```
+
+src\features\myApps\hooks\useDeleteApp.ts
+
+```tsx
+import { message } from 'antd';
+import { useMutation } from 'react-query';
+import { request } from '../../../common/utils';
+import { MutationParams } from '../../../common/types';
+
+// 类型声明
+export interface DeleteAppParams extends MutationParams {
+  id: number;
+}
+export interface DeleteAppResult {
+  data: {
+    isSuccess: boolean;
+  };
+}
+
+// 接口封装层
+export const deleteApp = async (params: DeleteAppParams) => {
+  const result = await request({
+    method: 'delete',
+    url: `/app/${params.id}`,
+  });
+
+  return result.data as DeleteAppResult | undefined;
+};
+
+// hook封装层
+export const useDeleteApp = () => {
+  return useMutation((params: DeleteAppParams) => deleteApp(params), {
+    onSuccess(data, variables, context) {
+      message.success('删除成功！');
+      // 执行传入的成功回调
+      variables.onSuccess && variables.onSuccess();
+    },
+    onError(err: Error, variables, context) {
+      console.error('删除失败', err.message);
+      message.error('删除失败！');
+      // 执行传入的失败回调
+      variables.onError && variables.onError();
+    },
+  });
+};
+```
+
+调用：
+
+```tsx
+const {
+  isLoading,
+  isError,
+  data: appList,
+} = useGetAppList({
+  title: keyword,
+  pageSize: 30,
+  offset: 0,
+});
+const generateApps = () => {
+  if (isLoading) {
+    return (
+      <div className="loading">
+        <Spin></Spin>
+      </div>
+    );
+  }
+
+  if (isError) {
+    return <div className="error-tip">服务器开小差了，请稍后重试~</div>;
+  }
+
+  if (!appList.data.length) {
+    return <Empty description="没有满足条件的应用"></Empty>;
+  }
+
+  return appList.data.map((item) => {
+    const tagMap = {
+      '0': <Tag className="deleted">已删除</Tag>,
+      '1': <Tag className="offline">未启用</Tag>,
+      '2': <Tag className="online">已启用</Tag>,
+    };
+    const tag = tagMap[item.status];
+
+    const handleDeleteSuccess = () => {
+      appListQuery.refetch();
+    };
+
+    return (
+      <a className="app-card" key={item.id} href={`/app/${item.id}/admin/123`}>
+        <div className="header">
+          <div className="icon">
+            <ChromeOutlined />
+          </div>
+          <div className="title">{item.title}</div>
+        </div>
+        <p className="description">
+          <Tooltip
+            title={item.description}
+            placement="bottom"
+            mouseEnterDelay={0.3}
+          >
+            {item.description}
+          </Tooltip>
+        </p>
+
+        <div className="footer">
+          {tag}
+          <AppOperationDropdown
+            id={item.id}
+            onDeleteSuccess={handleDeleteSuccess}
+          />
+        </div>
+      </a>
+    );
+  });
+};
+
+return <div className="my-apps-app-list">{generateApps()}</div>;
+```
+
+参考：
+react-query 在项目中的架构封装设计（大量实践经验）
+https://blog.csdn.net/qq_21567385/article/details/117408650?spm=1001.2014.3001.5502
+
+react-query 请求服务器状态管理配置、query 查询请求、query 设置过期、预拉取、缓存读取等设置
+https://blog.csdn.net/weixin_43294560/article/details/114856693?ops_request_misc=%257B%2522request%255Fid%2522%253A%2522164416873916781683952154%2522%252C%2522scm%2522%253A%252220140713.130102334.pc%255Fall.%2522%257D&request_id=164416873916781683952154&biz_id=0&utm_medium=distribute.pc_search_result.none-task-blog-2~all~first_rank_ecpm_v1~rank_v31_ecpm-1-114856693.pc_search_insert_ulrmf&utm_term=react-query&spm=1018.2226.3001.4187
+
+https://www.yuque.com/cmint/grk2lw/qvhiaa#381589be
+一个翻译文档（还没完全翻译完）
+https://www.yuque.com/quanscheng/react-query/ifa2bi
+https://zhuanlan.zhihu.com/p/261146977
+https://www.bilibili.com/video/BV1qq4y1F7BM?spm_id_from=333.999.0.0
+https://juejin.cn/post/6937833844837974053
+Practical React Query
+https://tkdodo.eu/blog/practical-react-query
+https://codemachine.dev/things-i-learned-while-using-react-query-part-1
+
+## export interface from xxx 的报错
+
+我们在./create.ts 中定义了函数 createApp 和 接口 CreateAppParams、CreateAppResult，但在使用 export { createApp, CreateAppParams, CreateAppResult } from './createApp'; 进行导出的时候，出现了报错，与函数的导出不同，对接口需要用 export type 来单独进行重新导出。
+
+```ts
+export { createApp } from './createApp';
+export type { CreateAppParams, CreateAppResult } from './createApp';
+```
+
+## ant design 的 Dropdown 组件中的 overlay 里面的 menu 标签，不可以单独提到另外一个组件中进行封装，否则会出现 Menu 部分样式丢失。
+
+下面的 overlay 的内容不可以提取到单独的组件中，否则会导致 Menu 的部分样式丢失，如 box-shadow、item 的 hover 态等，这个问题比较奇怪
+
+```tsx
+<Dropdown
+  overlay={
+    <Menu className="my-apps-app-operation-dropdown" onClick={handleMenuClick}>
+      <Menu.Item key={1}>
+        <Button type="link" icon={<SettingOutlined />}>
+          应用设置
+        </Button>
+      </Menu.Item>
+      <Menu.Item key={2}>
+        <Button type="link" icon={<EyeOutlined />}>
+          访问应用
+        </Button>
+      </Menu.Item>
+      {/* <Menu.Item key={3}>
+      <Button type="link" icon={<CopyOutlined />}>复制应用</Button>
+    </Menu.Item> */}
+      <Menu.Item key={4}>
+        <Button
+          type="link"
+          icon={<DeleteOutlined />}
+          style={{ color: 'rgb(255, 82, 25)' }}
+          loading={deleteAppMutation.isLoading}
+        >
+          删除应用
+        </Button>
+      </Menu.Item>
+    </Menu>
+  }
+  placement="bottomCenter"
+>
+  <EllipsisOutlined onClick={handleEllipsisClick} />
+</Dropdown>
+```

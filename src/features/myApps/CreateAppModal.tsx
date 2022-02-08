@@ -1,6 +1,6 @@
 import { Button, Modal, Form, Input, Radio, message } from 'antd';
 import { useState } from 'react';
-import api from './apis';
+import { useCreateApp } from './hooks';
 // import { AppThemeColor } from './types';
 import './CreateAppModal.less';
 
@@ -10,8 +10,12 @@ import './CreateAppModal.less';
 //   description: string,
 //   themeColor: AppThemeColor,
 // }
+interface CreateAppModalParams {
+  onSuccess: () => void;
+}
 
-export default function CreateAppModal() {
+export default function CreateAppModal({ onSuccess }: CreateAppModalParams) {
+  const { mutate: createApp } = useCreateApp();
   const [form] = Form.useForm();
   const [isModalVisible, setIsModalVisible] = useState(false);
   const showModal = () => {
@@ -26,19 +30,10 @@ export default function CreateAppModal() {
       );
       values.creatorId = JSON.parse(userInfo).id;
 
-      api
-        .createApp(values)
-        .then((res) => {
-          if (res.code === 0) {
-            message.success('创建成功！');
-            return;
-          }
-
-          message.success('创建失败！');
-        })
-        .catch((err) => {
-          message.error(`创建失败：${err.message}`);
-        });
+      createApp({
+        ...values,
+        onSuccess,
+      });
       setIsModalVisible(false);
     } catch (err) {
       console.log('校验失败', JSON.stringify(err));
