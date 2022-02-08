@@ -5,10 +5,10 @@ import { useCreateApp } from './hooks';
 import './CreateAppModal.less';
 
 // interface App {
-//   title: string,
-//   icon: string,
-//   description: string,
-//   themeColor: AppThemeColor,
+//   title: string;
+//   icon: string;
+//   description: string;
+//   themeColor: AppThemeColor;
 // }
 interface CreateAppModalParams {
   onSuccess: () => void;

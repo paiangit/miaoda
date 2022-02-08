@@ -20,6 +20,7 @@ export interface GetAppListResult {
   }[];
   offset: number;
   pageSize: number;
+  totalCount: number;
 }
 
 // 接口封装层
@@ -34,8 +35,8 @@ export const getAppList = async (params: GetAppListParams) => {
 };
 
 // hook封装层
-export const useGetAppList = (params: GetAppListParams) => {
-  return useQuery([prefix('getAppList'), params], async () => {
+export const useGetAppList = (params: GetAppListParams, options) => {
+  return useQuery([prefix('getAppList'), params, options], async () => {
     return await getAppList(params);
   });
 };

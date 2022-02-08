@@ -2,9 +2,11 @@
 @import '../../styles/mixins.less';
 
 .my-apps-app-list {
-  display: flex;
-  flex-wrap: wrap;
-  gap: 16px;
+  .list {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 16px;
+  }
 
   .loading {
     width: 100%;
@@ -127,5 +129,11 @@
   .deleted {
     background: rgb(82 82 82 / 12%);
     color: #939393;
+  }
+
+  .pagination {
+    margin-top: 40px;
+    display: flex;
+    justify-content: center;
   }
 }
