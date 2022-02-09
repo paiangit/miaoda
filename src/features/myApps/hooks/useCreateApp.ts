@@ -1,22 +1,10 @@
 import { message } from 'antd';
 import { useMutation } from 'react-query';
 import { request } from '../../../common/utils';
-import { MutationParams } from '../../../common/types';
+import { App, MutationParams } from '../../../common/types';
 
 // 类型声明
-export interface CreateAppParams extends MutationParams {
-  title: string;
-  description: string;
-  icon: string;
-  themeColor: number;
-}
-
-export interface CreateAppResult {
-  title: string;
-  description: string;
-  icon: string;
-  themeColor: number;
-}
+export type CreateAppParams = App & MutationParams;
 
 // 接口封装层
 export const createApp = async (params: CreateAppParams) => {
@@ -26,7 +14,7 @@ export const createApp = async (params: CreateAppParams) => {
     data: params,
   });
 
-  return result.data as CreateAppResult | undefined;
+  return result.data as App | undefined;
 };
 
 // hook封装层

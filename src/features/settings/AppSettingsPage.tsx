@@ -1,28 +1,20 @@
-import { useState, useEffect } from 'react';
+import { useEffect } from 'react';
 import { useParams } from 'react-router-dom';
-import { Form, Input, Radio, Button, message } from 'antd';
-import apis from './apis';
-import { useMount, useDocumentTitle } from '../../common/hooks';
+import { Form, Input, Radio, Button, Spin } from 'antd';
+import { useDocumentTitle } from '../../common/hooks';
+import { useGetApp, useUpdateApp } from './hooks';
 import './AppSettingsPage.less';
 
 export default function AppSettingsPage() {
   useDocumentTitle('设置应用');
 
   const params = useParams();
-  const [initialInfo, setInitialInfo] = useState({});
   const [form] = Form.useForm();
-
-  useMount(() => {
-    apis
-      .getApp(params.appId)
-      .then((res) => {
-        console.log(res.data);
-        setInitialInfo(res.data);
-      })
-      .catch((err) => {
-        console.log(err);
-      });
-  });
+  const appId = Number(params.appId);
+  const getAppQuery = useGetApp(appId);
+  const { isLoading, isError, data: initialInfo, refetch } = getAppQuery;
+  const updateAppMutation = useUpdateApp(appId);
+  const { mutate: updateApp } = updateAppMutation;
 
   const layout = {
     labelCol: { span: 8 },
@@ -37,16 +29,12 @@ export default function AppSettingsPage() {
   };
 
   const handleFinish = (values) => {
-    api
-      .updateApp(params.appId, values)
-      .then((res) => {
-        if (res.code === 0) {
-          message.success('保存成功！');
-        }
-      })
-      .catch((err) => {
-        message.error(`保存失败：${err.message}！`);
-      });
+    updateApp({
+      data: values,
+      // onSuccess: () => {
+      //   refetch();
+      // },
+    });
   };
 
   const handleReset = () => {
@@ -58,6 +46,21 @@ export default function AppSettingsPage() {
     // 见：https://stackoverflow.com/questions/62336340/cannot-update-a-component-while-rendering-a-different-component-warning
     form.setFieldsValue(initialInfo);
   }, [initialInfo]);
+
+  if (isLoading) {
+    return <Spin></Spin>;
+  }
+
+  if (isError) {
+    const handleClick = () => window.location.reload();
+
+    return (
+      <div>
+        服务器开小差了，请稍侯重试~
+        <Button type="primary" onClick={handleClick}></Button>
+      </div>
+    );
+  }
 
   return (
     <div className="settings-app-settings">

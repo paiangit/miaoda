@@ -1,5 +1,6 @@
 import { useQuery } from 'react-query';
 import { request } from '../../../common/utils';
+import { App } from '../../../common/types';
 import { prefix } from './prefix';
 
 // 类型声明
@@ -10,14 +11,7 @@ export interface GetAppListParams {
 }
 
 export interface GetAppListResult {
-  data: {
-    title: string;
-    description: string;
-    icon: string;
-    themeColor: number;
-    status: number;
-    id: number;
-  }[];
+  data: App[];
   offset: number;
   pageSize: number;
   totalCount: number;

@@ -1,15 +1,8 @@
 import { Button, Modal, Form, Input, Radio, message } from 'antd';
 import { useState } from 'react';
 import { useCreateApp } from './hooks';
-// import { AppThemeColor } from './types';
 import './CreateAppModal.less';
 
-// interface App {
-//   title: string;
-//   icon: string;
-//   description: string;
-//   themeColor: AppThemeColor;
-// }
 interface CreateAppModalParams {
   onSuccess: () => void;
 }
