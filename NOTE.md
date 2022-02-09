@@ -3514,3 +3514,39 @@ interface AppListProps {
   );
 }
 ```
+
+## 组件被卸载后，调用设置组件状态报错 Warning: Can't perform a React state update on an unmounted component
+
+比如，我们发出一个请求，等 3S 后请求返回，但是这时用户已经切换到别的页面去了，原先请求数据的组件也就被卸载了，但数据请求成功后，还会去更新数据（比如，setData），这个时候，就会出现上面这个错误。该怎么解决呢，就是写一个 hook，维护一个组件是否已加载或已卸载的 Ref。
+
+src\common\hooks\useMountedRef.ts
+
+```ts
+import { useEffect, useRef } from 'react';
+
+/**
+ * 返回组件的挂载状态，如果还没有挂载或者已经被卸载，则返回false，否则返回true
+ */
+export const useMountedRef = () => {
+  const mountedRef = useRef(false);
+
+  useEffect(() => {
+    mountedRef.current = true;
+
+    return () => {
+      mountedRef.current = false;
+    };
+  });
+
+  return mountedRef;
+};
+```
+
+然后，像如下这样使用：
+
+```tsx
+const mountedRef = useMountedRef();
+
+// 在组件已经被卸载时，不再调用setData
+mountedRef && setData(xxx);
+```

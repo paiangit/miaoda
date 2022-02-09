@@ -1,4 +1,5 @@
 import { useState } from 'react';
+import { useMountedRef } from './index';
 
 interface State<D> {
   status: 'idle' | 'loading' | 'success' | 'error';
@@ -25,6 +26,7 @@ export function useAsync<D>(
     ...initialState,
   });
   const config = { ...defaultConfig, ...initialConfig };
+  const mountedRef = useMountedRef();
 
   const setData = (data: D) =>
     setState({
@@ -50,7 +52,8 @@ export function useAsync<D>(
 
     return promise
       .then((data) => {
-        setData(data);
+        // 在组件已经被卸载时，不再调用setData
+        mountedRef.current && setData(data);
         return data;
       })
       .catch((error) => {
