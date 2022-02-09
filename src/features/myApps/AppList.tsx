@@ -1,17 +1,16 @@
-import { useState, useEffect } from 'react';
+import { useState } from 'react';
 import { Empty, Tag, Tooltip, Spin, Pagination } from 'antd';
 import { ChromeOutlined } from '@ant-design/icons';
-import { useMount } from '../../common/hooks';
 import AppOperationDropdown from './AppOperationDropdown';
 import { useGetAppList } from './hooks';
 import './AppList.less';
 
 interface AppListProps {
   keyword: string;
-  setQuery: React.Dispatch<any>;
+  setRefetch: (fetch) => void;
 }
 
-export default function AppList({ keyword, setQuery }: AppListProps) {
+export default function AppList({ keyword, setRefetch }: AppListProps) {
   const defaultCurrentPage = 1;
   const defaultPageSize = 2;
   const [page, setPage] = useState(defaultCurrentPage);
@@ -26,11 +25,9 @@ export default function AppList({ keyword, setQuery }: AppListProps) {
       keepPreviousData: true,
     }
   );
-  const { isLoading, isError, data: appList } = appListQuery;
+  const { isLoading, isError, data: appList, refetch } = appListQuery;
 
-  useMount(() => {
-    setQuery(appListQuery);
-  });
+  setRefetch(refetch);
 
   const generateApps = () => {
     if (isLoading) {
@@ -58,7 +55,7 @@ export default function AppList({ keyword, setQuery }: AppListProps) {
       const tag = tagMap[item.status];
 
       const handleDeleteSuccess = () => {
-        appListQuery.refetch();
+        refetch();
       };
 
       return (

@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useState, useRef } from 'react';
 import AppList from './AppList';
 import SearchPanel from './SearchPanel';
 import CreateAppModal from './CreateAppModal';
@@ -9,10 +9,13 @@ export default function AppListPage() {
   useDocumentTitle('应用列表', false);
 
   const [keyword, setKeyword] = useState('');
-  const [query, setQuery] = useState(null);
+  const refetchRef = useRef(null);
+  const setRefetchRef = (newRefetch) => {
+    refetchRef.current = newRefetch;
+  };
 
   const handleCreateSuccess = () => {
-    query.refetch();
+    refetchRef.current && refetchRef.current();
   };
 
   return (
@@ -20,7 +23,7 @@ export default function AppListPage() {
       <div className="my-apps-app-list-page">
         <CreateAppModal onSuccess={handleCreateSuccess} />
         <SearchPanel keyword={keyword} setKeyword={setKeyword} />
-        <AppList keyword={keyword} setQuery={setQuery} />
+        <AppList keyword={keyword} setRefetch={setRefetchRef} />
       </div>
     </>
   );
