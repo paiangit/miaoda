@@ -3550,3 +3550,53 @@ const mountedRef = useMountedRef();
 // 在组件已经被卸载时，不再调用setData
 mountedRef && setData(xxx);
 ```
+
+## useCallback
+
+一个非状态（即非 state）且非基本数据类型的数据，是不能放在 useEffect 的依赖（useEffect 的第二个参数）里的，否则会造成无限循环渲染。之所以会重新渲染，是因为每次渲染的时候，这个非状态且非基本数据类型的数据都会重新创建，从而在新旧两个变量在进行浅比较的时候不相等，从而就会重新渲染。
+
+但是，当你在 useEffect 的第一个函数，在这个函数内部使用了某个非状态且非基本数据类型的变量，而这个变量却没有在 useEffect 的第二个参数里面的时候，Eslint 会报错。但是若将这个变量放进第二个参数中，则又会造成无线循环渲染。怎么办呢？
+
+要想把这个变量加入到 useEffect 的第二个参数中，我们就需要把这个变量变成不是每次渲染都变化的变量。怎么变呢？可以用 useMemo 进行包裹，也可以用 useCallback 进行包裹。useCallback 是特殊版本的 useMemo。
+
+其使用方法如下，仍然是第二个参数传入被依赖的项。这样，第二个参数就是依赖项。
+
+```ts
+const startEdit = useCallback(
+  (id: number) => {
+    setEditingTaskId({ editingTaskId: id });
+  },
+  [setEditingTaskId]
+);
+```
+
+例如，上面这个函数，setEditingTaskId 是依赖项，这意味着，setEditingTaskId 变化时，startEdit 会被更新。其它时候，startEdit 不会被更新。
+
+值得注意的是，如果你在 useCallback 的依赖项里面依赖了某个 state，而在 useCallback 的函数体内，又对这个 state 进行了设置，也会导致循环渲染，例如，下面这样：
+
+```ts
+const startEdit = useCallback(
+  (id: number) => {
+    setEditingTaskId({ editingTaskId: id });
+    setState(...state, status: 'loading')
+  },
+  [setEditingTaskId, state]
+);
+```
+
+那怎么办呢？可以用到 setState 接收函数的做法，接收一个函数，从而获得变更前的 state，这样就不再依赖于 state 了，所以也就没必要传入 state 这个依赖项了。
+
+```ts
+const startEdit = useCallback(
+  (id: number) => {
+    setEditingTaskId({ editingTaskId: id });
++    setState(prevState => ({
++      ...prevState,
++      status: 'loading',
++    }))
+  },
++  [setEditingTaskId]
+);
+```
+
+当你在写的自定义 hook，返回的内容里面有函数的时候，大概率你是需要用 useCallback 给它包裹一层的，否则别人在 useEffect 里面使用你这个函数的时候，Eslint 就会报错说要把它加入到依赖之中，而如果对方按要求加入进去的话，就会导致循环渲染，而如果不加入的话，又会出现 Eslint 报错。
