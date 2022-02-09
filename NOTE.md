@@ -3177,17 +3177,179 @@ export type { CreateAppParams, CreateAppResult } from './createApp';
 </Dropdown>
 ```
 
-## 给 useState 传入函数
+## 以一个函数作为状态（state）
 
-给 useState 传入函数有特殊的意义，它的意义就是惰性初始化。什么是惰性初始化呢，就是当某一个初始化的动作耗时很长时，就需要惰性初始化。
+想要把一个函数作为状态，应该怎么做呢，首先你可能想到的是给 useState 传入一个函数作为初始值。
 
-因为给 useState 传入函数的默认意义是进行惰性初始化，也就是说，这个函数会立即执行一次，而不是我们所理解的给一个 state 设置初始值为这个函数。这就导致一个问题，如果我们就是想给某个状态初始值设置成一个函数，那应该怎么办呢？
+但是，其实直接给 useState() 传入函数是有特殊的意义，它的意义就是惰性初始化。什么是惰性初始化呢？就是当某一个初始化的动作耗时很长时，就需要惰性初始化。也就是说，传入 useState()的这个函数会立即执行一次，而不是我们所理解的给一个 state 设置初始值为这个函数。这就导致一个问题，如果我们就是想给某个状态初始值设置成一个函数，那应该怎么办呢？
 
 有两个办法：
 
-方法 1，给这个函数外面再套一层，函数，然后在函数内部返回这个函数，这样就可以在惰性初始化时，虽然被执行了一次，但得到的初始值仍然是一个函数。
+方法 1，给这个函数外面再套一层，函数，然后在函数内部返回这个函数，这样就可以在惰性初始化时，虽然被执行了一次，但得到的初始值仍然是一个函数。另外要注意的是，在 setXxx 设置状态的时候，对于传入的函数外面也要包裹一层，以真正想要设置的函数作为其返回值。
+
+src\features\myApps\AppListPage.tsx
+
+```tsx
+import { useState, useRef } from 'react';
+import AppList from './AppList';
+import SearchPanel from './SearchPanel';
+import CreateAppModal from './CreateAppModal';
+import { useDocumentTitle } from '../../common/hooks';
+import './AppListPage.less';
+
+export default function AppListPage() {
+  useDocumentTitle('应用列表', false);
+
+  const [keyword, setKeyword] = useState('');
++  const [refetch, setRefetch] = useState(() => () => {}); // 注意这里不能直接传入目标函数（直接传入函数是惰性初始化），而是要传入一个返回目标函数的函数
+
+  const handleCreateSuccess = () => {
+    refetch();
+  };
+
+  return (
+    <>
+      <div className="my-apps-app-list-page">
+        <CreateAppModal onSuccess={handleCreateSuccess} />
+        <SearchPanel keyword={keyword} setKeyword={setKeyword} />
+        <AppList keyword={keyword} setRefetch={setRefetch} />
+      </div>
+    </>
+  );
+}
+```
+
+src\features\myApps\AppList.tsx
+
+```tsx
+import { useState } from 'react';
+import { Empty, Tag, Tooltip, Spin, Pagination } from 'antd';
+import { ChromeOutlined } from '@ant-design/icons';
+import AppOperationDropdown from './AppOperationDropdown';
++ import { useMount } from '../../common/hooks';
+import { useGetAppList } from './hooks';
+import './AppList.less';
+
+interface AppListProps {
+  keyword: string;
+  setRefetch: (fetch) => void;
+}
+
+export default function AppList({ keyword, setRefetch }: AppListProps) {
+  const defaultCurrentPage = 1;
+  const defaultPageSize = 2;
+  const [page, setPage] = useState(defaultCurrentPage);
+  const [pageSize, setPageSize] = useState(defaultPageSize);
+  const appListQuery = useGetAppList(
+    {
+      title: keyword,
+      pageSize,
+      offset: (page - 1) * pageSize,
+    },
+    {
+      keepPreviousData: true,
+    }
+  );
+  const { isLoading, isError, data: appList, refetch } = appListQuery;
+
++  useMount(() => setRefetch(() => refetch)); //  注意这里不能直接传入函数，而是要传入一个返回目标函数的函数
+
+  const generateApps = () => {
+    if (isLoading) {
+      return (
+        <div className="loading">
+          <Spin></Spin>
+        </div>
+      );
+    }
+
+    if (isError) {
+      return <div className="error-tip">服务器开小差了，请稍后重试~</div>;
+    }
+
+    if (!appList.data.length) {
+      return <Empty description="没有满足条件的应用"></Empty>;
+    }
+
+    return appList.data.map((item) => {
+      const tagMap = {
+        '0': <Tag className="deleted">已删除</Tag>,
+        '1': <Tag className="offline">未启用</Tag>,
+        '2': <Tag className="online">已启用</Tag>,
+      };
+      const tag = tagMap[item.status];
+
+      const handleDeleteSuccess = () => {
+        refetch();
+      };
+
+      return (
+        <a
+          className="app-card"
+          key={item.id}
+          href={`/app/${item.id}/admin/123`}
+        >
+          <div className="header">
+            <div className="icon">
+              <ChromeOutlined />
+            </div>
+            <div className="title">{item.title}</div>
+          </div>
+          <p className="description">
+            <Tooltip
+              title={item.description}
+              placement="bottom"
+              mouseEnterDelay={0.3}
+            >
+              {item.description}
+            </Tooltip>
+          </p>
+
+          <div className="footer">
+            {tag}
+            <AppOperationDropdown
+              id={item.id}
+              onDeleteSuccess={handleDeleteSuccess}
+            />
+          </div>
+        </a>
+      );
+    });
+  };
+
+  const handlePageChange = (pageNumber) => {
+    setPage(pageNumber);
+  };
+
+  const handlePageSizeChange = (pageSize) => {
+    setPageSize(pageSize);
+  };
+
+  const genPagination = () => {
+    return (
+      <Pagination
+        showQuickJumper
+        defaultCurrent={defaultCurrentPage}
+        defaultPageSize={defaultPageSize}
+        total={appList?.totalCount || 0}
+        onChange={handlePageChange}
+        onShowSizeChange={handlePageSizeChange}
+      />
+    );
+  };
+
+  return (
+    <div className="my-apps-app-list">
+      <div className="list">{generateApps()}</div>
+      <div className="pagination">{genPagination()}</div>
+    </div>
+  );
+}
+```
 
 方法 2，用 useRef 包裹这个函数，然后修改这个 Ref 的时候用 xxxRef.current = yyy。
+
+注意，Ref 的改变是不会触发组件重新渲染的，所以会有下面这第 17 行标注的特别注意事项！
 
 src\features\myApps\AppListPage.tsx
 
@@ -3209,6 +3371,7 @@ export default function AppListPage() {
 +  }
 
   const handleCreateSuccess = () => {
+     // 注意！！！这里要现获取refetchRef.current，而不能在外面定义一个变量保存refetchRef.current，然后直接使用这个变量。这是因为，Ref的改变是不会触发重新渲染的，所以那个变量的值会一直是初次渲染的时候读到的refetchRef.current
 +    refetchRef.current && refetchRef.current();
   };
 
