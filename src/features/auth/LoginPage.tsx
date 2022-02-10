@@ -24,8 +24,8 @@ export default function LoginPage() {
           );
           message.success('登录成功');
           setTimeout(() => {
-            navigate(`/user/${id}/profile`);
-          }, 3000);
+            navigate(`/user/${id}/myApps`);
+          }, 2000);
         }
       }
     });
