@@ -2,7 +2,6 @@ import { useQuery } from 'react-query';
 import { request } from '../../../common/utils';
 import { App } from '../../../common/types';
 import { GetAppListQueryKey } from '../keys';
-import { defaultCurrentPage, defaultPageSize } from '../const';
 
 // 类型声明
 export interface GetAppListResult {
@@ -30,13 +29,7 @@ export const useGetAppList = (
 ) => {
   const [key, params] = getAppListQueryKey;
 
-  // if (params.offset == null) {
-  //   params.offset = defaultCurrentPage * defaultPageSize;
-  // }
-  // if (!params.pageSize) {
-  //   params.pageSize = defaultPageSize;
-  // }
-  debugger;
+  console.log(params);
 
   return useQuery(
     getAppListQueryKey,

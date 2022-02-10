@@ -2915,8 +2915,11 @@ https://react-query.tanstack.com/guides/infinite-queries
 import { useInfiniteQuery } from 'react-query';
 
 function Projects() {
-  const fetchProjects = ({ pageParam = 0 }) =>
-    fetch('/api/projects?cursor=' + pageParam);
+  const fetchProjects = async (pg, limit) => {
+    const offset = (pg - 1) * limit;
+    const res = await axios.get(`/posts?offset=${offset}&limit=${limit}`);
+    return res.data;
+  };
 
   const {
     data,
@@ -2926,9 +2929,15 @@ function Projects() {
     isFetching,
     isFetchingNextPage,
     status,
-  } = useInfiniteQuery('projects', fetchProjects, {
-    getNextPageParam: (lastPage, pages) => lastPage.nextCursor,
-  });
+  } = useInfiniteQuery(
+    'projects',
+    ({ pageParam = 1 }) => fetchProjects(pageParam, id, 20),
+    {
+      getNextPageParam: (lastGroup, allGroups) => {
+        return lastGroup?.nextPage || null;
+      },
+    }
+  );
 
   return status === 'loading' ? (
     <p>Loading...</p>
@@ -2959,6 +2968,19 @@ function Projects() {
     </>
   );
 }
+```
+
+**预取下一页：queryClient.prefetchQuery**
+
+```ts
+// Prefetch the next page!
+React.useEffect(() => {
+  if (data?.hasMore) {
+    queryClient.prefetchQuery(['projects', page + 1], () =>
+      fetchProjects(page + 1)
+    );
+  }
+}, [data, page, queryClient]);
 ```
 
 上面讲的 useQuery 只能用于 Get 请求，那么，其它类型的请求怎么办呢？可以用 useMutation 操作数据，如 Post、Delete、Patch、Put 都可以用 useMutation。
@@ -4155,3 +4177,13 @@ useEffect(() => {
   }, 0);
 }, [initialInfo, form]);
 ```
+
+## Ant Design 的当前页改变和 pageSize 改变都会触发 onChange
+
+官方 API 可以看出，onShowSizeChange -> function(currentPage, pageSize) 回调的参数为当前页码和改变后的 pageSize；onChange -> function(currentPage, pageSize) 由回调的参数可以看出，当当前页码和 pageSize 发生改变时，均会触发 onChange 回调。这就是当改变 pageSize 时，会触发 onShowSizeChange 一次，然后触发 onChange。
+
+综上：
+
+当给分页设置了 currentPage 和 pageSize 两个属性值后，切换页码和 pageSize 时，只需要指定 onChange 回调就可以了。
+
+我在初次改变 pageSize 时，onChange 里面接收到的 currentPage 是 0，不知道是受到什么的影响。后来，为了解决这个问题，我在 onChange 里面判断了一下，如果 currentPage 是小于等于 0，就把它变成 1。

@@ -1,4 +1,4 @@
-import { useCallback, useEffect, useState } from 'react';
+import { useCallback } from 'react';
 import { Empty, Tag, Tooltip, Spin, Pagination } from 'antd';
 import { ChromeOutlined } from '@ant-design/icons';
 import { useUrlQueryParams, useMount } from '../../common/hooks';
@@ -22,36 +22,26 @@ export default function AppList({ keyword, setRefetch }: AppListProps) {
 
   useMount(() => {
     setUrlQueryParams({
-      ...urlQueryParams,
       page: defaultCurrentPage,
       pageSize: defaultPageSize,
+      keyword,
     });
+    console.log('mount');
   });
 
-  const getAppListQueryKey = useGetAppListQueryKey();
-  const appListQuery = useGetAppList(getAppListQueryKey, {
+  const appListQuery = useGetAppList(useGetAppListQueryKey(), {
     keepPreviousData: true,
   });
   const { isLoading, isError, data: appList, refetch } = appListQuery;
 
   const handlePageChange = useCallback(
-    (pageNumber) => {
+    (pageNumber, pageSize) => {
       setUrlQueryParams({
-        ...urlQueryParams,
-        page: pageNumber,
-      });
-    },
-    [setUrlQueryParams, urlQueryParams]
-  );
-
-  const handlePageSizeChange = useCallback(
-    (pageSize) => {
-      setUrlQueryParams({
-        ...urlQueryParams,
+        page: Math.max(pageNumber, 1),
         pageSize,
       });
     },
-    [setUrlQueryParams, urlQueryParams]
+    [setUrlQueryParams]
   );
 
   setRefetch(refetch);
@@ -123,11 +113,11 @@ export default function AppList({ keyword, setRefetch }: AppListProps) {
     return (
       <Pagination
         showQuickJumper
+        showSizeChanger
         defaultCurrent={defaultCurrentPage}
         defaultPageSize={defaultPageSize}
         total={appList?.totalCount || 0}
         onChange={handlePageChange}
-        onShowSizeChange={handlePageSizeChange}
       />
     );
   };
@@ -139,3 +129,5 @@ export default function AppList({ keyword, setRefetch }: AppListProps) {
     </div>
   );
 }
+
+// AppList.whyDidYouRender = true;
