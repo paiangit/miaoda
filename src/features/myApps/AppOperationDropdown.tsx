@@ -26,7 +26,7 @@ export default function AppOperationDropDown({
   onDeleteSuccess,
 }: AppOperationDropDownProps) {
   const deleteAppMutation = useDeleteApp();
-  const { mutate: deleteApp } = deleteAppMutation;
+  const { mutateAsync: deleteApp } = deleteAppMutation;
   const navigate = useNavigate();
   const handleMenuClick = (e) => {
     const { key } = e;
@@ -45,10 +45,7 @@ export default function AppOperationDropDown({
         break;
       case 4:
         // 删除应用
-        deleteApp({
-          id,
-          onSuccess: onDeleteSuccess,
-        });
+        deleteApp(id).then(onDeleteSuccess);
         break;
       default:
         break;

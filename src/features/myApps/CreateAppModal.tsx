@@ -8,7 +8,7 @@ interface CreateAppModalParams {
 }
 
 export default function CreateAppModal({ onSuccess }: CreateAppModalParams) {
-  const { mutate: createApp } = useCreateApp();
+  const { mutateAsync: createApp } = useCreateApp();
   const [form] = Form.useForm();
   const [isModalVisible, setIsModalVisible] = useState(false);
   const showModal = () => {
@@ -23,9 +23,10 @@ export default function CreateAppModal({ onSuccess }: CreateAppModalParams) {
       );
       values.creatorId = JSON.parse(userInfo).id;
 
-      createApp({
-        ...values,
-        onSuccess,
+      createApp(values).then(() => {
+        onSuccess();
+        // 清空表单
+        form.resetFields();
       });
       setIsModalVisible(false);
     } catch (err) {

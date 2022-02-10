@@ -1,4 +1,4 @@
-import { useEffect } from 'react';
+import { useEffect, useCallback } from 'react';
 import { useParams } from 'react-router-dom';
 import { Form, Input, Radio, Button, Spin } from 'antd';
 import { useDocumentTitle } from '../../common/hooks';
@@ -12,9 +12,9 @@ export default function AppSettingsPage() {
   const [form] = Form.useForm();
   const appId = Number(params.appId);
   const getAppQuery = useGetApp(appId);
-  const { isLoading, isError, data: initialInfo, refetch } = getAppQuery;
+  const { isLoading, isError, data: initialInfo } = getAppQuery;
   const updateAppMutation = useUpdateApp(appId);
-  const { mutate: updateApp } = updateAppMutation;
+  const { mutateAsync: updateApp } = updateAppMutation;
 
   const layout = {
     labelCol: { span: 8 },
@@ -29,12 +29,7 @@ export default function AppSettingsPage() {
   };
 
   const handleFinish = (values) => {
-    updateApp({
-      data: values,
-      // onSuccess: () => {
-      //   refetch();
-      // },
-    });
+    updateApp(values);
   };
 
   const handleReset = () => {

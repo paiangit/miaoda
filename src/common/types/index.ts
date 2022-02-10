@@ -9,11 +9,6 @@ export enum AppStatus {
   ONLINE = 2,
 }
 
-export interface MutationParams {
-  onSuccess?: () => void;
-  onError?: () => void;
-}
-
 export interface App {
   id?: number;
   title: string;

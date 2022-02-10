@@ -2424,6 +2424,8 @@ export function useUrlQueryParams<T extends string>(keys: T[]) {
 }
 ```
 
+其实，有些跨组件的状态也可以用 useUrlQueryParams 来进行管理，在修改状态的地方通过 useUrlQueryParams 把参数写入 URL 中，并在需要用到的组件中通过 useUrlQueryParams 从 URL 中读取出来。
+
 ## 获取某组件上的属性的类型
 
 ```ts
@@ -2594,6 +2596,16 @@ export const AppList = () => {
 
 第二个参数是一个真正执行请求并返回数据的异步方法，要求返回 then-able 的函数，通常来说就说要求返回 Promise。
 
+使用唯一 key 还可以做一些其它的事情：
+
+```ts
+// 让某个缓存失效
+queryClient.invalidateQueries('唯一key');
+
+// 读取缓存
+queryClient.getQueryData('唯一key');
+```
+
 请求时，如果有参数怎么传递呢？
 
 当 Query 的唯一 key 是数组或对象时通常都包含了查询参数。
@@ -2654,10 +2666,26 @@ react-query 给我们提供了请求 cache 功能，默认情况下，请求将�
 - refetchOnWindowFocus 当浏览器窗口重新获取焦点时，重新向服务器端发送请求同步最新状态。默认 false
 - refetchOnReconnect 网络重新连接时进行数据重新获取
 - refetchOnMount 组件挂载完成后进行数据重新获取
-- enabled 如果为“false”的话，“useQuery”不会触发，需要使用其返回的“refetch”来触发操作
+- enabled 如果为“false”的话，“useQuery”不会触发，需要使用其返回的“refetch”来触发操作。
 - staleTime 状态的保质期。在同步状态时，如果状态仍然在保质期内，直接从缓存中获取状态，不会在后台发送真实的请求来更新状态缓存。
 - placeholderData 在服务端状态没有加载完成前，可以使用占位符状态填充客户端缓存以提升用户体验。
 - refetchInterval 指定轮询的间隔时间，false 为不轮询。
+
+关于 enabled 的一个使用用例：
+
+```ts
+export function useGetApp(id: number) {
+  return useQuery(
+    ['getApp', id],
+    async () => {
+      return await getApp(id);
+    },
+    {
+      enabled: !!id, // 表示当id为空的时候，就不要发起请求了
+    }
+  );
+}
+```
 
 那么，如何对这些参数进行全局配置，使得对于整个应用的所有请求都生效呢？如下所示：
 
@@ -2946,6 +2974,8 @@ export const useData = () => {
 第二层是基于第二层的封装所做的接口的封装；
 第三层是基于第二层用 useQuery 或 useMutation 将接口封装成一个个的 hook。每个文件一个 hook。
 
+#### useQuery 的使用
+
 src\features\myApps\hooks\useGetAppList.ts
 
 ```tsx
@@ -2998,10 +3028,147 @@ src\features\myApps\hooks\useDeleteApp.ts
 import { message } from 'antd';
 import { useMutation } from 'react-query';
 import { request } from '../../../common/utils';
-import { MutationParams } from '../../../common/types';
 
 // 类型声明
-export interface DeleteAppParams extends MutationParams {
+export interface DeleteAppResult {
+  data: {
+    isSuccess: boolean;
+  };
+}
+
+// 接口封装层
+export const deleteApp = async (id: number) => {
+  const result = await request({
+    method: 'delete',
+    url: `/app/${id}`,
+  });
+
+  return result.data as DeleteAppResult | undefined;
+};
+
+// hook封装层
+export const useDeleteApp = () => {
+  return useMutation((id: number) => deleteApp(id), {
+    onSuccess(data, variables, context) {
+      message.success('删除成功！');
+    },
+    onError(err: Error, variables, context) {
+      console.error('删除失败', err.message);
+      message.error('删除失败！');
+    },
+  });
+};
+```
+
+调用：
+
+```tsx
+import { Dropdown, Menu, Button } from 'antd';
+import {
+  EllipsisOutlined,
+  SettingOutlined,
+  EyeOutlined,
+  CopyOutlined,
+  DeleteOutlined,
+} from '@ant-design/icons';
+import { useNavigate } from 'react-router-dom';
+import { useDeleteApp } from './hooks';
+import './AppOperationDropdown.less';
+
+interface AppOperationDropDownProps {
+  id: number;
+  onDeleteSuccess: () => void;
+}
+
+const handleEllipsisClick = (
+  evt: React.MouseEvent<HTMLElement, MouseEvent>
+) => {
+  evt.preventDefault();
+};
+
+export default function AppOperationDropDown({
+  id,
+  onDeleteSuccess,
+}: AppOperationDropDownProps) {
+  const deleteAppMutation = useDeleteApp();
+  const { mutateAsync: deleteApp } = deleteAppMutation;
+  const navigate = useNavigate();
+  const handleMenuClick = (e) => {
+    const { key } = e;
+
+    switch (+key) {
+      case 1:
+        // 应用设置
+        navigate(`/app/${id}/admin/appSettings`);
+        break;
+      case 2:
+        // 访问应用 TODO: 替换pageId
+        navigate(`/app/${id}/preview?pageId=123`);
+        break;
+      case 3:
+        // TODO: 复制应用
+        break;
+      case 4:
+        // 删除应用
+        deleteApp(id).then(onDeleteSuccess);
+        break;
+      default:
+        break;
+    }
+  };
+
+  return (
+    <Dropdown
+      // 下面的overlay的内容不可以提取到单独的组件中，否则会导致Menu的部分样式丢失，如box-shadow、item的hover态等，这个问题比较奇怪
+      overlay={
+        <Menu
+          className="my-apps-app-operation-dropdown"
+          onClick={handleMenuClick}
+        >
+          <Menu.Item key={1}>
+            <Button type="link" icon={<SettingOutlined />}>
+              应用设置
+            </Button>
+          </Menu.Item>
+          <Menu.Item key={2}>
+            <Button type="link" icon={<EyeOutlined />}>
+              访问应用
+            </Button>
+          </Menu.Item>
+          {/* <Menu.Item key={3}>
+          <Button type="link" icon={<CopyOutlined />}>复制应用</Button>
+        </Menu.Item> */}
+          <Menu.Item key={4}>
+            <Button
+              type="link"
+              icon={<DeleteOutlined />}
+              style={{ color: 'rgb(255, 82, 25)' }}
+              loading={deleteAppMutation.isLoading}
+            >
+              删除应用
+            </Button>
+          </Menu.Item>
+        </Menu>
+      }
+      placement="bottomCenter"
+    >
+      <EllipsisOutlined onClick={handleEllipsisClick} />
+    </Dropdown>
+  );
+}
+```
+
+#### useMutation 的使用
+
+src\features\myApps\hooks\useDeleteApp.ts
+
+```ts
+import { message } from 'antd';
+import { useMutation } from 'react-query';
+import { request } from '../../../common/utils';
+
+// 类型声明
+export interface DeleteAppParams {
   id: number;
 }
 export interface DeleteAppResult {
@@ -3038,79 +3205,105 @@ export const useDeleteApp = () => {
 };
 ```
 
-调用：
+src\features\myApps\AppOperationDropdown.tsx
 
 ```tsx
-const {
-  isLoading,
-  isError,
-  data: appList,
-} = useGetAppList({
-  title: keyword,
-  pageSize: 30,
-  offset: 0,
-});
-const generateApps = () => {
-  if (isLoading) {
-    return (
-      <div className="loading">
-        <Spin></Spin>
-      </div>
-    );
-  }
+import { Dropdown, Menu, Button } from 'antd';
+import {
+  EllipsisOutlined,
+  SettingOutlined,
+  EyeOutlined,
+  CopyOutlined,
+  DeleteOutlined,
+} from '@ant-design/icons';
+import { useNavigate } from 'react-router-dom';
+import { useDeleteApp } from './hooks';
+import './AppOperationDropdown.less';
 
-  if (isError) {
-    return <div className="error-tip">服务器开小差了，请稍后重试~</div>;
-  }
+interface AppOperationDropDownProps {
+  id: number;
+  onDeleteSuccess: () => void;
+}
 
-  if (!appList.data.length) {
-    return <Empty description="没有满足条件的应用"></Empty>;
-  }
-
-  return appList.data.map((item) => {
-    const tagMap = {
-      '0': <Tag className="deleted">已删除</Tag>,
-      '1': <Tag className="offline">未启用</Tag>,
-      '2': <Tag className="online">已启用</Tag>,
-    };
-    const tag = tagMap[item.status];
-
-    const handleDeleteSuccess = () => {
-      appListQuery.refetch();
-    };
-
-    return (
-      <a className="app-card" key={item.id} href={`/app/${item.id}/admin/123`}>
-        <div className="header">
-          <div className="icon">
-            <ChromeOutlined />
-          </div>
-          <div className="title">{item.title}</div>
-        </div>
-        <p className="description">
-          <Tooltip
-            title={item.description}
-            placement="bottom"
-            mouseEnterDelay={0.3}
-          >
-            {item.description}
-          </Tooltip>
-        </p>
-
-        <div className="footer">
-          {tag}
-          <AppOperationDropdown
-            id={item.id}
-            onDeleteSuccess={handleDeleteSuccess}
-          />
-        </div>
-      </a>
-    );
-  });
+const handleEllipsisClick = (
+  evt: React.MouseEvent<HTMLElement, MouseEvent>
+) => {
+  evt.preventDefault();
 };
 
-return <div className="my-apps-app-list">{generateApps()}</div>;
+export default function AppOperationDropDown({
+  id,
+  onDeleteSuccess,
+}: AppOperationDropDownProps) {
+  const deleteAppMutation = useDeleteApp();
+  const { mutateAsync: deleteApp } = deleteAppMutation;
+  const navigate = useNavigate();
+  const handleMenuClick = (e) => {
+    const { key } = e;
+
+    switch (+key) {
+      case 1:
+        // 应用设置
+        navigate(`/app/${id}/admin/appSettings`);
+        break;
+      case 2:
+        // 访问应用 TODO: 替换pageId
+        navigate(`/app/${id}/preview?pageId=123`);
+        break;
+      case 3:
+        // TODO: 复制应用
+        break;
+      case 4:
+        // 删除应用
+        deleteApp({ id }).then(onDeleteSuccess);
+        break;
+      default:
+        break;
+    }
+  };
+
+  return (
+    <Dropdown
+      // 下面的overlay的内容不可以提取到单独的组件中，否则会导致Menu的部分样式丢失，如box-shadow、item的hover态等，这个问题比较奇怪
+      overlay={
+        <Menu
+          className="my-apps-app-operation-dropdown"
+          onClick={handleMenuClick}
+        >
+          <Menu.Item key={1}>
+            <Button type="link" icon={<SettingOutlined />}>
+              应用设置
+            </Button>
+          </Menu.Item>
+          <Menu.Item key={2}>
+            <Button type="link" icon={<EyeOutlined />}>
+              访问应用
+            </Button>
+          </Menu.Item>
+          {/* <Menu.Item key={3}>
+          <Button type="link" icon={<CopyOutlined />}>复制应用</Button>
+        </Menu.Item> */}
+          <Menu.Item key={4}>
+            <Button
+              type="link"
+              icon={<DeleteOutlined />}
+              style={{ color: 'rgb(255, 82, 25)' }}
+              loading={deleteAppMutation.isLoading}
+            >
+              删除应用
+            </Button>
+          </Menu.Item>
+        </Menu>
+      }
+      placement="bottomCenter"
+    >
+      <EllipsisOutlined onClick={handleEllipsisClick} />
+    </Dropdown>
+  );
+}
 ```
+
+这里我们采用了 mutateAsync，因为需要进行回调处理。如果我们不需要进行回调处理的话，可以用 mutate。
 
 参考：
 react-query 在项目中的架构封装设计（大量实践经验）
@@ -3599,4 +3792,87 @@ const startEdit = useCallback(
 );
 ```
 
+## 组件组合（composition component）
+
+使用 Context 之前的考虑：
+
+Context 主要应用场景在于很多不同层级的组件需要访问一些同样的数据。请谨慎使用，因为这会使得组件的复用性变差。
+
+如果你只是想避免层层传递一些属性，组件组合（component composition， https://react.docschina.org/docs/composition-vs-inheritance.html）有时候是一个比 context 更好的解决方案。
+
 当你在写的自定义 hook，返回的内容里面有函数的时候，大概率你是需要用 useCallback 给它包裹一层的，否则别人在 useEffect 里面使用你这个函数的时候，Eslint 就会报错说要把它加入到依赖之中，而如果对方按要求加入进去的话，就会导致循环渲染，而如果不加入的话，又会出现 Eslint 报错。
+
+比如，考虑这样一个 Page 组件，它层层向下传递 user 和 avatarSize 属性，从而让深度嵌套的 Link 和 Avatar 组件可以读取到这些属性：
+
+```tsx
+<Page user={user} avatarSize={avatarSize} />
+// ... 渲染出 ...
+<PageLayout user={user} avatarSize={avatarSize} />
+// ... 渲染出 ...
+<NavigationBar user={user} avatarSize={avatarSize} />
+// ... 渲染出 ...
+<Link href={user.permalink}>
+  <Avatar user={user} size={avatarSize} />
+</Link>
+```
+
+如果在最后只有 Avatar 组件真的需要 user 和 avatarSize，那么层层传递这两个 props 就显得非常冗余。而且一旦 Avatar 组件需要更多从来自顶层组件的 props，你还得在中间层级一个一个加上去，这将会变得非常麻烦。
+
+一种 无需 context 的解决方案是将 Avatar 组件自身传递下去，因为中间组件无需知道 user 或者 avatarSize 等 props：
+
+```tsx
+function Page(props) {
+  const user = props.user;
+  const userLink = (
+    <Link href={user.permalink}>
+      <Avatar user={user} size={props.avatarSize} />
+    </Link>
+  );
+  return <PageLayout userLink={userLink} />;
+}
+
+// 现在，我们有这样的组件：
+<Page user={user} avatarSize={avatarSize} />
+// ... 渲染出 ...
+<PageLayout userLink={...} />
+// ... 渲染出 ...
+<NavigationBar userLink={...} />
+// ... 渲染出 ...
+{props.userLink}
+```
+
+**这种变化下，只有最顶部的 Page 组件需要知道 Link 和 Avatar 组件是如何使用 user 和 avatarSize 的。这种对组件的控制反转减少了在你的应用中要传递的 props 数量，这在很多场景下会使得你的代码更加干净，使你对根组件有更多的把控。但是，这并不适用于每一个场景：这种将逻辑提升到组件树的更高层次来处理，会使得这些高层组件变得更复杂，并且会强行将低层组件适应这样的形式，这可能不会是你想要的。**
+
+而且你的组件并不限制于接收单个子组件。**你可能会传递多个子组件，甚至会为这些子组件（children）封装多个单独的“接口（slots）”，如下所示：**
+
+```tsx
+function Page(props) {
+  const user = props.user;
+  const content = <Feed user={user} />;
+  const topBar = (
+    <NavigationBar>
+      <Link href={user.permalink}>
+        <Avatar user={user} size={props.avatarSize} />
+      </Link>
+    </NavigationBar>
+  );
+  return <PageLayout topBar={topBar} content={content} />;
+}
+```
+
+这种模式足够覆盖很多场景了，在这些场景下你需要将子组件和直接关联的父组件解耦。如果子组件需要在渲染前和父组件进行一些交流，你可以进一步使用 render props。
+
+但是，有的时候在组件树中很多不同层级的组件需要访问同样的一批数据。Context 能让你将这些数据向组件树下所有的组件进行“广播”，所有的组件都能访问到这些数据，也能访问到后续的数据更新。使用 context 的通用的场景包括管理当前的 locale，theme，或者一些缓存数据，这比替代方案要简单的多。
+
+## 处理 ant design form 的报错
+
+```ts
+useEffect(() => {
+  // 会报一个错误，Warning: Instance created by `useForm` is not connected to any Form element.
+  // 所以需要用setTimeout包裹一下，原因待研究
+  // https://stackoverflow.com/questions/61056421/warning-instance-created-by-useform-is-not-connect-to-any-form-element/65641605
+  setTimeout(() => {
+    form.setFieldsValue(initialInfo);
+  }, 0);
+}, [initialInfo, form]);
+```
