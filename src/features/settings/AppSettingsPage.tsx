@@ -32,15 +32,15 @@ export default function AppSettingsPage() {
     updateApp(values);
   };
 
-  const handleReset = () => {
+  const handleReset = useCallback(() => {
     form.setFieldsValue(initialInfo);
-  };
+  }, [form, initialInfo]);
 
   useEffect(() => {
     // 必须把这个副作用放在useEffect内，否则会报错：Cannot update a component (`FormItem`) while rendering a different component
     // 见：https://stackoverflow.com/questions/62336340/cannot-update-a-component-while-rendering-a-different-component-warning
     form.setFieldsValue(initialInfo);
-  }, [initialInfo]);
+  }, [initialInfo, form]);
 
   if (isLoading) {
     return <Spin></Spin>;
