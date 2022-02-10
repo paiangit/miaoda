@@ -1,6 +1,7 @@
 import { useQuery } from 'react-query';
 import { request } from '../../../common/utils';
 import { App } from '../../../common/types';
+import { GetAppQueryKey } from '../keys';
 
 export const getApp = async (id: number) => {
   const result = await request({
@@ -11,9 +12,11 @@ export const getApp = async (id: number) => {
   return result.data as App | undefined;
 };
 
-export function useGetApp(id: number) {
+export function useGetApp(getAppQueryKey: GetAppQueryKey) {
+  const [key, id] = getAppQueryKey;
+
   return useQuery(
-    ['getApp', id],
+    getAppQueryKey,
     async () => {
       return await getApp(id);
     },

@@ -3,6 +3,7 @@ import { useParams } from 'react-router-dom';
 import { Form, Input, Radio, Button, Spin } from 'antd';
 import { useDocumentTitle } from '../../common/hooks';
 import { useGetApp, useUpdateApp } from './hooks';
+import { useGetAppQueryKey } from './keys';
 import './AppSettingsPage.less';
 
 export default function AppSettingsPage() {
@@ -11,7 +12,7 @@ export default function AppSettingsPage() {
   const params = useParams();
   const [form] = Form.useForm();
   const appId = Number(params.appId);
-  const getAppQuery = useGetApp(appId);
+  const getAppQuery = useGetApp(useGetAppQueryKey());
   const { isLoading, isError, data: initialInfo } = getAppQuery;
   const updateAppMutation = useUpdateApp(appId);
   const { mutateAsync: updateApp } = updateAppMutation;

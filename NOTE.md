@@ -2803,6 +2803,57 @@ const q2 = useQuery(['myAPIName', reqParams, appState], () =>
 - stale：当前 Query 已然过期了，下次执行 Query 会发送请求
 - inactive：当前 Query 没有激活，默认 5 分钟后会被回收掉（从内存中移除）
 
+### 乐观更新（optimistic updates）
+
+乐观更新是一种 UI 行为，它在服务端返回操作成功之前，就把 UI 的行为给改变了。
+
+```ts
+// 项目列表搜索的参数
+export const useProjectSearchParams = () => {
+  const [params, setParams] = useUrlQueryParams(['name', 'personId']);
+  return [
+    useMemo(
+      () => ({ ...params, personId: Number(params.personId) || undefined }),
+      [params]
+    ),
+    setParams,
+  ] as const;
+};
+```
+
+```ts
+// const queryKey = ['projects', searchParams];
+
+export const useEditProject = (queryKey) => {
+  const client = useHttp();
+  const queryClient = useQueryClient();
+  const [searchParams] = useProjectsSearchParams();
+
+  return useMutation(
+    (params: Partial<Project>) => client(`projects/${params.id}`, {
+      method: 'PATCH',
+      data: params,
+    }),
+    {
+      onSuccess: () => queryClient.invalidateQueries(queryKey),
+
+      async onMutate(target) {
+
+        const previousItems = queryClient.getQueryData(queryKey);
+        queryClient.setQueryData(queryKey, (old?: Project[]) => {
+          return old?.map(project  => project.id ? {...project, ...target} : project)
+        });
+        return {previousItems};
+      },
+
+      onError(error, newItem, context) {
+        queryClient.setQueryData(queryKey, (context as {previousItems: Project[]}.previousItems)
+      },
+    }
+  )
+}
+```
+
 ### 分页查询
 
 react-query 让分页变得非常的简单，同时 Cache 了数据：
@@ -3304,6 +3355,234 @@ export default function AppOperationDropDown({
 ```
 
 这里我们采用了 mutateAsync，因为需要进行回调处理。如果我们不需要进行回调处理的话，可以用 mutate。
+
+### 对 queryKey 进行提取，方便引用
+
+主要的思路是将获取 queryKey 的方法封装成一个 hook，方便各处饮用获取到 queryKey。因为 queryKey 是包含参数的，所以，需要采用前面封装的 useUrlQueryParams 这个 hook，本质是利用了 url 地址中的 query 来传递我们所需要的参数，方便在 hook 中无依赖地获取到。
+
+src\common\utils\prefixKey.ts
+
+```ts
+// 给react-query的key加上模块前缀，保证全局唯一
+export const prefixKey = (key, moduleName) => `__rq__${moduleName}__${key}`;
+```
+
+src\features\myApps\AppList.tsx
+
+```tsx
+import { useCallback, useEffect, useState } from 'react';
+import { Empty, Tag, Tooltip, Spin, Pagination } from 'antd';
+import { ChromeOutlined } from '@ant-design/icons';
+import { useUrlQueryParams, useMount } from '../../common/hooks';
+import AppOperationDropdown from './AppOperationDropdown';
+import { useGetAppList } from './hooks';
++ import { useGetAppListQueryKey } from './keys';
++ import { defaultCurrentPage, defaultPageSize } from './const';
+import './AppList.less';
+
+interface AppListProps {
+  keyword: string;
+  setRefetch: (fetch) => void;
+}
+
+export default function AppList({ keyword, setRefetch }: AppListProps) {
++  const [urlQueryParams, setUrlQueryParams] = useUrlQueryParams(['keyword', 'page', 'pageSize']);
+
++  useMount(() => {
+    setUrlQueryParams({
+      ...urlQueryParams,
+      page: defaultCurrentPage,
+      pageSize: defaultPageSize,
+    });
+  });
+
+  const appListQuery = useGetAppList(
++    useGetAppListQueryKey(),
+    {
+      keepPreviousData: true,
+    }
+  );
+  const { isLoading, isError, data: appList, refetch } = appListQuery;
+
++  const handlePageChange = useCallback((pageNumber) => {
++    setUrlQueryParams({
+      ...urlQueryParams,
+      page: pageNumber,
+    });
++  }, [setUrlQueryParams, urlQueryParams]);
+
++  const handlePageSizeChange = useCallback((pageSize) => {
++    setUrlQueryParams({
+      ...urlQueryParams,
+      pageSize,
+    });
++  }, [setUrlQueryParams, urlQueryParams]);
+
+  setRefetch(refetch);
+
+  const generateApps = () => {
+    if (isLoading) {
+      return (
+        <div className="loading">
+          <Spin></Spin>
+        </div>
+      );
+    }
+
+    if (isError) {
+      return <div className="error-tip">服务器开小差了，请稍后重试~</div>;
+    }
+
+    if (!appList || !appList.data.length) {
+      return <Empty description="没有满足条件的应用"></Empty>;
+    }
+
+    return appList.data.map((item) => {
+      const tagMap = {
+        '0': <Tag className="deleted">已删除</Tag>,
+        '1': <Tag className="offline">未启用</Tag>,
+        '2': <Tag className="online">已启用</Tag>,
+      };
+      const tag = tagMap[item.status];
+
+      const handleDeleteSuccess = () => {
+        refetch();
+      };
+
+      return (
+        <a
+          className="app-card"
+          key={item.id}
+          href={`/app/${item.id}/admin/123`}
+        >
+          <div className="header">
+            <div className="icon">
+              <ChromeOutlined />
+            </div>
+            <div className="title">{item.title}</div>
+          </div>
+          <p className="description">
+            <Tooltip
+              title={item.description}
+              placement="bottom"
+              mouseEnterDelay={0.3}
+            >
+              {item.description}
+            </Tooltip>
+          </p>
+
+          <div className="footer">
+            {tag}
+            <AppOperationDropdown
+              id={item.id}
+              onDeleteSuccess={handleDeleteSuccess}
+            />
+          </div>
+        </a>
+      );
+    });
+  };
+
+  const genPagination = () => {
+    return (
+      <Pagination
+        showQuickJumper
+        defaultCurrent={defaultCurrentPage}
+        defaultPageSize={defaultPageSize}
+        total={appList?.totalCount || 0}
+        onChange={handlePageChange}
+        onShowSizeChange={handlePageSizeChange}
+      />
+    );
+  };
+
+  return (
+    <div className="my-apps-app-list">
+      <div className="list">{generateApps()}</div>
+      <div className="pagination">{genPagination()}</div>
+    </div>
+  );
+}
+```
+
+src\features\myApps\keys.ts
+
+```ts
+/**
+ * 汇总请求 key 的意义在于：
+ * 1）调取全局 client 进行重复请求或者阻断、获取缓存都是会模糊匹配 key list 的，汇总 key 为可能的全局操作提供便利；
+ * 2）一个有意义的 key 可以帮助你在 react-query/devtools 里快速分辨是什么请求。
+ */
+import { prefixKey } from '../../common/utils';
+import { useUrlQueryParams } from '../../common/hooks';
+
+const moduleName = '__myApps__';
+const prefix = (key) => prefixKey(key, moduleName);
+
+export type GetAppListQueryKey = [
+  string,
+  {
+    title: string;
+    pageSize: number;
+    offset: number;
+  }
+];
+
+export const useGetAppListQueryKey = () => {
+  const [urlQueryParams] = useUrlQueryParams(['keyword', 'page', 'pageSize']);
+  const pageSize = +urlQueryParams.pageSize;
+  const page = +urlQueryParams.page;
+
+  const params = {
+    title: urlQueryParams.keyword,
+    pageSize,
+    offset: (page - 1) * pageSize,
+  };
+
+  return [prefix('getAppList'), params] as GetAppListQueryKey;
+};
+```
+
+src\features\myApps\hooks\useGetAppList.ts
+
+```ts
+import { useQuery } from 'react-query';
+import { request } from '../../../common/utils';
+import { App } from '../../../common/types';
++ import { GetAppListQueryKey } from '../keys';
+import { defaultCurrentPage, defaultPageSize } from '../const';
+
+// 类型声明
+export interface GetAppListResult {
+  data: App[];
+  offset: number;
+  pageSize: number;
+  totalCount: number;
+}
+
+// 接口封装层
+export const getAppList = async (params) => {
+  const res = await request({
+    method: 'get',
+    url: '/app/list',
+    params,
+  });
+
+  return res.data as GetAppListResult | undefined;
+};
+
+// hook封装层
++ export const useGetAppList = (getAppListQueryKey: GetAppListQueryKey, options?) => {
++  const [key, params] = getAppListQueryKey;
+
+  return useQuery(getAppListQueryKey, async () => {
+    return await getAppList(params);
+  }, {
++    ...options,
++    enabled: params.pageSize > 0 && params.offset >= 0,
+  });
+};
+```
 
 参考：
 react-query 在项目中的架构封装设计（大量实践经验）

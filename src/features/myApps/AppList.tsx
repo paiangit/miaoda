@@ -1,8 +1,11 @@
-import { useState } from 'react';
+import { useCallback, useEffect, useState } from 'react';
 import { Empty, Tag, Tooltip, Spin, Pagination } from 'antd';
 import { ChromeOutlined } from '@ant-design/icons';
+import { useUrlQueryParams, useMount } from '../../common/hooks';
 import AppOperationDropdown from './AppOperationDropdown';
 import { useGetAppList } from './hooks';
+import { useGetAppListQueryKey } from './keys';
+import { defaultCurrentPage, defaultPageSize } from './const';
 import './AppList.less';
 
 interface AppListProps {
@@ -11,21 +14,45 @@ interface AppListProps {
 }
 
 export default function AppList({ keyword, setRefetch }: AppListProps) {
-  const defaultCurrentPage = 1;
-  const defaultPageSize = 2;
-  const [page, setPage] = useState(defaultCurrentPage);
-  const [pageSize, setPageSize] = useState(defaultPageSize);
-  const appListQuery = useGetAppList(
-    {
-      title: keyword,
-      pageSize,
-      offset: (page - 1) * pageSize,
-    },
-    {
-      keepPreviousData: true,
-    }
-  );
+  const [urlQueryParams, setUrlQueryParams] = useUrlQueryParams([
+    'keyword',
+    'page',
+    'pageSize',
+  ]);
+
+  useMount(() => {
+    setUrlQueryParams({
+      ...urlQueryParams,
+      page: defaultCurrentPage,
+      pageSize: defaultPageSize,
+    });
+  });
+
+  const getAppListQueryKey = useGetAppListQueryKey();
+  const appListQuery = useGetAppList(getAppListQueryKey, {
+    keepPreviousData: true,
+  });
   const { isLoading, isError, data: appList, refetch } = appListQuery;
+
+  const handlePageChange = useCallback(
+    (pageNumber) => {
+      setUrlQueryParams({
+        ...urlQueryParams,
+        page: pageNumber,
+      });
+    },
+    [setUrlQueryParams, urlQueryParams]
+  );
+
+  const handlePageSizeChange = useCallback(
+    (pageSize) => {
+      setUrlQueryParams({
+        ...urlQueryParams,
+        pageSize,
+      });
+    },
+    [setUrlQueryParams, urlQueryParams]
+  );
 
   setRefetch(refetch);
 
@@ -42,7 +69,7 @@ export default function AppList({ keyword, setRefetch }: AppListProps) {
       return <div className="error-tip">服务器开小差了，请稍后重试~</div>;
     }
 
-    if (!appList.data.length) {
+    if (!appList || !appList.data.length) {
       return <Empty description="没有满足条件的应用"></Empty>;
     }
 
@@ -90,14 +117,6 @@ export default function AppList({ keyword, setRefetch }: AppListProps) {
         </a>
       );
     });
-  };
-
-  const handlePageChange = (pageNumber) => {
-    setPage(pageNumber);
-  };
-
-  const handlePageSizeChange = (pageSize) => {
-    setPageSize(pageSize);
   };
 
   const genPagination = () => {

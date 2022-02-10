@@ -1,15 +1,10 @@
 import { useQuery } from 'react-query';
 import { request } from '../../../common/utils';
 import { App } from '../../../common/types';
-import { prefix } from './prefix';
+import { GetAppListQueryKey } from '../keys';
+import { defaultCurrentPage, defaultPageSize } from '../const';
 
 // 类型声明
-export interface GetAppListParams {
-  title: string;
-  pageSize: number;
-  offset: number;
-}
-
 export interface GetAppListResult {
   data: App[];
   offset: number;
@@ -18,7 +13,7 @@ export interface GetAppListResult {
 }
 
 // 接口封装层
-export const getAppList = async (params: GetAppListParams) => {
+export const getAppList = async (params) => {
   const res = await request({
     method: 'get',
     url: '/app/list',
@@ -29,8 +24,28 @@ export const getAppList = async (params: GetAppListParams) => {
 };
 
 // hook封装层
-export const useGetAppList = (params: GetAppListParams, options) => {
-  return useQuery([prefix('getAppList'), params, options], async () => {
-    return await getAppList(params);
-  });
+export const useGetAppList = (
+  getAppListQueryKey: GetAppListQueryKey,
+  options?
+) => {
+  const [key, params] = getAppListQueryKey;
+
+  // if (params.offset == null) {
+  //   params.offset = defaultCurrentPage * defaultPageSize;
+  // }
+  // if (!params.pageSize) {
+  //   params.pageSize = defaultPageSize;
+  // }
+  debugger;
+
+  return useQuery(
+    getAppListQueryKey,
+    async () => {
+      return await getAppList(params);
+    },
+    {
+      ...options,
+      enabled: params.pageSize > 0 && params.offset >= 0,
+    }
+  );
 };
