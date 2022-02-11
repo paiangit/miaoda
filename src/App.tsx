@@ -1,16 +1,25 @@
+import { lazy, Suspense } from 'react';
 import { useRoutes, Navigate } from 'react-router-dom';
+import { FullPageLoading } from './common/components/FullPageLoading';
 
-import { MainLayout, MainPage } from './features/home';
-import { AppListPage } from './features/myApps';
-import { AdminLayout, ManagementPage } from './features/management';
-import { AppSettingsPage } from './features/settings';
-import { AppPublishPage } from './features/publish';
-import { DesignerPage } from './features/design';
-import { PreviewPage } from './features/preview';
-import { RegisterPage, LoginPage } from './features/auth';
-import { ProfilePage } from './features/user';
-import { PageNotFound } from './common/containers';
-import { CounterPage } from './features/examples';
+const NotFoundPage = lazy(() => import('./features/exception/NotFoundPage'));
+const MainLayout = lazy(() => import('./features/home/MainLayout'));
+const MainPage = lazy(() => import('./features/home/MainPage'));
+const AppListPage = lazy(() => import('./features/myApps/AppListPage'));
+const AdminLayout = lazy(() => import('./features/management/AdminLayout'));
+const ManagementPage = lazy(
+  () => import('./features/management/ManagementPage')
+);
+const AppSettingsPage = lazy(
+  () => import('./features/settings/AppSettingsPage')
+);
+const AppPublishPage = lazy(() => import('./features/publish/AppPublishPage'));
+const DesignerPage = lazy(() => import('./features/design/DesignerPage'));
+const PreviewPage = lazy(() => import('./features/preview/PreviewPage'));
+const RegisterPage = lazy(() => import('./features/auth/RegisterPage'));
+const LoginPage = lazy(() => import('./features/auth/LoginPage'));
+const ProfilePage = lazy(() => import('./features/user/ProfilePage'));
+const CounterPage = lazy(() => import('./features/examples/CounterPage'));
 // import routeConfig from './common/routeConfig.js';
 
 function App() {
@@ -28,7 +37,7 @@ function App() {
       },
       {
         path: '404',
-        element: <PageNotFound />,
+        element: <NotFoundPage />,
       },
       {
         path: 'myApps',
@@ -89,7 +98,13 @@ function App() {
   const routing = useRoutes([mainRoutes, adminRoutes]);
   // const routing = useRoutes([routeConfig]);
 
-  return <div className="app">{routing}</div>;
+  return (
+    <div className="app">
+      <Suspense fallback={<FullPageLoading></FullPageLoading>}>
+        {routing}
+      </Suspense>
+    </div>
+  );
 }
 
 export default App;

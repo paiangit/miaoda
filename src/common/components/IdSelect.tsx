@@ -1,9 +1,10 @@
 import React from 'react';
-import { Raw } from './types';
 import { Select } from 'antd';
 import { toNumber } from 'lodash';
 
 type SelectProps = React.ComponentProps<typeof Select>;
+
+export type Raw = 'number' | 'string';
 
 interface IdSelectProps
   extends Omit<SelectProps, 'value' | 'onChange' | 'options'> {

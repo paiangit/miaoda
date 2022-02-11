@@ -1721,12 +1721,6 @@ REACT_APP_ACCESS_TOKEN_KEY=miaodaAccessToken
 
 这样返回给服务器端之后，服务器就能正常地解析和验证 JWT 是否有效。
 
-## 性能优化
-
-因为 Layout 组件无参数，所以可以用 React.memo 第二个参数传 return false 的函数来直接优化。
-
-export default React.memo(MainLayout, () => false);
-
 ## 将公共组件分成三类，在 common 目录下分目录管理
 
 basic 基础组件
@@ -4202,5 +4196,428 @@ useEffect(() => {
 综上：
 
 当给分页设置了 currentPage 和 pageSize 两个属性值后，切换页码和 pageSize 时，只需要指定 onChange 回调就可以了。
+
+## 开发一个页面的一般步骤
+
+### 定义基础设施
+
+定义 type
+
+```ts
+export interface Kanban {
+  id: number;
+  name: string;
+  projectId: number;
+}
+```
+
+定义接口请求 hook
+
+```ts
+import { useHttp } from 'utils/http';
+import { QueryKey, useMutation, useQuery } from 'react-query';
+import { Kanban } from 'types/kanban';
+
+export const useKanbans = (param?: Partial<Kanban>) => {
+  const client = useHttp();
+
+  return useQuery<Kanban[]>(['kanbans', param], () =>
+    client('kanbans', { data: param })
+  );
+};
+```
+
+### 创建页面
+
+```tsx
+import React, { useCallback } from 'react';
+import { useDocumentTitle } from 'utils';
+import {
+  useKanbanSearchParams,
+  useKanbansQueryKey,
+  useProjectInUrl,
+  useTasksQueryKey,
+  useTasksSearchParams,
+} from 'screens/kanban/util';
+import { useKanbans } from 'utils/kanban';
+
+export const KanbanScreen = () => {
+  useDocumentTitle('看板列表');
+
+  const { data: currentProject } = useProjectInUrl();
+  const { data: kanbans, isLoading: kanbanIsLoading } = useKanbans(
+    useKanbanSearchParams()
+  );
+  const { isLoading: taskIsLoading } = useTasks(useTasksSearchParams());
+  const isLoading = taskIsLoading || kanbanIsLoading;
+
+  return (
+    <DragDropContext>
+      <ScreenContainer>
+        <h1>{currentProject?.name}看板</h1>
+        <SearchPanel />
+        {isLoading ? (
+          <Spin size={'large'} />
+        ) : (
+          <ColumnsContainer>...</ColumnsContainer>
+        )}
+        <TaskModal />
+      </ScreenContainer>
+    </DragDropContext>
+  );
+};
+```
+
+### 定义请求页面中某个区块数据的 queryKey
+
+```ts
+export const useKanbanSearchParams = () => ({ projectId: useProjectIdInUrl() });
+export const useKanbansQueryKey = () => ['kanbans', useKanbanSearchParams()];
+```
+
+### 然后定义请求更具体数据的 Hook
+
+### 然后定义页面中的组件
+
+## 拖拽：react-beautiful-dnd
+
+// TODO：
+
+## React 性能优化
+
+### 使用 React.lazy 来异步加载组件，进行代码分割。
+
+React.lazy 方法可以异步加载组件文件。
+
+```tsx
+const Foo = React.lazy(() => import('../componets/Foo));
+```
+
+注意，被导入的组件需要用 export default 导出组件。
+
+React.lazy 不能单独使用，需要配合 React.Suspense 使用。React.Suspense 是用来包裹异步组件，添加 loading 效果等。
+注意 lazy 的 l 是小写，而 Suspense 的 S 是大写！
+
+```ts
+<React.Suspense fallback={<div>loading...</div>}>
+  <Foo />
+</React.Suspense>
+```
+
+React.lazy 原理：
+
+React.lazy 使用 import 来懒加载组件，import 在 webpack 中最终会调用 requireEnsure 方法，动态插入 script 来请求 js 文件，类似 jsonp 的形式。
+
+比如，当一个页面中同时存在已登录和未登录组件，则可以对这两个组件用 React.Lazy 进行包裹，延迟加载：
+
+```tsx
+import React from 'react';
+import './App.css';
+import { useAuth } from 'context/auth-context';
+import { ErrorBoundary } from 'components/error-boundary';
+import { FullPageErrorFallback, FullPageLoading } from 'components/lib';
+
+const AuthenticatedApp = React.lazy(() => import('authenticated-app'));
+const UnauthenticatedApp = React.lazy(() => import('unauthenticated-app'));
+
+function App() {
+  const { user } = useAuth();
+
+  return (
+    <div className="App">
+      <ErrorBoundary fallbackRender={FullPageErrorFallback}>
+        <React.Suspense fallback={<FullPageLoading />}>
+          {user ? <AuthenticatedApp /> : <UnauthenticatedApp />}
+        </React.Suspense>
+      </ErrorBoundary>
+    </div>
+  );
+}
+
+export default App;
+```
+
+React.lazy 用于路由懒加载：
+
+```ts
+import { lazy, Suspense } from 'react';
+import { useRoutes, Navigate } from 'react-router-dom';
+import { FullPageLoading } from './common/components/FullPageLoading';
+
+const NotFoundPage = lazy(() => import('./features/exception/NotFoundPage'));
+const MainLayout = lazy(() => import('./features/home/MainLayout'));
+const MainPage = lazy(() => import('./features/home/MainPage'));
+const AppListPage = lazy(() => import('./features/myApps/AppListPage'));
+const AdminLayout = lazy(() => import('./features/management/AdminLayout'));
+const ManagementPage = lazy(
+  () => import('./features/management/ManagementPage')
+);
+const AppSettingsPage = lazy(
+  () => import('./features/settings/AppSettingsPage')
+);
+const AppPublishPage = lazy(() => import('./features/publish/AppPublishPage'));
+const DesignerPage = lazy(() => import('./features/design/DesignerPage'));
+const PreviewPage = lazy(() => import('./features/preview/PreviewPage'));
+const RegisterPage = lazy(() => import('./features/auth/RegisterPage'));
+const LoginPage = lazy(() => import('./features/auth/LoginPage'));
+const ProfilePage = lazy(() => import('./features/user/ProfilePage'));
+const CounterPage = lazy(() => import('./features/examples/CounterPage'));
+// import routeConfig from './common/routeConfig.js';
+
+function App() {
+  const mainRoutes = {
+    path: '/',
+    element: <MainLayout />,
+    children: [
+      {
+        path: '*',
+        element: <Navigate to="/404" />,
+      },
+      {
+        path: '/',
+        element: <MainPage />,
+      },
+      {
+        path: '404',
+        element: <NotFoundPage />,
+      },
+      {
+        path: 'myApps',
+        element: <AppListPage />,
+      },
+      {
+        path: 'app/:appId/admin',
+        element: <Navigate to=":pageId" />,
+      },
+      {
+        path: 'app/:appId/design',
+        element: <DesignerPage />,
+      },
+      {
+        path: 'app/:appId/preview',
+        element: <PreviewPage />,
+      },
+      {
+        path: 'auth/register',
+        element: <RegisterPage />,
+      },
+      {
+        path: 'auth/login',
+        element: <LoginPage />,
+      },
+      {
+        path: 'user/:userId/profile',
+        element: <ProfilePage />,
+      },
+      {
+        path: 'examples/counter',
+        element: <CounterPage />,
+      },
+    ],
+  };
+  const adminRoutes = {
+    path: 'app/:appId/admin/',
+    element: <AdminLayout />,
+    children: [
+      {
+        path: '*',
+        element: <Navigate to="/404" />,
+      },
+      {
+        path: ':pageId',
+        element: <ManagementPage />,
+      },
+      {
+        path: 'appPublish',
+        element: <AppPublishPage />,
+      },
+      {
+        path: 'appSettings',
+        element: <AppSettingsPage />,
+      },
+    ],
+  };
+  const routing = useRoutes([mainRoutes, adminRoutes]);
+  // const routing = useRoutes([routeConfig]);
+
+  return (
+    <div className="app">
+      <Suspense fallback={<FullPageLoading></FullPageLoading>}>
+        {routing}
+      </Suspense>
+    </div>
+  );
+}
+
+export default App;
+```
+
+### React.memo
+
+在 React 中，改变父组件的状态，对父组件进行渲染，无论这个状态子组件是否用到，子组件都会重新渲染。假设某个子组件的渲染非常耗性能，我们就可以用 React.memo 来包裹这个组件，减少这种不必要的渲染。
+
+```ts
+function Child(props) {
+  return <div>...</div>;
+}
+
+function areEqual(prevProps, nextProps) {
+  if (prevProps.someProp === nextProps.someProp) {
+    return true;
+  } else {
+    return false;
+  }
+}
+
+export default React.memo(Child, areEqual);
+```
+
+React.memo()可接受 2 个参数，第一个参数为纯函数的组件，第二个参数用于对比 props 来控制是否重渲染组件，与 shouldComponentUpdate()功能类似。
+
+当不传入第二个参数的时候，被 React.memo 包裹的这个组件在其自身的 prevProps 和 nextProps 浅比较之后若不等 或者 这个组件使用了 redux 等中的全局状态时，才会重新渲染。不受其它外部传入状态的影响。
+
+那是不是每个组件都要用 React.memo 包裹起来呢？实际上不需要。要用到 React.memo 的机会其实不太多。只用在重新渲染比较耗性能的组件上。另外，React.memo 本身要进行浅比较，也是有成本的。
+
+React.memo 是用在一个组件上的，useMemo 是用来包裹一个值的。
+
+比如，下面的 Layout 组件因为无参数，也没有用到 redux 等全局状态，所以可以用 React.memo 第二个参数传 return false 的函数来直接优化。
+
+```tsx
+import React from 'react';
+import { Link, Outlet } from 'react-router-dom';
+import './MainLayout.less';
+
+function MainLayout() {
+  return (
+    <div className="home-main-layout">
+      <ul className="demo-nav">
+        <li>
+          <Link to="/">首页</Link>
+        </li>
+        <li>
+          <Link to="/myApps">我的应用</Link>
+        </li>
+        <li>
+          <Link to="/app/1/admin/123">Page Management for app 1 page 123</Link>
+        </li>
+        <li>
+          <Link to="/app/1/admin/appPublish">Publish app 1</Link>
+        </li>
+        {/* <li><Link to="/app/1/admin/appSettings">Settings for app 1</Link></li> */}
+        <li>
+          <Link to="/app/1/design?pageId=123">Design app 1 page 123</Link>
+        </li>
+        <li>
+          <Link to="/app/1/preview?pageId=123">Preview app 1 page 123</Link>
+        </li>
+        <li>
+          <Link to="/auth/register">注册</Link>
+        </li>
+        <li>
+          <Link to="/auth/login">登录</Link>
+        </li>
+        <li>
+          <Link to="/user/1/profile">我的档案</Link>
+        </li>
+        <li>
+          <Link to="/examples/counter">计数器例子</Link>
+        </li>
+      </ul>
+      <Outlet />
+    </div>
+  );
+}
+
+export default React.memo(MainLayout, () => false);
+```
+
+## React 性能追踪：用 React 的 Profiler 来进行性能追踪
+
+Profiler 可以用来作为一个组件包裹在任何组件的外面。一个应用中可以使用多个 Profiler。
+
+尽管 Profiler 是一个轻量级组件，但我们仍然要注意只在需要时才使用它。因为每一个添加都会给 CPU 和内存增加一些负担。
+
+```tsx
+<Profiler id="xxx" onRender={callback}>
+  <SomeComponent />
+</Profiler>
+```
+
+因为 Profiler 会增加额外的开支，所以它在生产构建中默认是被禁用的。
+
+如果需要用到它的时候，可以通过
+
+npm run build -- --profile
+
+或者
+
+yarn build --profile
+
+来启用它。
+
+```tsx
+import React, { ProfilerProps, ProfilerOnRenderCallback } from 'react';
+
+type Props = { metadata?: any; phases?: ('mount' | 'update')[] } & Omit<
+  ProfilerProps,
+  'onRender'
+>;
+
+let queue: unknown[] = [];
+
+const sendProfileQueue = () => {
+  if (!queue.length) {
+    return;
+  }
+
+  const queueToSend = [...queue];
+  queue = [];
+  console.log(queueToSend);
+};
+
+// 每隔5秒批量打印输出一次，以避免打印过于频繁
+setInterval(sendProfileQueue, 5000);
+
+export const Profiler = ({ metadata, phases, ...props }: Props) => {
+  const reportProfile: ProfilerOnRenderCallback = (
+    id: string,
+    phase: 'mount' | 'update',
+    actualDuration: number,
+    baseDuration: number,
+    startTime: number,
+    commitTime: number,
+    interactions: Set<unknown>
+  ) => {
+    // 指定如果没有传入phases，则所有更新都记录
+    // 否则，如果phase属于phases中，则也要记录
+    // phase是阶段的意思，比如，mount阶段、update阶段
+    if (!phases || phases.includes(phase)) {
+      queue.push({
+        id,
+        phase,
+        actualDuration,
+        baseDuration,
+        startTime,
+        commitTime,
+        interactions,
+        metadata,
+      });
+    }
+  };
+
+  return <React.Profiler onRender={reportProfile} {...props} />;
+};
+```
+
+然后像如下这样使用：
+
+```tsx
+import { Profiler } from '../../common/components/Profiler';
+...
+<Profiler id="app-list" phases={['update', 'mount']} >
+  <AppList keyword={keyword} setRefetch={setRefetchRef} />
+</Profiler>
+...
+```
 
 我在初次改变 pageSize 时，onChange 里面接收到的 currentPage 是 0，不知道是受到什么的影响。后来，为了解决这个问题，我在 onChange 里面判断了一下，如果 currentPage 是小于等于 0，就把它变成 1。
