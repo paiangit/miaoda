@@ -3596,6 +3596,21 @@ export const getAppList = async (params) => {
 };
 ```
 
+### 在账号退出登录的时候，需要清空一下 react-query 的缓存
+
+以防止一个账号退出登录后立即换另一个账号登录时，还有接口能先看到上一个账号请求后缓存的数据，然后再跳变成新数据（通常是使用了{keepPreviousData: true}选项的接口中可见）。
+
+```ts
+const queryClient = useQueryClient();
+const logout = () =>
+  auth.logout().then(() => {
+    setUser(null);
+    queryClient.clear();
+  });
+```
+
+### react-query 对于一段时间内（默认是 2 秒，可设置）的多个同一请求 key 的请求，会合并成一个，不会重复请求。所以，对于页面中有多个卡片，每个卡片中都使用了同一请求 key 的 Query 的情况，不用担心重复请求。
+
 参考：
 react-query 在项目中的架构封装设计（大量实践经验）
 https://blog.csdn.net/qq_21567385/article/details/117408650?spm=1001.2014.3001.5502
