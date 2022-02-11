@@ -27,6 +27,7 @@ export const useUrlQueryParams = <K extends string>(keys: K[]) => {
   ] as const; // 这里的as const，即TypeScript中的const断言。const断言会告诉编译器为表达式推断最窄的*或最具体的类型。如果您不使用as const，编译器将使用其默认类型推断行为，这可能会导致更广泛或更通用的类型。
 };
 
+// 提供一个useSetUrlSearchParam来代替setSearchParam，避免两个入口导致的URL地址栏参数出现param1=&&param2=的情况
 export const useSetUrlSearchParam = () => {
   const [searchParams, setSearchParam] = useSearchParams();
   return (params: { [key in string]: unknown }) => {

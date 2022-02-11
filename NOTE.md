@@ -2130,16 +2130,6 @@ modifyVars: {
 ## 自定义 Hook
 
 ```ts
-import { useEffect } from 'react';
-
-export const useMount = (callback) => {
-  useEffect(() => {
-    callback();
-  }, []);
-};
-```
-
-```ts
 import { useEffect, useState } from 'react';
 
 export const useDebounce = (value, delay) => {
@@ -2970,7 +2960,7 @@ function Projects() {
 }
 ```
 
-**预取下一页：queryClient.prefetchQuery**
+### **预取下一页：queryClient.prefetchQuery**
 
 ```ts
 // Prefetch the next page!
@@ -3395,7 +3385,7 @@ src\features\myApps\AppList.tsx
 import { useCallback, useEffect, useState } from 'react';
 import { Empty, Tag, Tooltip, Spin, Pagination } from 'antd';
 import { ChromeOutlined } from '@ant-design/icons';
-import { useUrlQueryParams, useMount } from '../../common/hooks';
+import { useUrlQueryParams } from '../../common/hooks';
 import AppOperationDropdown from './AppOperationDropdown';
 import { useGetAppList } from './hooks';
 + import { useGetAppListQueryKey } from './keys';
@@ -3410,13 +3400,13 @@ interface AppListProps {
 export default function AppList({ keyword, setRefetch }: AppListProps) {
 +  const [urlQueryParams, setUrlQueryParams] = useUrlQueryParams(['keyword', 'page', 'pageSize']);
 
-+  useMount(() => {
++  useEffect(() => {
     setUrlQueryParams({
       ...urlQueryParams,
       page: defaultCurrentPage,
       pageSize: defaultPageSize,
     });
-  });
+  }, []);
 
   const appListQuery = useGetAppList(
 +    useGetAppListQueryKey(),
@@ -3716,11 +3706,10 @@ export default function AppListPage() {
 src\features\myApps\AppList.tsx
 
 ```tsx
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { Empty, Tag, Tooltip, Spin, Pagination } from 'antd';
 import { ChromeOutlined } from '@ant-design/icons';
 import AppOperationDropdown from './AppOperationDropdown';
-+ import { useMount } from '../../common/hooks';
 import { useGetAppList } from './hooks';
 import './AppList.less';
 
@@ -3746,7 +3735,7 @@ export default function AppList({ keyword, setRefetch }: AppListProps) {
   );
   const { isLoading, isError, data: appList, refetch } = appListQuery;
 
-+  useMount(() => setRefetch(() => refetch)); //  注意这里不能直接传入函数，而是要传入一个返回目标函数的函数
+  +useEffect(() => setRefetch(() => refetch), []); //  注意这里不能直接传入函数，而是要传入一个返回目标函数的函数
 
   const generateApps = () => {
     if (isLoading) {
@@ -3887,7 +3876,6 @@ src\features\myApps\AppListPage.tsx
 import { useState, useEffect } from 'react';
 import { Empty, Tag, Tooltip, Spin, Pagination } from 'antd';
 import { ChromeOutlined } from '@ant-design/icons';
-import { useMount } from '../../common/hooks';
 import AppOperationDropdown from './AppOperationDropdown';
 import { useGetAppList } from './hooks';
 import './AppList.less';
@@ -4092,6 +4080,20 @@ const startEdit = useCallback(
 +  [setEditingTaskId]
 );
 ```
+
+useMemo 的意思就是：不要每次渲染都重新定义，而是我让你重新定义的时候再重新定义(第二个参数，依赖列表里的依赖变化时，才重新定义)。useMemo 里的回调函数如果有用到变量的话，IDE 就会提醒加上依赖了。
+
+这就是使用 useMemo 的原理，useMemo 适用于所有类型的值，假如这个值恰好是函数，那么用 useCallback 也可以。也就是说，useCallback 是一种特殊的 useMemo。
+
+在这里再粗暴地给大家总结一下日常使用的场景：
+
+如果你定义了一个变量，满足下面的条件就最好用 useMemo 和 useCallback 给包裹住：
+
+1. 它不是状态，也就是说，不是用 useState 定义的(redux 中的状态实际上也是用 useState 定义的)
+2. 它不是基本类型
+3. 它会被放在 useEffect 的依赖列表里 || 自定义 hook 的返回值
+
+说一下第 3 条，中间的两个竖线是 或，也就是两者满足其一第 3 条就成立。自定义 hook 的返回值也成立是因为，你不知道自定义 hook 的返回值将会被用在哪里，它可能会被用在依赖也可能不会，所以干脆都加上。
 
 ## 组件组合（composition component）
 

@@ -1,7 +1,7 @@
-import { useCallback } from 'react';
+import { useCallback, useEffect } from 'react';
 import { Empty, Tag, Tooltip, Spin, Pagination } from 'antd';
 import { ChromeOutlined } from '@ant-design/icons';
-import { useUrlQueryParams, useMount } from '../../common/hooks';
+import { useUrlQueryParams } from '../../common/hooks';
 import AppOperationDropdown from './AppOperationDropdown';
 import { useGetAppList } from './hooks';
 import { useGetAppListQueryKey } from './keys';
@@ -20,14 +20,13 @@ export default function AppList({ keyword, setRefetch }: AppListProps) {
     'pageSize',
   ]);
 
-  useMount(() => {
+  useEffect(() => {
     setUrlQueryParams({
       page: defaultCurrentPage,
       pageSize: defaultPageSize,
       keyword,
     });
-    console.log('mount');
-  });
+  }, []);
 
   const appListQuery = useGetAppList(useGetAppListQueryKey(), {
     keepPreviousData: true,
