@@ -4533,6 +4533,8 @@ export default React.memo(MainLayout, () => false);
 
 ## React 性能追踪：用 React 的 Profiler 来进行性能追踪
 
+Profiler 测量渲染一个 React 应用多久渲染一次以及渲染一次的“代价”。它的目的是识别出应用中渲染较慢的部分，或是可以用类似 memoization 优化的部分。
+
 Profiler 可以用来作为一个组件包裹在任何组件的外面。一个应用中可以使用多个 Profiler。
 
 尽管 Profiler 是一个轻量级组件，但我们仍然要注意只在需要时才使用它。因为每一个添加都会给 CPU 和内存增加一些负担。
@@ -4621,3 +4623,356 @@ import { Profiler } from '../../common/components/Profiler';
 ```
 
 我在初次改变 pageSize 时，onChange 里面接收到的 currentPage 是 0，不知道是受到什么的影响。后来，为了解决这个问题，我在 onChange 里面判断了一下，如果 currentPage 是小于等于 0，就把它变成 1。
+
+## 自动化测试
+
+### 目的：让我们对自己写的代码更有信心，防止出现“新代码破坏旧代码”的无限循环。
+
+### 分类：（从上往下粒度越来越大）
+
+- 单元测试：传统单元测试、组件测试、hook 测试
+
+- 集成测试：多个单元集成成一起，变成一个模块，测试这个模块
+
+- e2e 测试（端到端测试）：模拟用户
+
+### 安装依赖
+
+Create React App 已经默认给我们安装了几个测试依赖：
+
+```json
+"@testing-library/jest-dom": "^5.16.1",
+"@testing-library/react": "^12.1.2",
+"@testing-library/user-event": "^13.5.0",
+```
+
+我们还需要安装如下两个：
+
+```sh
+pnpm add @testing-library/react-hooks msw -D
+```
+
+### 测试一个函数：
+
+http 模块的单元测试
+**test**/http.ts
+
+```ts
+// 这个是用来mock异步请求的，因为单元测试不能去直接测试真实的请求，那样的话请求有可能成功，有可能失败，就没法隔离环境对单元测试结果的影响了
+import { setupServer } from 'msw/node';
+
+// rest可以用来很方便的mock RESTful的接口
+import { rest } from 'msw';
+const apiUrl = process.env.REACT_APP_API_URL;
+const server = setupServer();
+
+// jest是对react最友好的一个测试库
+// beforeAll 代表执行所有测试之前，先要执行的回调函数
+beforeAll(() => server.listen());
+
+// 每一个测试跑完以后，都重置mock路由
+afterEach(() => server.resetHandlers());
+
+// 所有的测试跑完以后，关闭mock路由
+afterAll(() => server.close());
+
+test('http方法发送异步请求', async () => {
+  const endpoint = 'test-endpoint'; // 请求的地址
+  const mockResult = { mockValue: 'mock' }; // mock请求返回的值
+
+  server.use(
+    rest.get(`${apiUrl}/${endpoint}`, (req, res, ctx) =>
+      res(ctx.json(mockResult))
+    )
+  );
+
+  const result = await http(endpoint);
+  expect(result).toEqual(mockResult);
+});
+
+http('http请求时会在header里带上token', async () => {
+  const token = 'FAKE_TOKEN';
+  const endpoint = 'test-endpoint';
+  const mockResult = {
+    mockValue: 'mock',
+  };
+
+  let request: any;
+
+  server.use(
+    rest.get(`${apiUrl}/${endpoint}`, async (req, res, ctx) => {
+      request = req;
+      return res(ctx.json(mockResult));
+    })
+  );
+
+  await http(endpoint, { token });
+  expect(request.headers.get('Authorization')).toBe(`Bearer ${token}`);
+});
+```
+
+然后执行 npm tun test 即可执行单元测试。
+
+### 测试 hook；
+
+**test**/use-async.ts
+
+```ts
+import { useAsync } from 'utils/use-async'
+import { act, renderHook } from '@testing-library/react-hooks';
+
+const defaultState: ReturnType<typeof useAsync> = {
+  stat: 'idle',
+  data: null,
+  error: null,
+
+  isIdle: true,
+  isLoading: false,
+  isError: false,
+  isSuccess: false,
+
+  // 下面几个方法在我们测试时都不是很重要，我们把它们标记成 expect.any(Function)
+  run: expect.any(Function),
+  setData: expect.any(Function),
+  setError: expect.any(Function),
+  retry: expect.any(Function),
+}
+
+const loadingState: ReturnType<typeof useAsync> = {
+  ...defaultState,
+  stat: 'loading',
+  isIdle: false,
+  isLoading: true,
+};
+
+const successState: ReturnType<typeof useAsync> {
+  ...defaultState,
+  stat: 'success',
+  isIdle: false,
+  isSuccess: true,
+};
+
+test('useAsync 可以异步处理', async() => {
+  let resolve: any;
+  let reject;
+
+  const promise = new Promise((res, rej) => {
+    resolve = res;
+    reject = rej;
+  });
+
+  const { result } = renderHook(() => useAsync());
+  expect(result.current).toEqual(defaultState);
+
+  let p: Promise<any>;
+
+  // 因为有情况下setState是异步的，所以如果你想等setState都执行完了，可以安全地获得setState后的值的话，就应该用act把它包起来。
+  act(() => {
+    p = result.current.run(promise);
+  });
+  expect(result.current).toEqual(loadingState);
+
+  const resolvedValue = {mockValue: 'resolved'};
+  await act(async() => {
+    resolve(resolvedValue);
+    await p;
+  });
+  expect(result.current).toEqual({
+    ...successState,
+    data: resolvedValue,
+  });
+})
+```
+
+### 测试组件：
+
+**test**/mark.tsx
+
+```tsx
+import React from 'react';
+import { render, screen } from '@testing-library/react';
+
+import { Mark } from 'components/mark';
+
+test('Mark组件正确高亮关键词', () => {
+  const name = '物料管理';
+  const keyword = '管理';
+
+  render(<Mark name={name} keyword={keyword} />);
+
+  expect(screen.getByText(keyword)).toBeInTheDocument();
+  expect(screen.getByText(keyword)).toHaveStyle('color: #257AFD');
+  expect(screen.getByText('物料')).not.toHaveStyle('color: #257AFD');
+});
+```
+
+### 集成测试：
+
+集成测试一般测试的是组件之间的组合或者函数之间的组合。
+
+useLocation 只能在 BrowserRouter 包裹的范围内使用，否则会得到错误。
+
+在测试用例之前加入一个下面这个 matchMedia stub。
+
+setupTests.ts
+
+```tsx
+import '@testing-library/jest-dom'
+
+window.matchMedia = window.matchMedia || function() {
+  return {
+    matches: false,
+    addListener: function{},
+    removeListener: function{},
+  };
+}
+```
+
+下面我们来测试 project-list.tsxt 这个页面。
+
+首先我们看看这个页面都用到哪些 API。然后我们将这些 API 逐一 mock 一下。
+
+**test**/project-list.tsx
+
+```tsx
+import React, { ReactNode } from 'react';
+import { setupServer } from 'msw/node';
+import { rest } from 'msw';
+import { render, screen, waitFor } from '@testing-library/react';
+import { ProjectListScreen } from 'src/screens/project-list';
+import { AppProviders } from 'src/context';
+
+const apiUrl = process.env.REACT_APP_API_URL;
+
+const server = setupServer(
+  rest.get(`${apiUrl}/me`, (req, res, ctx) => {
+    id: 1,
+    name: 'jack',
+    token: '123',
+  });
+
+  rest.get(`${apiUrl}/users`, (req, res, ctx) => [
+    {
+      "id": 1,
+      "name": "paian"
+    },
+    {
+      "id": 2,
+      "name": "dennis"
+    }
+  ]);
+
+  rest.get(`${apiUrl}/projects`, (req, res, ctx) => {
+    // mock一个简易的搜索功能
+    const data = [
+      {
+        "id": 1,
+        "name": "项目1",
+        "created": 1604989637822
+      },
+      {
+        "id": 2,
+        "name": "项目2",
+        "created": 1604989667855
+      },
+    ];
+    const { name = '', personId = undefined, } = Object.fromEntries(req.url.searchParams);
+    const result = data.filter(project => {
+      return project.name.includes(name) && (personId ? project.personId === +personId : true)
+    })
+    return res(ctx.json(result));
+  });
+);
+
+beforeAll(() => server.listen());
+
+afterEach(() => server.resetHandlers());
+
+afterAll(() => server.close());
+
+// 因为渲染一个页面的时候，通常都会依赖一些Provider，路由等信息，不是单纯的一个页面，所以我们封装一个函数来提供这些信息
+export const renderScreen = (ui: ReactNode, { route = 'projects/'} = {}) => {
+  window.history.pushState({}, 'Test Page', route);
+  return render(<AppProviders>{ui}</AppProviders>);
+}
+
+// 因为页面首先会是显示loading，所以我们需要等一等，等到真实内容渲染出来
+const waitTable = () => waitFor(() => expect(screen.getByText('项目1')).toBeInTheDocument());
+
+test('项目列表展示正常', async () => {
+  renderScreen(<ProjectScreen />, { route: '/projects' });
+  await waitTable();
+  expect(screen.getAllByRole('row').length).toBe(fakeData.projects.length + 1);
+});
+
+// 因为单元测试和集成测试是跑在node.js上的，这样会跑得比较快，缺点是无法完整地模拟浏览器。比如，在页面的项目搜索输入框中内容改变的时候，URL地址也跟着改变，这个是做不到的，因为没有浏览器。
+test('搜索项目', async () => {
+  renderScreen(<ProjectListScreen/>, { route: '/projects?name=项目' });
+  await waitTable();
+  expect(screen.getAllByRole('row').length).toBe(3);
+  expect(screen.getByText('项目1')).toBeInTheDocument();
+})
+```
+
+因为这里用到了 AppProviders，所以如果你的项目中并没有把这个东西做提取的话，建议做一下提取，方便真实项目和测试共用。
+
+```tsx
+import React, { ReactNode } from 'react';
+import { QueryClient, QueryClientProvider } from 'react-query';
+import { BrowserRouter as Router } from 'react-router-dom';
+import { AuthProvider } from 'src/context/auth-context';
+
+export const AppProviders = ({ children }: { children: ReactNode }) => {
+  const queryClient = new QueryClient({
+    defaultOptions: {
+      queries: {
+        refetchOnWindowFocus: false,
+      },
+    },
+  });
+
+  return (
+    <QueryClientProvider client={queryClient}>
+      <Router>
+        <AuthProvider>{children}</AuthProvider>
+      </Router>
+    </QueryClientProvider>
+  );
+};
+```
+
+我们这里用到的库是@testing-library/react，它有一个前辈是 emzy，之前非常流行，现在逐渐被@testing-library/react 所代替。@testing-library/react 中，没有 getById、getByClass 等 DOM 相关的操作接口，取而代之的是（都在@testing-library/react 的 screen 下）：
+
+- getByText
+
+- getByRole
+
+- getByPlaceholderText
+
+- getByTestId // 可以给 DOM 元素加一个属性，test id
+
+- getByAltText
+
+- getByLabelText
+
+- getByTitle
+
+- getAllByRole
+
+- getAllByText
+
+- getAllByTestId
+
+- getAllByAltText
+
+- getAllByDisplayValue
+
+- getAllByLabelText
+
+- getAllByPlaceholderText
+
+- getAllByTitle
+
+等等。
+
+这是因为@testing-library/react 认为，测试的时候，要从用户的角度出发。而 getById、getByClass 等 DOM 相关的操作会涉及到开发中的细节，因为 className 等是会经常变的，一旦变化就得相应地调整你的测试脚本。而 getByText 等里面的 Text 是较大概率不会经常变化的，所以可以更好地保持测试脚本的稳定。
