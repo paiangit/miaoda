@@ -36,7 +36,7 @@ export default function AppOperationDropDown({
         break;
       case 2:
         // 访问应用 TODO: 替换pageId
-        navigate(`/app/${id}/preview?pageId=123`);
+        navigate(`/app/${id}/preview/123`);
         break;
       case 3:
         // TODO: 复制应用
