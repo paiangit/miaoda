@@ -26,7 +26,7 @@ export default function AppList({ keyword, setRefetch }: AppListProps) {
       pageSize: defaultPageSize,
       keyword,
     });
-  }, [setUrlQueryParams, keyword]);
+  }, [keyword]); // 注意这里不能把 setUrlQueryParams 加进来，否则会造成循环渲染
 
   const appListQuery = useGetAppList(useGetAppListQueryKey(), {
     keepPreviousData: true,

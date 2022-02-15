@@ -11,7 +11,7 @@ export default function CenterArea() {
       </div>
       <div className="simulator">
         <div className="simulator-content">
-          <iframe className="simulator-canvas"></iframe>
+          <iframe title="设计器" className="simulator-canvas"></iframe>
         </div>
       </div>
     </div>

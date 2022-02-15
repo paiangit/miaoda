@@ -1,4 +1,5 @@
-import { Outlet, Link } from 'react-router-dom';
+import { Button } from 'antd';
+import { Outlet } from 'react-router-dom';
 import './AdminLayout.less';
 
 export default function AdminLayout() {
@@ -12,7 +13,7 @@ export default function AdminLayout() {
       <Outlet />
       <br />
       <button>
-        <a onClick={handleClick}>返回</a>
+        <Button type="link" onClick={handleClick}>返回</Button>
       </button>
     </div>
   );

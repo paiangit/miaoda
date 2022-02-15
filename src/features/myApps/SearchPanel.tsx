@@ -22,11 +22,10 @@ export default function SearchPanel({ keyword, setParams }: SearchPanelProps) {
   const debounceValue = useDebounce(title, 300);
 
   useEffect(() => {
-    console.log(debounceValue);
     setParams({
       keyword: debounceValue
     });
-  }, [debounceValue, setParams]);
+  }, [debounceValue]); // 注意这里不能把 setParams 加进来，否则会造成循环渲染
 
   return (
     <Form className="my-apps-search-panel">
