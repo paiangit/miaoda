@@ -14,7 +14,7 @@ interface AppListProps {
 }
 
 export default function AppList({ keyword, setRefetch }: AppListProps) {
-  const [urlQueryParams, setUrlQueryParams] = useUrlQueryParams([
+  const [,setUrlQueryParams] = useUrlQueryParams([
     'keyword',
     'page',
     'pageSize',
@@ -26,7 +26,7 @@ export default function AppList({ keyword, setRefetch }: AppListProps) {
       pageSize: defaultPageSize,
       keyword,
     });
-  }, []);
+  }, [setUrlQueryParams, keyword]);
 
   const appListQuery = useGetAppList(useGetAppListQueryKey(), {
     keepPreviousData: true,

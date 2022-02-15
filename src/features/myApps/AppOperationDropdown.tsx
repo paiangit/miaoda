@@ -3,7 +3,6 @@ import {
   EllipsisOutlined,
   SettingOutlined,
   EyeOutlined,
-  CopyOutlined,
   DeleteOutlined,
 } from '@ant-design/icons';
 import { useNavigate } from 'react-router-dom';

@@ -1,4 +1,4 @@
-import { useState, useRef } from 'react';
+import { useRef } from 'react';
 import AppList from './AppList';
 import SearchPanel from './SearchPanel';
 import CreateAppModal from './CreateAppModal';

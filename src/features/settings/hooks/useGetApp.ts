@@ -13,7 +13,7 @@ export const getApp = async (id: number) => {
 };
 
 export function useGetApp(getAppQueryKey: GetAppQueryKey) {
-  const [key, id] = getAppQueryKey;
+  const [, id] = getAppQueryKey;
 
   return useQuery(
     getAppQueryKey,

@@ -27,7 +27,7 @@ export const useGetAppList = (
   getAppListQueryKey: GetAppListQueryKey,
   options?
 ) => {
-  const [key, params] = getAppListQueryKey;
+  const [, params] = getAppListQueryKey;
 
   console.log(params);
 

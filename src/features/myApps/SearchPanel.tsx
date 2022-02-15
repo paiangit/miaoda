@@ -26,7 +26,7 @@ export default function SearchPanel({ keyword, setParams }: SearchPanelProps) {
     setParams({
       keyword: debounceValue
     });
-  }, [debounceValue]);
+  }, [debounceValue, setParams]);
 
   return (
     <Form className="my-apps-search-panel">

@@ -16,7 +16,7 @@ export function CheckLogin(Component) {
         // console.log('未登录', err);
         navigate('/auth/login');
       });
-  }, []);
+  }, [navigate]);
 
   return function () {
     return <Component />;

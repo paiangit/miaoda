@@ -25,7 +25,7 @@ export function useAsync<D>(
     ...defaultInitialState,
     ...initialState,
   });
-  const config = { ...defaultConfig, ...initialConfig };
+  // const config = { ...defaultConfig, ...initialConfig };
   const mountedRef = useMountedRef();
 
   const setData = (data: D) =>

@@ -34,7 +34,7 @@ export default function ProfilePage() {
           navigate('/auth/login');
         }, 3000);
       });
-  }, []);
+  }, [navigate, params.userId]);
 
   const layout = {
     labelCol: { span: 8 },
