@@ -18,9 +18,7 @@ export default function CreateAppModal({ onSuccess }: CreateAppModalParams) {
     console.log(form.getFieldsValue());
     try {
       const values = await form.validateFields();
-      const userInfo = window.localStorage.getItem(
-        process.env.REACT_APP_USER_INFO_KEY
-      );
+      const userInfo = window.localStorage.getItem(process.env.REACT_APP_USER_INFO_KEY);
       values.creatorId = JSON.parse(userInfo).id;
 
       createApp(values).then(() => {

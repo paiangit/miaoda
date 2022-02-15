@@ -45,10 +45,6 @@ function App() {
         element: <NotFoundPage />,
       },
       {
-        path: 'myApps',
-        element: <AppListPage />,
-      },
-      {
         path: 'app/:appId/admin',
         element: <Navigate to=":pageId" />,
       },
@@ -59,6 +55,10 @@ function App() {
       {
         path: 'auth/login',
         element: <LoginPage />,
+      },
+      {
+        path: 'user/:userId/myApps',
+        element: <AppListPage />,
       },
       {
         path: 'user/:userId/profile',

@@ -1,68 +1,76 @@
-import React from 'react';
+import React, { useState, useEffect } from 'react';
 import { Outlet, Link } from 'react-router-dom';
 import { Layout, Menu } from 'antd';
 import './MainLayout.less';
 
 function MainLayout() {
   const { Header, Content, Footer } = Layout;
+  const [menu, setMenu] = useState([]);
 
-  const menu = [
-    {
-      name: '首页',
-      to: '/',
-      key: 'menu1',
-    },
-    {
-      name: '我的应用',
-      to: '/myApps',
-      key: 'menu2',
-    },
-    // {
-    //   name: 'Management app 1 page 123',
-    //   to: '/app/1/admin/123',
-    //   key: 'menu3',
-    // },
-    // {
-    //   name: 'Publish app 1',
-    //   to: '/app/1/admin/appPublish',
-    //   key: 'menu4',
-    // },
-    // {
-    //   name: 'Settings app 1',
-    //   to: '/app/1/admin/appSettings',
-    //   key: 'menu5',
-    // },
-    // {
-    //   name: 'Design app 1 page 123',
-    //   to: '/app/1/design/123',
-    //   key: 'menu6',
-    // },
-    // {
-    //   name: 'Preview app 1 page 123',
-    //   to: '/app/1/preview/123',
-    //   key: 'menu7',
-    // },
-    {
-      name: '注册',
-      to: '/auth/register',
-      key: 'menu8',
-    },
-    {
-      name: '登录',
-      to: '/auth/login',
-      key: 'menu9',
-    },
-    {
-      name: '我的档案',
-      to: '/user/1/profile',
-      key: 'menu10',
-    },
-    // {
-    //   name: '计数器例子',
-    //   to: '/examples/counter',
-    //   key: 'menu11',
-    // },
-  ];
+  useEffect(() => {
+    const userInfo = window.localStorage.getItem(process.env.REACT_APP_USER_INFO_KEY);
+    const userId = JSON.parse(userInfo).id;
+
+    const data = [
+      {
+        name: '首页',
+        to: '/',
+        key: 'menu1',
+      },
+      {
+        name: '我的应用',
+        to: `/user/${userId}/myApps`,
+        key: 'menu2',
+      },
+      {
+        name: '我的档案',
+        to: `/user/${userId}/profile`,
+        key: 'menu10',
+      },
+      // {
+      //   name: 'Management app 1 page 123',
+      //   to: '/app/1/admin/123',
+      //   key: 'menu3',
+      // },
+      // {
+      //   name: 'Publish app 1',
+      //   to: '/app/1/admin/appPublish',
+      //   key: 'menu4',
+      // },
+      // {
+      //   name: 'Settings app 1',
+      //   to: '/app/1/admin/appSettings',
+      //   key: 'menu5',
+      // },
+      // {
+      //   name: 'Design app 1 page 123',
+      //   to: '/app/1/design/123',
+      //   key: 'menu6',
+      // },
+      // {
+      //   name: 'Preview app 1 page 123',
+      //   to: '/app/1/preview/123',
+      //   key: 'menu7',
+      // },
+      {
+        name: '注册',
+        to: '/auth/register',
+        key: 'menu8',
+      },
+      {
+        name: '登录',
+        to: '/auth/login',
+        key: 'menu9',
+      },
+      // {
+      //   name: '计数器例子',
+      //   to: '/examples/counter',
+      //   key: 'menu11',
+      // },
+    ];
+
+    setMenu(data);
+  }, [])
 
   const generateMenu = () => menu.map(item => {
     return (
