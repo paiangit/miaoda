@@ -12,13 +12,11 @@ export function CheckLogin(Component) {
   }, [checkLogin]);
 
   return function () {
-    console.log(isLoading);
-
     if (isLoading) {
       return (<FullPageLoading></FullPageLoading>);
     }
 
-    if (true) {
+    if (isError) {
       return (<FullPageRetry></FullPageRetry>);
     }
 
