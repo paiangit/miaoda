@@ -11,7 +11,7 @@ import 'antd/dist/antd.less';
 // import reportWebVitals from './reportWebVitals';
 import { ErrorFallback } from './common/containers/ErrorFallback';
 import Root from './Root';
-import './styles/index.less';
+import './common/styles/index.less';
 
 moment.locale('zh-cn');
 

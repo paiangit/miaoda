@@ -1,7 +1,6 @@
 import { Form, Button, Input, message } from 'antd';
 import { useCreateUser } from './hooks';
 import { useDocumentTitle } from '../../common/hooks';
-import { User } from '../../common/types';
 import './RegisterPage.less';
 
 export default function RegisterPage() {
