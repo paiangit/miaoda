@@ -2546,7 +2546,7 @@ import { useQuery } from 'react-query';
 import axios from 'axios';
 
 const fetchAppList = () => {
-  return axios.get('http://localhost:3000/api/app/list');
+  return axios.get('http://localhost:4000/api/app/list');
 };
 
 export const AppList = () => {

@@ -21,7 +21,7 @@
     "web-vitals": "^2.1.2"
   },
   "scripts": {
-    "start": "cross-env PORT=80 craco start",
+    "start": "craco start",
     "build": "craco build",
     "test": "craco test",
     "eject": "react-scripts eject",
@@ -60,6 +60,7 @@
     "@types/react-dom": "^17.0.11",
     "@welldone-software/why-did-you-render": "^6.2.3",
     "craco-less": "^2.0.0",
+    "cross-env": "^7.0.3",
     "eslint-config-prettier": "^8.3.0",
     "husky": "^7.0.4",
     "jest-watch-typeahead": "^0.6.5",
