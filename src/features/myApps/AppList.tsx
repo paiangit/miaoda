@@ -2,6 +2,8 @@ import { useCallback, useEffect } from 'react';
 import { Empty, Tag, Tooltip, Spin, Pagination } from 'antd';
 import { ChromeOutlined } from '@ant-design/icons';
 import { useUrlQueryParams } from '../../common/hooks';
+import { Loading } from '../../common/components/Loading';
+import { Retry } from '../../common/components/Retry';
 import AppOperationDropdown from './AppOperationDropdown';
 import { useGetAppList } from './hooks';
 import { useGetAppListQueryKey } from './keys';
@@ -47,22 +49,18 @@ export default function AppList({ keyword, setRefetch }: AppListProps) {
 
   const generateApps = () => {
     if (isLoading) {
-      return (
-        <div className="loading">
-          <Spin></Spin>
-        </div>
-      );
+      return (<Loading></Loading>);
     }
 
     if (isError) {
-      return <div className="error-tip">服务器开小差了，请稍后重试~</div>;
+      return (<Retry></Retry>);
     }
 
     if (!appList || !appList.data.length) {
       return <Empty description="没有满足条件的应用"></Empty>;
     }
 
-    return appList.data.map((item) => {
+    const listContent = appList.data.map((item) => {
       const tagMap = {
         '0': <Tag className="deleted">已删除</Tag>,
         '1': <Tag className="offline">未启用</Tag>,
@@ -106,9 +104,17 @@ export default function AppList({ keyword, setRefetch }: AppListProps) {
         </a>
       );
     });
+
+    return (
+      <div className="list">{listContent}</div>
+    );
   };
 
   const genPagination = () => {
+    if (isLoading || isError) {
+      return (<div></div>);
+    }
+
     return (
       <Pagination
         showQuickJumper
@@ -123,7 +129,7 @@ export default function AppList({ keyword, setRefetch }: AppListProps) {
 
   return (
     <div className="my-apps-app-list">
-      <div className="list">{generateApps()}</div>
+      {generateApps()}
       <div className="pagination">{genPagination()}</div>
     </div>
   );

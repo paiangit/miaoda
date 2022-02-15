@@ -1,7 +1,9 @@
 import { useEffect, useCallback } from 'react';
 import { useParams } from 'react-router-dom';
-import { Form, Input, Radio, Button, Spin } from 'antd';
+import { Form, Input, Radio, Button } from 'antd';
 import { useDocumentTitle } from '../../common/hooks';
+import { Loading } from '../../common/components/Loading';
+import { Retry } from '../../common/components/Retry';
 import { useGetApp, useUpdateApp } from './hooks';
 import { useGetAppQueryKey } from './keys';
 import './AppSettingsPage.less';
@@ -49,18 +51,11 @@ export default function AppSettingsPage() {
   }, [initialInfo, form]);
 
   if (isLoading) {
-    return <Spin></Spin>;
+    return <Loading></Loading>;
   }
 
   if (isError) {
-    const handleClick = () => window.location.reload();
-
-    return (
-      <div>
-        服务器开小差了，请稍侯重试~
-        <Button type="primary" onClick={handleClick}></Button>
-      </div>
-    );
+    return (<Retry></Retry>);
   }
 
   return (

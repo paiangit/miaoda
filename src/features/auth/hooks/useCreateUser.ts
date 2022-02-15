@@ -11,7 +11,7 @@ const createUser = async (data) => {
     data,
   });
 
-  return result.data as User || undefined;
+  return result.data as User | undefined;
 }
 
 // hook封装层
