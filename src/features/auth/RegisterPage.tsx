@@ -1,14 +1,14 @@
 import { Form, Button, Input, message } from 'antd';
-import { useNavigate } from 'react-router-dom';
-import apis from './apis';
+import { useCreateUser } from './hooks';
 import { useDocumentTitle } from '../../common/hooks';
+import { User } from '../../common/types';
 import './RegisterPage.less';
 
 export default function RegisterPage() {
   useDocumentTitle('用户注册');
 
   const [form] = Form.useForm();
-  const navigate = useNavigate();
+  const { mutateAsync: createUser, isLoading } = useCreateUser();
 
   function handleFinish(values) {
     const { username, email, password, retypePassword } = values;
@@ -18,24 +18,15 @@ export default function RegisterPage() {
     // 注册之前移除登录token
     window.localStorage.removeItem(process.env.REACT_APP_ACCESS_TOKEN_KEY);
 
-    apis
-      .createUser({
-        username,
-        password,
-        email,
-      })
-      .then((res) => {
-        console.log(res);
-        if (res.code === 0) {
-          message.success('注册成功！');
-          setTimeout(() => {
-            navigate('/auth/login');
-          }, 3000);
-        }
-      })
-      .catch((err) => {
-        console.log(err);
-      });
+    const user = {
+      username,
+      password,
+      email,
+    }
+
+    createUser(user).then(res => {
+      form.resetFields();
+    });
   }
 
   const layout = {
@@ -101,7 +92,7 @@ export default function RegisterPage() {
         </Form.Item>
 
         <Form.Item wrapperCol={{ ...layout.wrapperCol, offset: 8 }}>
-          <Button type="primary" htmlType="submit">
+          <Button type="primary" htmlType="submit" loading={isLoading}>
             注册
           </Button>
         </Form.Item>

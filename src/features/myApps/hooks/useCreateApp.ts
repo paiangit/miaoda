@@ -1,3 +1,4 @@
+import { useNavigate } from 'react-router-dom';
 import { message } from 'antd';
 import { useMutation } from 'react-query';
 import { request } from '../../../common/utils';
@@ -16,13 +17,21 @@ export const createApp = async (params: App) => {
 
 // hook封装层
 export const useCreateApp = () => {
-  return useMutation(async (params: App) => createApp(params), {
-    onSuccess(data, variables, context) {
-      message.success('创建成功！');
+  const navigate = useNavigate();
+
+  return useMutation(
+    async (params: App) => createApp(params),
+    {
+      onSuccess(data, variables, context) {
+        message.success('创建成功！');
+        setTimeout(() => {
+          navigate('/auth/login');
+        }, 3000);
+      },
+      onError(err: Error, variables, context) {
+        console.log('创建失败', err);
+        message.error('创建失败！');
+      },
     },
-    onError(err: Error, variables, context) {
-      console.log('创建失败', err);
-      message.error('创建失败！');
-    },
-  });
+  );
 };

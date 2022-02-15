@@ -24,8 +24,7 @@ export default function AppOperationDropDown({
   id,
   onDeleteSuccess,
 }: AppOperationDropDownProps) {
-  const deleteAppMutation = useDeleteApp();
-  const { mutateAsync: deleteApp } = deleteAppMutation;
+  const { mutateAsync: deleteApp, isLoading } = useDeleteApp();
   const navigate = useNavigate();
   const handleMenuClick = (e) => {
     const { key } = e;
@@ -77,7 +76,7 @@ export default function AppOperationDropDown({
               type="link"
               icon={<DeleteOutlined />}
               style={{ color: 'rgb(255, 82, 25)' }}
-              loading={deleteAppMutation.isLoading}
+              loading={isLoading}
             >
               删除应用
             </Button>

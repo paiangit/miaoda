@@ -1,34 +1,15 @@
-import { Form, Button, message, Input } from 'antd';
-import { useNavigate } from 'react-router-dom';
+import { Form, Button, Input } from 'antd';
 import { useDocumentTitle } from '../../common/hooks';
-import apis from './apis';
+import { useLogin } from './hooks';
 import './LoginPage.less';
 
 export default function LoginPage() {
   useDocumentTitle('用户登录');
 
-  const navigate = useNavigate();
+  const { mutate: login, isLoading } = useLogin();
 
   const handleFinish = (values) => {
-    apis.login(values).then((res) => {
-      if (res.code === 0) {
-        let { token, id, username } = res.data;
-        if (token) {
-          window.localStorage.setItem(
-            process.env.REACT_APP_ACCESS_TOKEN_KEY,
-            token
-          );
-          window.localStorage.setItem(
-            process.env.REACT_APP_USER_INFO_KEY,
-            JSON.stringify({ id, username })
-          );
-          message.success('登录成功');
-          setTimeout(() => {
-            navigate(`/user/${id}/myApps`);
-          }, 2000);
-        }
-      }
-    });
+    login(values);
   };
 
   const [form] = Form.useForm();
@@ -66,7 +47,7 @@ export default function LoginPage() {
           <Input.Password maxLength={14} />
         </Form.Item>
         <Form.Item wrapperCol={{ ...layout.wrapperCol, offset: 8 }}>
-          <Button type="primary" htmlType="submit">
+          <Button type="primary" htmlType="submit" loading={isLoading}>
             登录
           </Button>
         </Form.Item>
