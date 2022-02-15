@@ -5006,3 +5006,14 @@ trim_trailing_whitespace = false
   "files.autoSaveDelay": 2000,
 }
 ```
+
+## 解决报错： validateDOMNesting(...): <button> cannot appear as a descendant of <button>
+
+大致是说在<button>标签里面不能在嵌套<button>标签
+
+例如下面：
+
+<button>
+  button1
+    <button>button2</button>
+</button>
