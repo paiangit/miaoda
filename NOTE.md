@@ -4976,3 +4976,33 @@ export const AppProviders = ({ children }: { children: ReactNode }) => {
 等等。
 
 这是因为@testing-library/react 认为，测试的时候，要从用户的角度出发。而 getById、getByClass 等 DOM 相关的操作会涉及到开发中的细节，因为 className 等是会经常变的，一旦变化就得相应地调整你的测试脚本。而 getByText 等里面的 Text 是较大概率不会经常变化的，所以可以更好地保持测试脚本的稳定。
+
+## 添加.editorconfig文件
+
+```
+root = true
+
+[*]
+charset = utf-8
+indent_style = space
+indent_size = 2
+tab_width = 2
+end_of_line = lf
+trim_trailing_whitespace = true
+insert_final_newline = true
+
+[*.md]
+trim_trailing_whitespace = false
+
+```
+
+## 加长设置VS Code自动保存文件的延时
+
+在.vscode/settings.json中，需要配置"files.autoSave": "afterDelay"选项来让文件修改后自动保存，之所以要设置 "files.autoSaveDelay": 2000 是因为默认的保存速度太快，当文件末尾没有空行的时候，会与.editorconfig中的 insert_final_newline = true 相冲突，在你安装了名称: EditorConfig for VS Code（https://marketplace.visualstudio.com/items?itemName=EditorConfig.EditorConfig）插件的时候，会造成鼠标在你输入代码的时候不断换行的问题。
+
+```json
+{
+  "files.autoSave": "afterDelay",
+  "files.autoSaveDelay": 2000,
+}
+```

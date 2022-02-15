@@ -1,3 +1,5 @@
 {
-  "typescript.tsdk": "node_modules\\typescript\\lib"
+  // "typescript.tsdk": "node_modules\\typescript\\lib"
+  "files.autoSave": "afterDelay",
+  "files.autoSaveDelay": 2000, // 可避当文件末尾没有空行的时候，与.editorconfig中的 insert_final_newline = true 相冲突（安装了: EditorConfig for VS Code 插件的时候）
 }
