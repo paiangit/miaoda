@@ -23,10 +23,7 @@ export const getAppList = async (params) => {
 };
 
 // hook封装层
-export const useGetAppList = (
-  getAppListQueryKey: GetAppListQueryKey,
-  options?
-) => {
+export const useGetAppList = (getAppListQueryKey: GetAppListQueryKey, options?) => {
   const [, params] = getAppListQueryKey;
 
   console.log(params);

@@ -1,16 +1,17 @@
-import { useParams, useNavigate } from 'react-router-dom';
+import { useNavigate } from 'react-router-dom';
 import { useEffect, useState } from 'react';
 import { Form } from 'antd';
-import apis from './apis';
 import { useDocumentTitle } from '../../common/hooks';
+import { Loading } from '../../common/components/Loading';
+import { useGetUser } from './hooks';
+import { useGetUserQueryKey } from './keys';
 import './ProfilePage.less';
 
 export default function ProfilePage() {
-  const params = useParams();
   const navigate = useNavigate();
   const [userProfile, setUserProfile] = useState({
     username: '',
-    id: '',
+    id: null,
     gender: 0,
     // avatar: '',
     email: '',
@@ -19,31 +20,26 @@ export default function ProfilePage() {
 
   useDocumentTitle('我的档案', false);
 
+  const userQuery = useGetUser(useGetUserQueryKey(),  {
+    keepPreviousData: true,
+  });
+  const { isLoading, isError, data, refetch } = userQuery;
+
   useEffect(() => {
-    apis
-      .getUser(params.userId)
-      .then((res) => {
-        console.log(res);
-        if (res.code === 0 && res.data) {
-          setUserProfile(res.data);
-        }
-      })
-      .catch((err) => {
-        console.log(err.message);
-        setTimeout(() => {
-          navigate('/auth/login');
-        }, 3000);
-      });
-  }, [navigate, params.userId]);
+    data && setUserProfile(data);
+  }, [data]);
 
   const layout = {
     labelCol: { span: 8 },
     wrapperCol: { span: 8 },
   };
 
-  return (
-    <div className="user-profile-page">
-      <h2 className="title">我的档案</h2>
+  const generateForm = () => {
+    if (isLoading) {
+      return (<Loading></Loading>);
+    }
+
+    return (
       <Form {...layout}>
         <Form.Item label="用户名">
           <div>{userProfile.username}</div>
@@ -58,6 +54,23 @@ export default function ProfilePage() {
           <div>{genderMap[userProfile.gender]}</div>
         </Form.Item>
       </Form>
+    );
+  }
+
+
+  if (isError) {
+    setTimeout(() => {
+      navigate('/auth/login');
+    }, 3000);
+    return (
+      <div></div>
+    );
+  }
+
+  return (
+    <div className="user-profile-page">
+      <h2 className="title">我的档案</h2>
+      { generateForm() }
     </div>
   );
 }

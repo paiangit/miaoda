@@ -31,12 +31,12 @@ export enum UserGender {
 }
 
 export interface User {
-  id?: number;
+  id: number;
   username: string;
-  password?: string;
+  password: string;
   gender: UserGender;
   avatar: string;
   email: string;
-  status?: UserStatus;
-  token?: string;
+  status: UserStatus;
+  token: string;
 }
