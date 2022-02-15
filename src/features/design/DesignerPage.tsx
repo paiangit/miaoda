@@ -1,4 +1,4 @@
-import { useParams } from 'react-router-dom';
+import { useParams, useNavigate } from 'react-router-dom';
 import { Button } from 'antd';
 import LeftArea from './LeftArea';
 import CenterArea from './CenterArea';
@@ -21,12 +21,21 @@ export default function DesignerPage() {
   };
 
   const params = useDesignerParams();
+  const navigate = useNavigate();
+
+  const handlePreview = () => {
+    navigate(`/app/${params.appId}/preview/${params.pageId}`);
+  };
+
+  const handleSave = () => {
+
+  };
 
   return (
     <div className="design-designer-page">
       <div className="designer-header">
-        <Button>预览</Button>
-        <Button type="primary">保存</Button>
+        <Button onClick={ handlePreview }>预览</Button>
+        <Button onClick={ handleSave } type="primary">保存</Button>
       </div>
       <div className="designer-body">
         <LeftArea></LeftArea>
