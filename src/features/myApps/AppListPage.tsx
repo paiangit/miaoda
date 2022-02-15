@@ -2,13 +2,13 @@ import { useState, useRef } from 'react';
 import AppList from './AppList';
 import SearchPanel from './SearchPanel';
 import CreateAppModal from './CreateAppModal';
-import { useDocumentTitle } from '../../common/hooks';
+import { useDocumentTitle, useUrlQueryParams } from '../../common/hooks';
 import './AppListPage.less';
 
 export default function AppListPage() {
   useDocumentTitle('应用列表', false);
 
-  const [keyword, setKeyword] = useState('');
+  const [params, setParams] = useUrlQueryParams(['keyword']);
   const refetchRef = useRef(null);
   const setRefetchRef = (newRefetch) => {
     refetchRef.current = newRefetch;
@@ -22,8 +22,8 @@ export default function AppListPage() {
     <>
       <div className="my-apps-app-list-page">
         <CreateAppModal onSuccess={handleCreateSuccess} />
-        <SearchPanel keyword={keyword} setKeyword={setKeyword} />
-        <AppList keyword={keyword} setRefetch={setRefetchRef} />
+        <SearchPanel keyword={params.keyword as string} setParams={setParams} />
+        <AppList keyword={params.keyword as string} setRefetch={setRefetchRef} />
       </div>
     </>
   );

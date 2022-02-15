@@ -5,10 +5,10 @@ import './SearchPanel.less';
 
 interface SearchPanelProps {
   keyword: string;
-  setKeyword: (keyword: string) => void;
+  setParams: ({ keyword: unknown }) => void
 }
 
-export default function SearchPanel({ keyword, setKeyword }: SearchPanelProps) {
+export default function SearchPanel({ keyword, setParams }: SearchPanelProps) {
   const [title, setTitle] = useState(keyword);
 
   const handleSearch = (value: string) => {
@@ -23,7 +23,9 @@ export default function SearchPanel({ keyword, setKeyword }: SearchPanelProps) {
 
   useEffect(() => {
     console.log(debounceValue);
-    setKeyword(debounceValue);
+    setParams({
+      keyword: debounceValue
+    });
   }, [debounceValue]);
 
   return (
