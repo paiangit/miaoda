@@ -26,8 +26,6 @@ export const getAppList = async (params) => {
 export const useGetAppList = (getAppListQueryKey: GetAppListQueryKey, options?) => {
   const [, params] = getAppListQueryKey;
 
-  console.log(params);
-
   return useQuery(
     getAppListQueryKey,
     async () => {
