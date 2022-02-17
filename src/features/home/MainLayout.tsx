@@ -63,8 +63,8 @@ function MainLayout() {
         key: 'menu9',
       },
       // {
-      //   name: '计数器例子',
-      //   to: '/examples/counter',
+      //   name: 'Todo List',
+      //   to: '/examples/todos',
       //   key: 'menu11',
       // },
     ];

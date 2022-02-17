@@ -1,8 +1,8 @@
 import initialState from './initialState';
-import { reducer as counterPlusOne } from './counterPlusOne';
-import { reducer as counterMinusOne } from './counterMinusOne';
+import { reducer as addTodo } from './addTodo';
+import { reducer as removeTodo } from './removeTodo';
 
-const reducers = [counterPlusOne, counterMinusOne];
+const reducers = [addTodo, removeTodo];
 
 export default function reducer(state = initialState, action) {
   let newState;
@@ -15,8 +15,11 @@ export default function reducer(state = initialState, action) {
   }
 
   // reduce((acc, cur), initialAcc)
-  return reducers.reduce(
+  const result = reducers.reduce(
     (previousState, reducer) => reducer(previousState, action),
     newState
   );
+
+  // 得到的结果是 { todoList: xxx }
+  return result;
 }

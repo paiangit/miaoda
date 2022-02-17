@@ -9,15 +9,11 @@ const AppListPage = lazy(() => import('./features/myApps/AppListPage'));
 const RegisterPage = lazy(() => import('./features/auth/RegisterPage'));
 const LoginPage = lazy(() => import('./features/auth/LoginPage'));
 const ProfilePage = lazy(() => import('./features/user/ProfilePage'));
-const CounterPage = lazy(() => import('./features/examples/CounterPage'));
+const TodosPage = lazy(() => import('./features/examples/TodosPage'));
 
 const AdminLayout = lazy(() => import('./features/management/AdminLayout'));
-const ManagementPage = lazy(
-  () => import('./features/management/ManagementPage')
-);
-const AppSettingsPage = lazy(
-  () => import('./features/settings/AppSettingsPage')
-);
+const ManagementPage = lazy(() => import('./features/management/ManagementPage'));
+const AppSettingsPage = lazy(() => import('./features/settings/AppSettingsPage'));
 const AppPublishPage = lazy(() => import('./features/publish/AppPublishPage'));
 
 const DesignLayout = lazy(() => import('./features/design/DesignLayout'));
@@ -65,8 +61,8 @@ function App() {
         element: <ProfilePage />,
       },
       {
-        path: 'examples/counter',
-        element: <CounterPage />,
+        path: 'examples/todos',
+        element: <TodosPage />,
       },
     ],
   };

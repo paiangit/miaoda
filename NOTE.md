@@ -1015,25 +1015,23 @@ npm i redux react-redux -S
 
 ```ts
 import { createStore } from 'redux';
-import rootReducer from './rootReducer.ts';
+import rootReducer from './rootReducer';
 
-function initStore() {
-  const store = createStore(rootReducer);
+const store = createStore(rootReducer);
 
-  return store;
-}
+export type RootState = ReturnType<typeof store.getState>;
 
-export default initStore();
+export default store;
 ```
 
 ### 4. 创建 src/common/rootReducer.ts：
 
 ```ts
 import { combineReducers } from 'redux';
-import homeReducer from '../features/examples/redux/reducer.ts';
+import todosReducer from '../features/examples/redux/reducer';
 
 const reducerMap = {
-  home: homeReducer,
+  todos: todosReducer,
 };
 
 export default combineReducers(reducerMap);
@@ -1046,11 +1044,11 @@ export default combineReducers(reducerMap);
 这个目录下 reducer 的聚合出口。它会把分别放在这个目录的各个文件中的 reducer 收集集合到一起。
 
 ```ts
-import initialState from './initialState.ts';
-import { reducer as counterPlusOne } from './counterPlusOne.ts';
-import { reducer as counterMinusOne } from './counterMinusOne.ts';
+import initialState from './initialState';
+import { reducer as addTodo } from './addTodo';
+import { reducer as removeTodo } from './removeTodo';
 
-const reducers = [counterPlusOne, counterMinusOne];
+const reducers = [addTodo, removeTodo];
 
 export default function reducer(state = initialState, action) {
   let newState;
@@ -1063,25 +1061,14 @@ export default function reducer(state = initialState, action) {
   }
 
   // reduce((acc, cur), initialAcc)
-  return reducers.reduce(
+  const result = reducers.reduce(
     (previousState, reducer) => reducer(previousState, action),
     newState
   );
+
+  // 得到的结果是 { todoList: xxx }
+  return result;
 }
-```
-
-#### actions.ts
-
-这个目录下 action 的聚合出口。
-
-```ts
-import { counterPlusOne } from './counterPlusOne.ts';
-import { counterMinusOne } from './counterMinusOne.ts';
-
-export default {
-  counterPlusOne,
-  counterMinusOne,
-};
 ```
 
 #### hooks.ts
@@ -1089,103 +1076,129 @@ export default {
 这个目录下 hooks 的聚合出口
 
 ```ts
-export { useCounterPlusOne } from './counterPlusOne.ts';
-export { useCounterMinusOne } from './counterMinusOne.ts';
+// hook集合
+export { useAddTodo } from './addTodo';
+export { useRemoveTodo } from './removeTodo';
 ```
 
-#### counterMinusOne.ts
+#### removeTodo.ts
 
 一个文件只放做一件事情的 action、reducer 等。这样一个个文件分别拆开。
 
 ```ts
 import { useCallback } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
-import { HOME_COUNTER_MINUS_ONE } from './constants.ts';
+import { RootState } from '../../../common/store';
+import { TODOS_REMOVE_TODO } from './constants';
 
-export function counterMinusOne() {
+interface TodosState {
+  todoList: string[];
+}
+
+// 单个action
+export function removeTodo(index) {
   return {
-    type: HOME_COUNTER_MINUS_ONE,
+    type: TODOS_REMOVE_TODO,
+    payload: index,
   };
 }
 
-export function useCounterMinusOne() {
+// 单个reducer
+export function reducer(state: TodosState, action) {
+  switch (action.type) {
+    case TODOS_REMOVE_TODO:
+      // 下面这样写会导致页面不更新，原因待研究
+      // const newState = {...state};
+      // newState.todoList.splice(action.payload, 1); // 主要是这句
+      // return newState;
+      return {
+        ...state,
+        todoList: state.todoList.filter((item, index) => index !== action.payload),
+      };
+
+    default:
+      return state;
+  }
+}
+
+// 单个hook
+export function useRemoveTodo() {
   const dispatch = useDispatch();
-  const count = useSelector((state) => state.home.count);
+  const todoList = useSelector((state: RootState) => state.todos.todoList);
+  debugger;
   const boundAction = useCallback(
-    () => dispatch(counterMinusOne()),
+    (index) => dispatch(removeTodo(index)),
     [dispatch]
   );
 
   return {
-    count,
-    counterMinusOne: boundAction,
+    todoList,
+    removeTodo: boundAction,
   };
-}
-
-export function reducer(state, action) {
-  switch (action.type) {
-    case HOME_COUNTER_MINUS_ONE:
-      return {
-        ...state,
-        count: state.count - 1,
-      };
-
-    default:
-      return state;
-  }
 }
 ```
 
-#### counterPlusOne.ts
+#### addTodo.ts
 
 ```ts
 import { useCallback } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
-import { HOME_COUNTER_PLUS_ONE } from './constants.ts';
+import { RootState } from '../../../common/store';
+import { TODOS_ADD_TODO } from './constants';
 
-export function counterPlusOne() {
+// 单个action
+export function addTodo(todo) {
   return {
-    type: HOME_COUNTER_PLUS_ONE,
+    type: TODOS_ADD_TODO,
+    payload: todo,
   };
 }
 
-export function useCounterPlusOne() {
-  const dispatch = useDispatch();
-  const count = useSelector((state) => state.home.count);
-  const boundAction = useCallback(() => dispatch(counterPlusOne()), [dispatch]);
-
-  return {
-    count,
-    counterPlusOne: boundAction,
-  };
-}
-
+// 单个reducer
 export function reducer(state, action) {
   switch (action.type) {
-    case HOME_COUNTER_PLUS_ONE:
+    case TODOS_ADD_TODO:
+      // 为什么下面这样写就洁界面不刷新呢
+      // const newState = {...state};
+      // newState.todoList.push(action.payload); // 主要是这一句所导致的
+      // newState.todoList = [...newState.todoList, action.payload];
+      // return newState;
       return {
         ...state,
-        count: state.count + 1,
+        todoList: [...state.todoList, action.payload],
       };
 
     default:
       return state;
   }
+}
+
+// 单个hook
+export function useAddTodo() {
+  const dispatch = useDispatch();
+  const todoList = useSelector((state: RootState) => state.todos.todoList);
+  const boundAction = useCallback((todo) => dispatch(addTodo(todo)), [dispatch]);
+
+  return {
+    todoList,
+    addTodo: boundAction,
+  };
 }
 ```
 
 #### constants.ts
 
 ```ts
-export const HOME_COUNTER_PLUS_ONE = 'HOME_COUNTER_PLUS_ONE';
-export const HOME_COUNTER_MINUS_ONE = 'HOME_COUNTER_MINUS_ONE';
+export const TODOS_REMOVE_TODO = 'TODOS_REMOVE_TODO';
+export const TODOS_ADD_TODO = 'TODOS_ADD_TODO';
 ```
 
 #### initialState.ts
 
 ```ts
+// 初始状态
 const initialState = {
-  count: 0,
+  todoList: [],
 };
 
 export default initialState;
@@ -1193,66 +1206,115 @@ export default initialState;
 
 其它每个 feature 下，都应该参照此种分类方式，创建对应的 redux 文件夹。
 
-### 6. 创建一个 Counter 组件来使用 redux
+### 6. 创建一个 TodoList 组件来使用 redux
 
-#### Counter.ts
+#### TodoList.ts
 
 ```ts
-import { useCounterPlusOne, useCounterMinusOne } from './redux/hooks.ts';
-import './Counter.less';
+import { Button, Form, Input, List, Typography } from 'antd';
+import { useAddTodo, useRemoveTodo } from './redux/hooks';
+import './TodoList.less';
 
-export default function Counter() {
-  const { count, counterPlusOne } = useCounterPlusOne();
-  const { counterMinusOne } = useCounterMinusOne();
+export default function TodoList() {
+  const { todoList, addTodo } = useAddTodo();
+  const { removeTodo } = useRemoveTodo();
+  const [form] = Form.useForm();
+
+  const handleFinish = (values) => {
+    console.log(values.todo, todoList);
+    addTodo(values.todo);
+    // 清空输入框
+    form.setFieldsValue({todo: ''});
+  };
+
+  const handleRemove = (index) => {
+    return () => removeTodo(index);
+  };
+
+  const handleChange = (e) => {
+
+  };
+
+  const layout = {
+    labelCol: { span: 8 },
+    wrapperCol: { span: 8 },
+  };
+
+  const tailLayout = { ...layout.wrapperCol, offset: 8 };
 
   return (
-    <div className="examples-counter">
-      <div className="count">计数：{count}</div>
-      <button className="minus-one" onClick={counterMinusOne}>
-        -
-      </button>
-      <button className="plus-one" onClick={counterPlusOne}>
-        +
-      </button>
+    <div className="examples-todo-list">
+      <Form form={form} {...layout} onFinish={handleFinish}>
+        <Form.Item
+          label="待办"
+          name="todo"
+          rules={[
+            {
+              required: true,
+              message: '请输入用户名',
+            },
+          ]}
+        >
+          <Input onChange={handleChange}/>
+        </Form.Item>
+
+        <Form.Item wrapperCol={tailLayout}>
+          <Button type="primary" htmlType="submit">
+            添加
+          </Button>
+        </Form.Item>
+      </Form>
+
+      <List
+        className="list"
+        header={<div>待办列表</div>}
+        bordered
+        dataSource={todoList}
+        renderItem={
+          (item, index) => (
+            <List.Item key={index}>
+              <Typography.Text>
+                {item}
+              </Typography.Text>
+              <Button onClick={handleRemove(index)}>删除</Button>
+            </List.Item>
+          )
+        }
+      >
+      </List>
     </div>
   );
 }
 ```
 
-#### Counter.less
+#### TodoList.less
 
 ```ts
-.examples-counter {
-  margin: 20px;
+@import '../../common/styles/themes.less';
+@import '../../common/styles/mixins.less';
 
-  .count{
-    margin: 10px 0;
-  }
-
-  .plus-one,
-  .minus-one {
-    background-color: #38b3e4;
-    border: none;
-    width: 50px;
-    height: 30px;
-    color: #fff;
-  }
-  .plus-one {
-    margin-left: 10px;
+.examples-todo-list {
+  margin-top: 20px;
+  .list {
+    margin: 50px auto 0;
+    width: 70%;
   }
 }
 ```
 
-#### 引入 Counter 到 CounterPage 中
+#### 引入 TodoList 到 TodosPage 中
 
 ```ts
-import Counter from './Counter.tsx';
-import './CounterPage.less';
+import { useDocumentTitle } from '../../common/hooks';
+import TodoList from './TodoList';
+import './TodosPage.less';
 
-export default function CounterPage() {
+export default function TodosPage() {
+  useDocumentTitle('例子：Todo List');
+
   return (
-    <div className="examples-counter-page">
-      <Counter></Counter>
+    <div className="examples-todos-page">
+      <TodoList />
     </div>
   );
 }
@@ -1260,7 +1322,7 @@ export default function CounterPage() {
 
 从 redux 的组织套路上来说，我们推荐：
 
-- 按 feature 编写 action、reducer 和相关 hooks（每一组拆成一个文件），编写辅助文件 constants、initialState，将 action、reducer、hooks 集中到统一的出口。
+- 按 feature 编写 action、reducer 和相关 hooks（每一组拆成一个文件），编写辅助文件 constants、initialState，将 reducer、hooks 集中到统一的出口。
 
 - 编写 store 和将所有 reducer 收集成 rootReducer
 
@@ -1341,10 +1403,10 @@ li {
 
 ### 在每个组件中，会有组件文件名同名的 less 文件来存放样式。features 中，每一个 feature 的文件夹名-组件名就是该组件的样式命名空间。因为 feature 都在同一个 features 文件夹下，所以可以保证 feature 不重名，又因为 feature 内部的功能都在 feature 文件夹下，所以可以保证 feature 内部组件不重名。这样一来，样式命名空间就不会重名。
 
-比如，对于 examples 这个 feature 下的 Counter 组件，该组件最外层容器的 className 我们给它命名成 examples-counter，该组件所有的样式都写在这个命名空间下：
+比如，对于 examples 这个 feature 下的 TodoList 组件，该组件最外层容器的 className 我们给它命名成 examples-todo-list，该组件所有的样式都写在这个命名空间下：
 
 ```css
-.examples-counter {
+.examples-todo-list {
   /* 这里写组件的具体样式 */
 }
 ```
@@ -4361,7 +4423,7 @@ const PreviewPage = lazy(() => import('./features/preview/PreviewPage'));
 const RegisterPage = lazy(() => import('./features/auth/RegisterPage'));
 const LoginPage = lazy(() => import('./features/auth/LoginPage'));
 const ProfilePage = lazy(() => import('./features/user/ProfilePage'));
-const CounterPage = lazy(() => import('./features/examples/CounterPage'));
+const TodosPage = lazy(() => import('./features/examples/TodosPage'));
 // import routeConfig from './common/routeConfig.js';
 
 function App() {
@@ -4410,8 +4472,8 @@ function App() {
         element: <ProfilePage />,
       },
       {
-        path: 'examples/counter',
-        element: <CounterPage />,
+        path: 'examples/todos',
+        element: <TodosPage />,
       },
     ],
   };
@@ -4520,7 +4582,7 @@ function MainLayout() {
           <Link to="/user/1/profile">我的档案</Link>
         </li>
         <li>
-          <Link to="/examples/counter">计数器例子</Link>
+          <Link to="/examples/todos">计数器例子</Link>
         </li>
       </ul>
       <Outlet />

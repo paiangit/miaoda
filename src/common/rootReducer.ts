@@ -1,8 +1,8 @@
 import { combineReducers } from 'redux';
-import homeReducer from '../features/examples/redux/reducer';
+import todosReducer from '../features/examples/redux/reducer';
 
 const reducerMap = {
-  home: homeReducer,
+  todos: todosReducer,
 };
 
 export default combineReducers(reducerMap);

@@ -1,5 +1,6 @@
+// 初始状态
 const initialState = {
-  count: 0,
+  todoList: [],
 };
 
 export default initialState;
