@@ -1,8 +1,9 @@
 import initialState from './initialState';
 import { reducer as addTodo } from './addTodo';
 import { reducer as removeTodo } from './removeTodo';
+import { reducer as addTodoAsync } from './addTodoAsync';
 
-const reducers = [addTodo, removeTodo];
+const reducers = [addTodo, removeTodo, addTodoAsync];
 
 export default function reducer(state = initialState, action) {
   let newState;

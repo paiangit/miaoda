@@ -37,7 +37,6 @@ export function reducer(state: TodosState, action) {
 export function useRemoveTodo() {
   const dispatch = useDispatch();
   const todoList = useSelector((state: RootState) => state.todos.todoList);
-  debugger;
   const boundAction = useCallback(
     (index) => dispatch(removeTodo(index)),
     [dispatch]

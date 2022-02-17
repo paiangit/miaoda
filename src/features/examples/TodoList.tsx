@@ -1,9 +1,10 @@
 import { Button, Form, Input, List, Typography } from 'antd';
-import { useAddTodo, useRemoveTodo } from './redux/hooks';
+import { useAddTodo, useRemoveTodo, useAddTodoAsync } from './redux/hooks';
 import './TodoList.less';
 
 export default function TodoList() {
   const { todoList, addTodo } = useAddTodo();
+  const { addTodoAsync } = useAddTodoAsync();
   const { removeTodo } = useRemoveTodo();
   const [form] = Form.useForm();
 
@@ -14,12 +15,15 @@ export default function TodoList() {
     form.setFieldsValue({todo: ''});
   };
 
-  const handleRemove = (index) => {
-    return () => removeTodo(index);
+  const validateAndSubmit = (e) => {
+    const todo = form.getFieldValue('todo');
+    addTodoAsync(todo);
+    // 清空输入框
+    form.setFieldsValue({todo: ''});
   };
 
-  const handleChange = (e) => {
-
+  const handleRemove = (index) => {
+    return () => removeTodo(index);
   };
 
   const layout = {
@@ -42,12 +46,15 @@ export default function TodoList() {
             },
           ]}
         >
-          <Input onChange={handleChange}/>
+          <Input/>
         </Form.Item>
 
         <Form.Item wrapperCol={tailLayout}>
           <Button type="primary" htmlType="submit">
             添加
+          </Button>
+          <Button className="validateAndSubmit" type="primary" onClick={validateAndSubmit}>
+            先校验再添加
           </Button>
         </Form.Item>
       </Form>
