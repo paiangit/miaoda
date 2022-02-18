@@ -1,5 +1,8 @@
 const CracoLessPlugin = require('craco-less');
 const path = require('path');
+// const fs = require('fs');
+const SpeedMeasurePlugin = require('speed-measure-webpack-plugin');
+const smp = new SpeedMeasurePlugin();
 
 module.exports = {
   webpack: {
@@ -7,14 +10,16 @@ module.exports = {
       '~': path.resolve(__dirname, './src/'),
     },
     configure: (webpackConfig, { env, paths }) => {
-      (webpackConfig.entry = path.resolve(__dirname, './src/index.tsx')),
-        (webpackConfig.resolve.extensions = [
+      // fs.writeFileSync('CRA的默认webpack配置.json', JSON.stringify(webpackConfig, null, 2));
+
+      webpackConfig.entry = path.resolve(__dirname, './src/index.tsx');
+      webpackConfig.resolve.extensions = [
           '.tsx',
           '.ts',
           ...webpackConfig.resolve.extensions,
-        ]);
-      // console.log('webpackConfig', webpackConfig);
-      return webpackConfig;
+      ];
+
+      return smp.wrap(webpackConfig);
     },
   },
   jest: {

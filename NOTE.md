@@ -224,7 +224,7 @@ module.exports = {
       entry: path.resolve(__dirname, './src/index.tsx'),
     },
     configure: (webpackConfig, { env, paths }) => {
-       webpackConfig.entry = path.resolve(__dirname, './src/index.tsx'),
+       webpackConfig.entry = path.resolve(__dirname, './src/index.tsx');
 +      webpackConfig.resolve.extensions = [
 +        '.tsx',
 +        '.ts',
@@ -5183,3 +5183,31 @@ trim_trailing_whitespace = false
   button1
     <button>button2</button>
 </button>
+
+# 打包优化
+
+## 引入speed-measure-webpack-plugin
+
+```js
+const SpeedMeasurePlugin = require('speed-measure-webpack-plugin');
+const smp = new SpeedMeasurePlugin();
+
+module.exports = {
+  webpack: {
+    configure: (webpackConfig, { env, paths }) => {
+      ...
+      return smp.wrap(webpackConfig);
+    },
+  },
+  ...
+};
+```
+
+这时会出现如下错误：
+
+URIError: Failed to decode param '/examples/%PUBLIC_URL%/favicon.ico'
+
+经过一系列折腾，发现只需要把public/index.html中的几处 %PUBLIC_URL% 删掉即可。注意%PUBLIC_URL%之后的那个斜杠药留着，否则控制台显示：
+
+> Manifest: Line: 1, column: 1, Syntax error.错误
+
