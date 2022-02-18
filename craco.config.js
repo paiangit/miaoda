@@ -5,7 +5,10 @@ const SpeedMeasurePlugin = require('speed-measure-webpack-plugin');
 const BundleAnalyzerPlugin = require('webpack-bundle-analyzer').BundleAnalyzerPlugin;
 const ProgressBarWebpackPlugin = require('progress-bar-webpack-plugin');
 
-const smp = new SpeedMeasurePlugin();
+const smp = new SpeedMeasurePlugin({
+  outputFormat: "json",
+  outputTarget: './build/speed.json'
+});
 
 module.exports = {
   webpack: {

@@ -5211,7 +5211,7 @@ URIError: Failed to decode param '/examples/%PUBLIC_URL%/favicon.ico'
 
 > Manifest: Line: 1, column: 1, Syntax error.错误
 
-## 添加webpack-bundle
+## 添加webpack-bundle-analyzer
 
 pnpm add webpack-bundle-analyzer -D
 
@@ -5229,15 +5229,6 @@ module.exports = {
 }
 ```
 
-## 修改devtool
-
-```js
-// 生产环境下用hidden-source-map让控制台中只能定位到编译后代码的位置，而不能map到源码，以提高安全性
-webpackConfig.devtool = process.env.NODE_ENV === 'development' ? 'eval-cheap-module-source-map' : 'hidden-source-map';
-```
-
-## create-react-app默认配置文件在这个位置可以找到：node_modules/react-scripts/config/webpack.config.js
-
 ## 添加打包进度条
 
 pnpm add progress-bar-webpack-plugin -D
@@ -5251,5 +5242,19 @@ plugins: [
 ],
 ```
 
+## 修改devtool
 
+```js
+// 生产环境下用hidden-source-map让控制台中只能定位到编译后代码的位置，而不能map到源码，以提高安全性
+webpackConfig.devtool = process.env.NODE_ENV === 'development' ? 'eval-cheap-module-source-map' : 'hidden-source-map';
+```
 
+## create-react-app默认配置文件在这个位置可以找到：node_modules/react-scripts/config/webpack.config.js
+
+## 
+
+```sh
+resolve: {
+  extensions: ['.tsx', '.ts'], // 因为我的项目只有这两种类型的文件，如果有其他类型，需要添加进去。
+}
+```
