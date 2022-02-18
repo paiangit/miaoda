@@ -2337,8 +2337,9 @@ const handleChange = (evt: React.ChangeEvent<HTMLInputElement>) => {
 要想预览正式环境的效果，可以执行如下命令：
 
 ```sh
+pnpm add serve -D
 pnpm build
-serve -s build --port 80
+serve -s build --port 3000
 ```
 
 ## 使用 react-error-boundary 处理错误
