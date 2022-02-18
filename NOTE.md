@@ -5211,3 +5211,20 @@ URIError: Failed to decode param '/examples/%PUBLIC_URL%/favicon.ico'
 
 > Manifest: Line: 1, column: 1, Syntax error.错误
 
+## 添加webpack-bundle
+
+pnpm add webpack-bundle-analyzer -D
+
+```js
+const BundleAnalyzerPlugin = require('webpack-bundle-analyzer').BundleAnalyzerPlugin;
+
+module.exports = {
+  webpack: {
+    ...
+    plugins: [
+      new BundleAnalyzerPlugin({ generateStatsFile: true }), // 参数表示结果要生成文件
+    ],
+  },
+  ...
+}
+```

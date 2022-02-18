@@ -2,6 +2,7 @@ const CracoLessPlugin = require('craco-less');
 const path = require('path');
 // const fs = require('fs');
 const SpeedMeasurePlugin = require('speed-measure-webpack-plugin');
+const BundleAnalyzerPlugin = require('webpack-bundle-analyzer').BundleAnalyzerPlugin;
 const smp = new SpeedMeasurePlugin();
 
 module.exports = {
@@ -20,7 +21,11 @@ module.exports = {
       ];
 
       return smp.wrap(webpackConfig);
+      // return webpackConfig;
     },
+    plugins: [
+      new BundleAnalyzerPlugin({ generateStatsFile: true }),
+    ],
   },
   jest: {
     configure: {
