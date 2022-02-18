@@ -5236,4 +5236,20 @@ module.exports = {
 webpackConfig.devtool = process.env.NODE_ENV === 'development' ? 'eval-cheap-module-source-map' : 'hidden-source-map';
 ```
 
+## create-react-app默认配置文件在这个位置可以找到：node_modules/react-scripts/config/webpack.config.js
+
+## 添加打包进度条
+
+pnpm add progress-bar-webpack-plugin -D
+
+```js
+const ProgressBarWebpackPlugin = require('progress-bar-webpack-plugin');
+
+plugins: [
+  ...
+  new ProgressBarWebpackPlugin(),
+],
+```
+
+
 

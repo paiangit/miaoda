@@ -3,6 +3,8 @@ const path = require('path');
 // const fs = require('fs');
 const SpeedMeasurePlugin = require('speed-measure-webpack-plugin');
 const BundleAnalyzerPlugin = require('webpack-bundle-analyzer').BundleAnalyzerPlugin;
+const ProgressBarWebpackPlugin = require('progress-bar-webpack-plugin');
+
 const smp = new SpeedMeasurePlugin();
 
 module.exports = {
@@ -27,6 +29,7 @@ module.exports = {
     },
     plugins: [
       new BundleAnalyzerPlugin({ generateStatsFile: true }),
+      new ProgressBarWebpackPlugin(),
     ],
   },
   jest: {
