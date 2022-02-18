@@ -5228,3 +5228,12 @@ module.exports = {
   ...
 }
 ```
+
+## 修改devtool
+
+```js
+// 生产环境下用hidden-source-map让控制台中只能定位到编译后代码的位置，而不能map到源码，以提高安全性
+webpackConfig.devtool = process.env.NODE_ENV === 'development' ? 'eval-cheap-module-source-map' : 'hidden-source-map';
+```
+
+

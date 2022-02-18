@@ -13,11 +13,13 @@ module.exports = {
     configure: (webpackConfig, { env, paths }) => {
       // fs.writeFileSync('CRA的默认webpack配置.json', JSON.stringify(webpackConfig, null, 2));
 
+      // 生产环境下用hidden-source-map让控制台中只能定位到编译后代码的位置，而不能map到源码，以提高安全性
+      webpackConfig.devtool = process.env.NODE_ENV === 'development' ? 'eval-cheap-module-source-map' : 'hidden-source-map';
       webpackConfig.entry = path.resolve(__dirname, './src/index.tsx');
       webpackConfig.resolve.extensions = [
-          '.tsx',
-          '.ts',
-          ...webpackConfig.resolve.extensions,
+        '.tsx',
+        '.ts',
+        ...webpackConfig.resolve.extensions,
       ];
 
       return smp.wrap(webpackConfig);
