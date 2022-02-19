@@ -5251,10 +5251,21 @@ webpackConfig.devtool = process.env.NODE_ENV === 'development' ? 'eval-cheap-mod
 
 ## create-react-app默认配置文件在这个位置可以找到：node_modules/react-scripts/config/webpack.config.js
 
-## 
+## 不能设置webpackConfig.resolve.symlinks = false;，否则会报错
+
+> export 'Navigate' (imported as 'Navigate') was not found in 'react-router-dom' (possible exports: BrowserRouter, HashRouter, Link, NavLink, createSearchParams, unstable_HistoryRouter, useLinkClickHandler, useSearchParams)
+
+## 添加循环依赖检测插件：circular-dependency-plugin
 
 ```sh
-resolve: {
-  extensions: ['.tsx', '.ts'], // 因为我的项目只有这两种类型的文件，如果有其他类型，需要添加进去。
-}
+pnpm add circular-dependency-plugin -D
+```
+
+```js
+const CircularDependencyPlugin = require('circular-dependency-plugin');
+
+// 循环依赖检测插件
+new CircularDependencyPlugin({
+  exclude: /node_modules/,
+}),
 ```

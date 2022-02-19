@@ -1,4 +1,6 @@
 const CracoLessPlugin = require('craco-less');
+const CircularDependencyPlugin = require('circular-dependency-plugin')
+
 const path = require('path');
 // const fs = require('fs');
 const SpeedMeasurePlugin = require('speed-measure-webpack-plugin');
@@ -6,7 +8,7 @@ const BundleAnalyzerPlugin = require('webpack-bundle-analyzer').BundleAnalyzerPl
 const ProgressBarWebpackPlugin = require('progress-bar-webpack-plugin');
 
 const smp = new SpeedMeasurePlugin({
-  outputFormat: "json",
+  outputFormat: 'json',
   outputTarget: './build/speed.json'
 });
 
@@ -33,6 +35,10 @@ module.exports = {
     plugins: [
       new BundleAnalyzerPlugin({ generateStatsFile: true }),
       new ProgressBarWebpackPlugin(),
+      // 循环依赖检测插件
+      new CircularDependencyPlugin({
+        exclude: /node_modules/,
+      }),
     ],
   },
   jest: {
