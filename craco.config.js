@@ -1,3 +1,4 @@
+const webpack = require('webpack');
 const {
   // addAfterLoader,
   // addBeforeLoader,
@@ -61,8 +62,11 @@ const handleBabelLoader = (webpackConfig, loaderName) => {
           loader: 'thread-loader',
         },
         {
-          loader: item.loader.loader,
-          options: item.loader.options,
+          loader: 'esbuild-loader',
+          options: {
+            loader: 'tsx',
+            target: 'es2015'
+          },
         }
       ]
     };
@@ -140,6 +144,11 @@ module.exports = {
       // 循环依赖检测插件
       new CircularDependencyPlugin({
         exclude: /node_modules/,
+      }),
+      // 换成esbuild-loader之后，
+      // 不加这个插件页面会出现Uncaught ReferenceError: React is not defined错误
+      new webpack.ProvidePlugin({
+        'React': 'react',
       }),
     ],
   },
