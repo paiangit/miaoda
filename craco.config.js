@@ -8,8 +8,8 @@ const BundleAnalyzerPlugin = require('webpack-bundle-analyzer').BundleAnalyzerPl
 const ProgressBarWebpackPlugin = require('progress-bar-webpack-plugin');
 
 const smp = new SpeedMeasurePlugin({
-  outputFormat: 'json',
-  outputTarget: './build/speed.json'
+  outputFormat: 'human',
+  outputTarget: './build/speed-measure.md'
 });
 
 module.exports = {
@@ -33,7 +33,7 @@ module.exports = {
       // return webpackConfig;
     },
     plugins: [
-      new BundleAnalyzerPlugin({ generateStatsFile: true }),
+      new BundleAnalyzerPlugin({ generateStatsFile: true, openAnalyzer: false }),
       new ProgressBarWebpackPlugin(),
       // 循环依赖检测插件
       new CircularDependencyPlugin({
