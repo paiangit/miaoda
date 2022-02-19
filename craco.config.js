@@ -1,4 +1,6 @@
 const {
+  loaderByName,
+  getLoaders,
   whenDev,
   whenProd,
 } = require('@craco/craco');
@@ -15,6 +17,48 @@ const smp = new SpeedMeasurePlugin({
   outputFormat: 'human',
   outputTarget: './build/speed-measure.md'
 });
+
+const threadLoader = require('thread-loader');
+
+// https://webpack.docschina.org/loaders/thread-loader/#root
+// https://github.com/webpack-contrib/thread-loader/blob/master/example/webpack.config.js
+threadLoader.warmup(
+  {
+    workers: require('os').cpus().length - 1,
+  },
+  [
+    'babel-loader',
+  ]
+);
+
+const addThreadLoaderBeforeLoaders = (webpackConfig, loaderName) => {
+  const { hasFoundAny, matches } = getLoaders(
+    webpackConfig,
+    loaderByName(loaderName),
+  );
+  if (!hasFoundAny) {
+    console.error(`没有找到${loaderName}`);
+  }
+
+  matches.forEach(item => {
+    const newItem = {
+      test: item.loader.test,
+      use: [
+        {
+          loader: 'thread-loader',
+        },
+        {
+          loader: item.loader.loader,
+          options: item.loader.options,
+        }
+      ]
+    };
+    item.loader.include && (newItem.include = item.loader.include);
+    item.loader.exclude && (newItem.exclude = item.loader.exclude);
+
+    item.parent[item.index] = newItem;
+  });
+}
 
 module.exports = {
   webpack: {
@@ -55,6 +99,8 @@ module.exports = {
         '.ts',
         ...webpackConfig.resolve.extensions,
       ];
+
+      addThreadLoaderBeforeLoaders(webpackConfig, 'babel-loader');
 
       return smp.wrap(webpackConfig);
       // return webpackConfig;

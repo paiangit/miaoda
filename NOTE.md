@@ -5317,3 +5317,54 @@ whenProd(() => {
   webpackConfig.output.filename = '[name].[contenthash].bundle.js';
 });
 ```
+
+## 给babel-loader添加thread-loader
+
+```js
+const threadLoader = require('thread-loader');
+
+// https://webpack.docschina.org/loaders/thread-loader/#root
+// https://github.com/webpack-contrib/thread-loader/blob/master/example/webpack.config.js
+threadLoader.warmup(
+  {
+    workers: require('os').cpus().length - 1,
+  },
+  [
+    'babel-loader',
+  ]
+);
+
+const addThreadLoaderBeforeLoaders = (webpackConfig, loaderName) => {
+  const { hasFoundAny, matches } = getLoaders(
+    webpackConfig,
+    loaderByName(loaderName),
+  );
+  if (!hasFoundAny) {
+    console.error(`没有找到${loaderName}`);
+  }
+
+  matches.forEach(item => {
+    const newItem = {
+      test: item.loader.test,
+      use: [
+        {
+          loader: 'thread-loader',
+        },
+        {
+          loader: item.loader.loader,
+          options: item.loader.options,
+        }
+      ]
+    };
+    item.loader.include && (newItem.include = item.loader.include);
+    item.loader.exclude && (newItem.exclude = item.loader.exclude);
+
+    item.parent[item.index] = newItem;
+  });
+}
+
+...
+addThreadLoaderBeforeLoaders(webpackConfig, 'babel-loader');
+...
+
+```
