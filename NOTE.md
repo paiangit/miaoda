@@ -5327,7 +5327,7 @@ threadLoader.warmup(
   ]
 );
 
-const addThreadLoaderBeforeLoaders = (webpackConfig, loaderName) => {
+const handleBabelLoader = (webpackConfig, loaderName) => {
   const { hasFoundAny, matches } = getLoaders(
     webpackConfig,
     loaderByName(loaderName),
@@ -5357,7 +5357,7 @@ const addThreadLoaderBeforeLoaders = (webpackConfig, loaderName) => {
 }
 
 ...
-addThreadLoaderBeforeLoaders(webpackConfig, 'babel-loader');
+handleBabelLoader(webpackConfig, 'babel-loader');
 ...
 
 ```
@@ -5388,4 +5388,46 @@ whenProd(() => {
   webpackConfig.devtool = 'hidden-source-map';
 });
 
+```
+
+## 简化CRA自带的babel-loader
+
+因为我们项目中需要babel-loader处理的只有tsx和ts这两类文件，所以将对/\.(js|mjs)$/处理的babel-loader移除，另外，对另一个处理/\.(js|mjs|jsx|ts|tsx)$/这许多种类型的正则简化成/\.(tsx|ts)$/，提高匹配效率。
+
+```js
+const handleBabelLoader = (webpackConfig, loaderName) => {
+  const { hasFoundAny, matches } = getLoaders(
+    webpackConfig,
+    loaderByName(loaderName),
+  );
+  if (!hasFoundAny) {
+    console.error(`没有找到${loaderName}`);
+  }
+
+  matches.forEach(item => {
++    // 移除掉CRA默认提供的test为/\.(js|mjs)$/的babel-loader，因为项目中并没有此类型的文件
++    if (item.loader.test.toString() === '/\\.(js|mjs)$/') {
++      item.parent.splice(item.index, 1);
++      return;
++    }
+
+    const newItem = {
++      // 对于CRA默认提供的test为/\.(js|mjs|jsx|ts|tsx)$/的babel-loader，我们将它的test简化成/\.(tsx|ts)$/，因为项目中只有这两种类型的文件
++      test: item.loader.test.toString().indexOf('tsx') > -1  ? /\.(tsx|ts)$/ : item.loader.test,
+      use: [
+        {
+          loader: 'thread-loader',
+        },
+        {
+          loader: item.loader.loader,
+          options: item.loader.options,
+        }
+      ]
+    };
+    item.loader.include && (newItem.include = item.loader.include);
+    item.loader.exclude && (newItem.exclude = item.loader.exclude);
+
+    item.parent[item.index] = newItem;
+  });
+}
 ```

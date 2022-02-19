@@ -37,7 +37,7 @@ threadLoader.warmup(
   ]
 );
 
-const addThreadLoaderBeforeLoaders = (webpackConfig, loaderName) => {
+const handleBabelLoader = (webpackConfig, loaderName) => {
   const { hasFoundAny, matches } = getLoaders(
     webpackConfig,
     loaderByName(loaderName),
@@ -47,8 +47,15 @@ const addThreadLoaderBeforeLoaders = (webpackConfig, loaderName) => {
   }
 
   matches.forEach(item => {
+    // 移除掉CRA默认提供的test为/\.(js|mjs)$/的babel-loader，因为项目中并没有此类型的文件
+    if (item.loader.test.toString() === '/\\.(js|mjs)$/') {
+      item.parent.splice(item.index, 1);
+      return;
+    }
+
     const newItem = {
-      test: item.loader.test,
+      // 对于CRA默认提供的test为/\.(js|mjs|jsx|ts|tsx)$/的babel-loader，我们将它的test简化成/\.(tsx|ts)$/，因为项目中只有这两种类型的文件
+      test: item.loader.test.toString().indexOf('tsx') > -1  ? /\.(tsx|ts)$/ : item.loader.test,
       use: [
         {
           loader: 'thread-loader',
@@ -115,7 +122,7 @@ module.exports = {
         ...webpackConfig.resolve.extensions,
       ];
 
-      addThreadLoaderBeforeLoaders(webpackConfig, 'babel-loader');
+      handleBabelLoader(webpackConfig, 'babel-loader');
 
       // 删除case-sensitive-paths-plugin
       whenDev(() => removePlugins(webpackConfig, (plugin) => {
