@@ -1,4 +1,4 @@
-import { isEmpty } from './index';
+import { isEmpty } from './isEmpty';
 
 export const cleanObject = (object?: { [key: string]: unknown }) => {
   if (!object) {

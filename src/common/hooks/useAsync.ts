@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import { useMountedRef } from './index';
+import { useMountedRef } from './useMountedRef';
 
 interface State<D> {
   status: 'idle' | 'loading' | 'success' | 'error';
