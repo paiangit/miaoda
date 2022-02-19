@@ -1,10 +1,12 @@
 const {
   loaderByName,
   getLoaders,
+  removePlugins,
   whenDev,
   whenProd,
 } = require('@craco/craco');
 const CracoLessPlugin = require('craco-less');
+const CaseSensitivePathsPlugin = require('case-sensitive-paths-webpack-plugin');
 const CircularDependencyPlugin = require('circular-dependency-plugin')
 
 const path = require('path');
@@ -101,6 +103,13 @@ module.exports = {
       ];
 
       addThreadLoaderBeforeLoaders(webpackConfig, 'babel-loader');
+
+      // 删除case-sensitive-paths-plugin
+      whenDev(() => removePlugins(webpackConfig, (plugin) => {
+        if (plugin instanceof CaseSensitivePathsPlugin) {
+          return plugin;
+        }
+      }));
 
       return smp.wrap(webpackConfig);
       // return webpackConfig;

@@ -5368,3 +5368,13 @@ addThreadLoaderBeforeLoaders(webpackConfig, 'babel-loader');
 ...
 
 ```
+
+## 删除case-sensitive-paths-plugin
+
+```js
+whenDev(() => removePlugins(webpackConfig, (plugin) => {
+  if (plugin instanceof CaseSensitivePathsPlugin) {
+    return plugin;
+  }
+}));
+```
