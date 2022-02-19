@@ -5184,6 +5184,23 @@ trim_trailing_whitespace = false
     <button>button2</button>
 </button>
 
+
+
+## 添加循环依赖检测插件：circular-dependency-plugin
+
+```sh
+pnpm add circular-dependency-plugin -D
+```
+
+```js
+const CircularDependencyPlugin = require('circular-dependency-plugin');
+
+// 循环依赖检测插件
+new CircularDependencyPlugin({
+  exclude: /node_modules/,
+}),
+```
+
 # 打包优化
 
 ## 引入speed-measure-webpack-plugin
@@ -5231,7 +5248,9 @@ module.exports = {
 
 ## 添加打包进度条
 
+```sh
 pnpm add progress-bar-webpack-plugin -D
+```
 
 ```js
 const ProgressBarWebpackPlugin = require('progress-bar-webpack-plugin');
@@ -5240,6 +5259,21 @@ plugins: [
   ...
   new ProgressBarWebpackPlugin(),
 ],
+```
+
+
+## 修改create-react-plugin的插件配置的方法
+
+```js
+// 修改plugin配置
+webpackConfig.plugins.map((plugin) => {
+  whenDev(() => {
+    if (plugin instanceof CaseSensitivePathsPlugin) {
+      // ...
+    }
+  })
+  return plugin;
+});
 ```
 
 ## 修改devtool
@@ -5255,17 +5289,31 @@ webpackConfig.devtool = process.env.NODE_ENV === 'development' ? 'eval-cheap-mod
 
 > export 'Navigate' (imported as 'Navigate') was not found in 'react-router-dom' (possible exports: BrowserRouter, HashRouter, Link, NavLink, createSearchParams, unstable_HistoryRouter, useLinkClickHandler, useSearchParams)
 
-## 添加循环依赖检测插件：circular-dependency-plugin
-
-```sh
-pnpm add circular-dependency-plugin -D
-```
+## 修改entry和output，提取公共依赖单独成一个vendor
 
 ```js
-const CircularDependencyPlugin = require('circular-dependency-plugin');
-
-// 循环依赖检测插件
-new CircularDependencyPlugin({
-  exclude: /node_modules/,
-}),
+webpackConfig.entry = {
+  // 注意这里键main不能修改，这是webpack的标准配置，否则会造成应用启动不了
+  // 此外，还要配套修改下面的output.filename
+  // https://webpack.docschina.org/concepts/entry-points/#separate-app-and-vendor-entries
+  main: path.resolve(__dirname, './src/index.tsx'),
+  vendor: [
+    'axios',
+    'react',
+    'react-dom',
+    'react-error-boundary',
+    'react-query',
+    'react-router-dom',
+    'redux',
+    'react-redux',
+    'redux-thunk',
+    'moment'
+  ],
+};
+whenDev(() => {
+  webpackConfig.output.filename = '[name].bundle.js';
+});
+whenProd(() => {
+  webpackConfig.output.filename = '[name].[contenthash].bundle.js';
+});
 ```
