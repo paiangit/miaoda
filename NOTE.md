@@ -5276,13 +5276,6 @@ webpackConfig.plugins.map((plugin) => {
 });
 ```
 
-## 修改devtool
-
-```js
-// 生产环境下用hidden-source-map让控制台中只能定位到编译后代码的位置，而不能map到源码，以提高安全性
-webpackConfig.devtool = process.env.NODE_ENV === 'development' ? 'eval-cheap-module-source-map' : 'hidden-source-map';
-```
-
 ## create-react-app默认配置文件在这个位置可以找到：node_modules/react-scripts/config/webpack.config.js
 
 ## 不能设置webpackConfig.resolve.symlinks = false;，否则会报错
@@ -5369,6 +5362,8 @@ addThreadLoaderBeforeLoaders(webpackConfig, 'babel-loader');
 
 ```
 
+除此之外，@craco/craco还提供了addAfterLoader、addAfterLoaders、addBeforeLoader、addBeforeLoaders、removeLoaders等方法来增加或减少loader。
+
 ## 删除case-sensitive-paths-plugin
 
 ```js
@@ -5377,4 +5372,20 @@ whenDev(() => removePlugins(webpackConfig, (plugin) => {
     return plugin;
   }
 }));
+```
+
+
+## 修改devtool
+
+```js
+whenDev(() => {
+  // 比默认的cheap-module-source-map打包速度更快
+  webpackConfig.devtool = 'eval-cheap-module-source-map';
+});
+
+whenProd(() => {
+// 生产环境下用hidden-source-map让控制台中只能定位到编译后代码的位置，而不能map到源码，以提高安全性
+  webpackConfig.devtool = 'hidden-source-map';
+});
+
 ```

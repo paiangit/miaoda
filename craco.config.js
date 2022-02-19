@@ -1,4 +1,8 @@
 const {
+  // addAfterLoader,
+  // addBeforeLoader,
+  // addBeforeLoaders,
+  // removeLoaders,
   loaderByName,
   getLoaders,
   removePlugins,
@@ -70,7 +74,16 @@ module.exports = {
     configure: (webpackConfig, { env, paths }) => {
       // fs.writeFileSync('CRA的默认webpack配置.json', JSON.stringify(webpackConfig, null, 2));
 
-      // 生产环境下用hidden-source-map让控制台中只能定位到编译后代码的位置，而不能map到源码，以提高安全性
+      whenDev(() => {
+        // 比默认的cheap-module-source-map打包速度更快
+        webpackConfig.devtool = 'eval-cheap-module-source-map';
+      });
+
+      whenProd(() => {
+        // 生产环境下用hidden-source-map让控制台中只能定位到编译后代码的位置，而不能map到源码，以提高安全性
+        webpackConfig.devtool = 'hidden-source-map';
+      });
+
       webpackConfig.entry = {
         // 注意这里键main不能修改，这是webpack的标准配置，否则会造成应用启动不了
         // 此外，还要配套修改下面的output.filename
