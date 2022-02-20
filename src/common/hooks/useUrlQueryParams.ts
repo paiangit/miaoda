@@ -1,11 +1,12 @@
 import { URLSearchParamsInit, useSearchParams } from 'react-router-dom';
 import { useMemo, useState } from 'react';
-import { cleanObject, subset } from '../utils';
+import cleanObject from '../utils/cleanObject';
+import subset from '../utils/subset';
 
 /**
  * 返回页面Url中，指定键的参数值
  */
-export const useUrlQueryParams = <K extends string>(keys: K[]) => {
+export default function useUrlQueryParams<K extends string>(keys: K[]) {
   const [searchParams] = useSearchParams();
   const setSearchParams = useSetUrlSearchParam();
   const [stateKeys] = useState(keys);

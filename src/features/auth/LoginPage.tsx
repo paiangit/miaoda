@@ -1,6 +1,6 @@
 import { Form, Button, Input } from 'antd';
-import { useDocumentTitle } from '../../common/hooks';
-import { useLogin } from './hooks';
+import useDocumentTitle from '../../common/hooks/useDocumentTitle';
+import useLogin from './hooks/useLogin';
 import './LoginPage.less';
 
 export default function LoginPage() {

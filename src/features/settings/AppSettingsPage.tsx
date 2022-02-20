@@ -1,10 +1,11 @@
 import { useEffect, useCallback } from 'react';
 import { useParams } from 'react-router-dom';
 import { Form, Input, Radio, Button } from 'antd';
-import { useDocumentTitle } from '../../common/hooks';
+import useDocumentTitle from '../../common/hooks/useDocumentTitle';
 import { Loading } from '../../common/components/Loading';
 import { Retry } from '../../common/components/Retry';
-import { useGetApp, useUpdateApp } from './hooks';
+import useGetApp from './hooks/useGetApp';
+import useUpdateApp from './hooks/useUpdateApp';
 import { useGetAppQueryKey } from './keys';
 import './AppSettingsPage.less';
 

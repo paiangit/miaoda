@@ -1,1 +1,3 @@
-export const isEmpty = (value: unknown) => value === '' || value == null;
+export default function isEmpty(value: unknown) {
+  return value === '' || value == null;
+}

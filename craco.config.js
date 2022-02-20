@@ -155,7 +155,7 @@ module.exports = {
       // See: https://github.com/stephencookdev/speed-measure-webpack-plugin/issues/167
       whenProd(() => {
         let miniCssExtractPlugin;
-        smpWrappedConfig.plugins.map((plugin, index) => {
+        smpWrappedConfig.plugins.forEach((plugin, index) => {
           if (plugin instanceof MiniCssExtractPlugin) {
             [ miniCssExtractPlugin ] = smpWrappedConfig.plugins.splice(index, 1);
           }

@@ -1,6 +1,6 @@
 import { Button, Modal, Form, Input, Radio } from 'antd';
 import { useState } from 'react';
-import { useCreateApp } from './hooks';
+import useCreateApp from './hooks/useCreateApp';
 import './CreateAppModal.less';
 
 interface CreateAppModalParams {

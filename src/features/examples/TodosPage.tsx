@@ -1,4 +1,4 @@
-import { useDocumentTitle } from '../../common/hooks';
+import useDocumentTitle from '../../common/hooks/useDocumentTitle';
 import TodoList from './TodoList';
 import './TodosPage.less';
 

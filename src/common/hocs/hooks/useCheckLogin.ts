@@ -1,7 +1,7 @@
 
 import { useMutation } from 'react-query';
 import { useNavigate } from 'react-router-dom';
-import { request } from '../../utils';
+import request from '../../utils/request';
 
 interface CheckLoginResult {
   isLogin: boolean;
@@ -16,7 +16,7 @@ const checkLogin = async () => {
   return result.data as CheckLoginResult | undefined;
 }
 
-export const useCheckLogin = () => {
+export default function useCheckLogin() {
   const navigate = useNavigate();
 
   return useMutation(

@@ -1,5 +1,5 @@
 import { useQuery } from 'react-query';
-import { request } from '../../../common/utils';
+import request from '../../../common/utils/request';
 import { App } from '../../../common/types';
 import { GetAppListQueryKey } from '../keys';
 
@@ -23,7 +23,7 @@ export const getAppList = async (params) => {
 };
 
 // hook封装层
-export const useGetAppList = (getAppListQueryKey: GetAppListQueryKey, options?) => {
+export default function useGetAppList (getAppListQueryKey: GetAppListQueryKey, options?) {
   const [, params] = getAppListQueryKey;
 
   return useQuery(

@@ -1,6 +1,6 @@
 import { message } from 'antd';
 import { useMutation } from 'react-query';
-import { request } from '../../../common/utils';
+import request from '../../../common/utils/request';
 
 // 类型声明
 export interface DeleteAppResult {
@@ -20,7 +20,7 @@ export const deleteApp = async (id: number) => {
 };
 
 // hook封装层
-export const useDeleteApp = () => {
+export default function useDeleteApp () {
   return useMutation((id: number) => deleteApp(id), {
     onSuccess(data, variables, context) {
       message.success('删除成功！');

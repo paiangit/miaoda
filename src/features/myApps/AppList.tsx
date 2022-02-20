@@ -1,11 +1,11 @@
 import { useCallback, useEffect } from 'react';
-import { Empty, Tag, Tooltip, Spin, Pagination } from 'antd';
+import { Empty, Tag, Tooltip, Pagination } from 'antd';
 import { ChromeOutlined } from '@ant-design/icons';
-import { useUrlQueryParams } from '../../common/hooks';
+import useUrlQueryParams from '../../common/hooks/useUrlQueryParams';
 import { Loading } from '../../common/components/Loading';
 import { Retry } from '../../common/components/Retry';
 import AppOperationDropdown from './AppOperationDropdown';
-import { useGetAppList } from './hooks';
+import useGetAppList from './hooks/useGetAppList';
 import { useGetAppListQueryKey } from './keys';
 import { defaultCurrentPage, defaultPageSize } from './const';
 import './AppList.less';

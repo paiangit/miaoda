@@ -1,5 +1,5 @@
 import { useMutation } from 'react-query';
-import { request } from '../../../common/utils';
+import request from '../../../common/utils/request';
 import { User } from '../../../common/types';
 import { message } from 'antd';
 
@@ -15,7 +15,7 @@ const createUser = async (data) => {
 }
 
 // hook封装层
-export const useCreateUser = () => {
+export default function useCreateUser() {
   return useMutation(
     async (data: Partial<User>) => createUser(data),
     {

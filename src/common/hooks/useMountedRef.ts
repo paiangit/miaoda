@@ -3,7 +3,7 @@ import { useEffect, useRef } from 'react';
 /**
  * 返回组件的挂载状态，如果还没有挂载或者已经被卸载，则返回false，否则返回true
  */
-export const useMountedRef = () => {
+export default function useMountedRef() {
   const mountedRef = useRef(false);
 
   useEffect(() => {

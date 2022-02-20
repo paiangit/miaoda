@@ -6,7 +6,7 @@ import {
   DeleteOutlined,
 } from '@ant-design/icons';
 import { useNavigate } from 'react-router-dom';
-import { useDeleteApp } from './hooks';
+import useDeleteApp from './hooks/useDeleteApp';
 import './AppOperationDropdown.less';
 
 interface AppOperationDropDownProps {

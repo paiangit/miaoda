@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import { useMountedRef } from './useMountedRef';
+import useMountedRef from './useMountedRef';
 
 interface State<D> {
   status: 'idle' | 'loading' | 'success' | 'error';
@@ -17,7 +17,7 @@ const defaultConfig = {
   throwOnError: false,
 };
 
-export function useAsync<D>(
+export default function useAsync<D>(
   initialState?: State<D>,
   initialConfig?: typeof defaultConfig
 ) {

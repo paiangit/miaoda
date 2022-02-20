@@ -46,7 +46,7 @@ export function reducer(state, action) {
 }
 
 // 单个hook
-export function useAddTodoAsync() {
+export default function useAddTodoAsync() {
   const dispatch = useDispatch();
   const todoList = useSelector((state: RootState) => state.todos.todoList);
   const boundAction = useCallback((todo) => dispatch(addTodoAsync(todo)), [dispatch]);

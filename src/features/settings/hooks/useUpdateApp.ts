@@ -1,5 +1,5 @@
 import { useMutation } from 'react-query';
-import { request } from '../../../common/utils';
+import request from '../../../common/utils/request';
 import { App } from '../../../common/types';
 import { message } from 'antd';
 
@@ -21,7 +21,7 @@ export const updateApp = async (id: number, params: UpdateAppParams) => {
   return result.data as UpdateAppResult | undefined;
 };
 
-export const useUpdateApp = (id) => {
+export default function useUpdateApp(id) {
   return useMutation(async (params: UpdateAppParams) => updateApp(id, params), {
     onSuccess(data, variables, context) {
       message.success('保存成功！');

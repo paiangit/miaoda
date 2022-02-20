@@ -1,6 +1,6 @@
-import { isEmpty } from './isEmpty';
+import isEmpty from './isEmpty';
 
-export const cleanObject = (object?: { [key: string]: unknown }) => {
+export default function cleanObject(object?: { [key: string]: unknown }) {
   if (!object) {
     return {};
   }

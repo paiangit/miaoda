@@ -1,10 +1,10 @@
 import { useEffect } from 'react';
 import { FullPageLoading } from '../components/FullPageLoading';
 import { FullPageRetry } from '../components/FullPageRetry';
-import { useCheckLogin } from './hooks';
+import useCheckLogin from './hooks/useCheckLogin';
 
 // 登录高阶组件
-export function CheckLogin(Component) {
+export default function CheckLogin(Component) {
   const { mutate: checkLogin, isLoading, isError } = useCheckLogin();
 
   useEffect(() => {

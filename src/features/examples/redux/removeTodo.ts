@@ -34,7 +34,7 @@ export function reducer(state: TodosState, action) {
 }
 
 // 单个hook
-export function useRemoveTodo() {
+export default function useRemoveTodo() {
   const dispatch = useDispatch();
   const todoList = useSelector((state: RootState) => state.todos.todoList);
   const boundAction = useCallback(

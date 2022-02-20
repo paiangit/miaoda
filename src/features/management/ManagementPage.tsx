@@ -1,5 +1,5 @@
 import { useParams } from 'react-router-dom';
-import { useDocumentTitle } from '../../common/hooks';
+import useDocumentTitle from '../../common/hooks/useDocumentTitle';
 import './ManagementPage.less';
 
 export default function ManagementPage() {

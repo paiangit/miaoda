@@ -89,4 +89,4 @@ function getToken(): string {
   return token ? `Bearer ${token}` : '';
 }
 
-export const request = instance;
+export default instance;

@@ -1,6 +1,6 @@
 import { useNavigate } from 'react-router-dom';
 import { useMutation } from 'react-query';
-import { request } from '../../../common/utils';
+import request from '../../../common/utils/request';
 import { User } from '../../../common/types';
 import { message } from 'antd';
 
@@ -16,7 +16,7 @@ const login = async (data) => {
 }
 
 // hook封装层
-export const useLogin = () => {
+export default function useLogin () {
   const navigate = useNavigate();
 
   return useMutation(

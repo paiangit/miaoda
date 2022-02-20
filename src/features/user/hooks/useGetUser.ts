@@ -1,5 +1,5 @@
 import { useQuery } from 'react-query';
-import { request } from '../../../common/utils';
+import request from '../../../common/utils/request';
 import { GetUserQueryKey } from '../keys';
 import { User } from '../../../common/types';
 
@@ -12,7 +12,7 @@ const getUser = async (params) => {
   return result.data as User | undefined;
 };
 
-export const useGetUser = (getUserQueryKey: GetUserQueryKey, options?) => {
+export default function useGetUser (getUserQueryKey: GetUserQueryKey, options?) {
   const [, params] = getUserQueryKey;
 
   return useQuery(

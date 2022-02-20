@@ -1,9 +1,9 @@
 import { useNavigate } from 'react-router-dom';
 import { useEffect, useState } from 'react';
 import { Form } from 'antd';
-import { useDocumentTitle } from '../../common/hooks';
+import useDocumentTitle from '../../common/hooks/useDocumentTitle';
 import { Loading } from '../../common/components/Loading';
-import { useGetUser } from './hooks';
+import useGetUser from './hooks/useGetUser';
 import { useGetUserQueryKey } from './keys';
 import './ProfilePage.less';
 
@@ -23,7 +23,7 @@ export default function ProfilePage() {
   const userQuery = useGetUser(useGetUserQueryKey(),  {
     keepPreviousData: true,
   });
-  const { isLoading, isError, data, refetch } = userQuery;
+  const { isLoading, isError, data } = userQuery;
 
   useEffect(() => {
     data && setUserProfile(data);
