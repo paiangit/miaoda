@@ -1,6 +1,6 @@
 import { useQuery } from 'react-query';
-import request from '../../../utils/request';
-import { App } from '../../../types';
+import request from '~utils/request';
+import { App } from '~types/index';
 import { GetAppQueryKey } from '../keys';
 
 export const getApp = async (id: number) => {

@@ -1,5 +1,5 @@
-import CheckLogin from '../../hocs/CheckLogin';
-import useDocumentTitle from '../../hooks/useDocumentTitle';
+import CheckLogin from '~hocs/CheckLogin';
+import useDocumentTitle from '~hooks/useDocumentTitle';
 import './MainPage.less';
 
 function MainPageRaw() {

@@ -2,8 +2,8 @@ import { useRef } from 'react';
 import AppList from './AppList';
 import SearchPanel from './SearchPanel';
 import CreateAppModal from './CreateAppModal';
-import useDocumentTitle from '../../hooks/useDocumentTitle';
-import useUrlQueryParams from '../../hooks/useUrlQueryParams';
+import useDocumentTitle from '~hooks/useDocumentTitle';
+import useUrlQueryParams from '~hooks/useUrlQueryParams';
 import './AppListPage.less';
 
 export default function AppListPage() {

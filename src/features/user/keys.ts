@@ -1,5 +1,5 @@
 import { useParams } from 'react-router-dom';
-import prefixKey from '../../utils/prefixKey';
+import prefixKey from '~utils/prefixKey';
 
 const moduleName = '__user__';
 const prefix = (key) => prefixKey(key, moduleName);

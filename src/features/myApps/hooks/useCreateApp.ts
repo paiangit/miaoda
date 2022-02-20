@@ -1,8 +1,8 @@
 import { useNavigate } from 'react-router-dom';
 import { message } from 'antd';
 import { useMutation } from 'react-query';
-import request from '../../../utils/request';
-import { App } from '../../../types';
+import request from '~utils/request';
+import { App } from '~types/index';
 
 // 接口封装层
 export const createApp = async (params: App) => {

@@ -1,9 +1,9 @@
 import { useEffect, useCallback } from 'react';
 import { useParams } from 'react-router-dom';
 import { Form, Input, Radio, Button } from 'antd';
-import useDocumentTitle from '../../hooks/useDocumentTitle';
-import { Loading } from '../../components/Loading';
-import { Retry } from '../../components/Retry';
+import useDocumentTitle from '~hooks/useDocumentTitle';
+import { Loading } from '~components/Loading';
+import { Retry } from '~components/Retry';
 import useGetApp from './hooks/useGetApp';
 import useUpdateApp from './hooks/useUpdateApp';
 import { useGetAppQueryKey } from './keys';

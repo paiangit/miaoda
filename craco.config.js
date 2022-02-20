@@ -13,6 +13,7 @@ const {
   whenProd,
 } = require('@craco/craco');
 const CracoLessPlugin = require('craco-less');
+const CracoAlias = require('craco-alias');
 const CaseSensitivePathsPlugin = require('case-sensitive-paths-webpack-plugin');
 const CircularDependencyPlugin = require('circular-dependency-plugin');
 const MiniCssExtractPlugin = require('mini-css-extract-plugin');
@@ -20,13 +21,12 @@ const SpeedMeasurePlugin = require('speed-measure-webpack-plugin');
 const BundleAnalyzerPlugin = require('webpack-bundle-analyzer').BundleAnalyzerPlugin;
 const ProgressBarWebpackPlugin = require('progress-bar-webpack-plugin');
 const AntdDayjsWebpackPlugin = require('antd-dayjs-webpack-plugin');
+const threadLoader = require('thread-loader');
 
 const smp = new SpeedMeasurePlugin({
   outputFormat: 'human',
   outputTarget: './build/speed-measure.md'
 });
-
-const threadLoader = require('thread-loader');
 
 // https://webpack.docschina.org/loaders/thread-loader/#root
 // https://github.com/webpack-contrib/thread-loader/blob/master/example/webpack.config.js
@@ -86,9 +86,6 @@ module.exports = {
   // },
 
   webpack: {
-    alias: {
-      '~': path.resolve(__dirname, './src/'),
-    },
     configure: (webpackConfig, { env, paths }) => {
       // fs.writeFileSync('CRA的默认webpack配置.json', JSON.stringify(webpackConfig, null, 2));
 
@@ -167,7 +164,7 @@ module.exports = {
       // return webpackConfig;
     },
     plugins: [
-      new BundleAnalyzerPlugin({ generateStatsFile: true, openAnalyzer:  true }),
+      new BundleAnalyzerPlugin({ generateStatsFile: true, openAnalyzer: false }),
       new ProgressBarWebpackPlugin(),
       // 循环依赖检测插件
       new CircularDependencyPlugin({
@@ -212,6 +209,14 @@ module.exports = {
           },
         },
       },
+    },
+    {
+      plugin: CracoAlias,
+      options: {
+        source: 'tsconfig',
+        baseUrl: './src',
+        tsConfigPath: './tsconfig.extend.json',
+      }
     },
   ],
 };

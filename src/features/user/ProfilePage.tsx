@@ -1,8 +1,8 @@
 import { useNavigate } from 'react-router-dom';
 import { useEffect, useState } from 'react';
 import { Form } from 'antd';
-import useDocumentTitle from '../../hooks/useDocumentTitle';
-import { Loading } from '../../components/Loading';
+import useDocumentTitle from '~hooks/useDocumentTitle';
+import { Loading } from '~components/Loading';
 import useGetUser from './hooks/useGetUser';
 import { useGetUserQueryKey } from './keys';
 import './ProfilePage.less';

@@ -1,7 +1,7 @@
 
 import { useMutation } from 'react-query';
 import { useNavigate } from 'react-router-dom';
-import request from '../../utils/request';
+import request from '~utils/request';
 
 interface CheckLoginResult {
   isLogin: boolean;

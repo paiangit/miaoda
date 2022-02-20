@@ -1,6 +1,6 @@
 import { useMutation } from 'react-query';
-import request from '../../../utils/request';
-import { User } from '../../../types';
+import request from '~utils/request';
+import { User } from '~types/index';
 import { message } from 'antd';
 
 // 接口封装层

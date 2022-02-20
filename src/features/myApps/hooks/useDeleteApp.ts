@@ -1,6 +1,6 @@
 import { message } from 'antd';
 import { useMutation } from 'react-query';
-import request from '../../../utils/request';
+import request from '~utils/request';
 
 // 类型声明
 export interface DeleteAppResult {

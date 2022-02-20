@@ -2289,7 +2289,7 @@ modifyVars: {
 
 就可以在组件的样式中引入
 
-@import '../../styles/themes.less';
+@import '~styles/themes.less';
 
 接下来我们就可以在组件中正常地使用@border-radius-base 这个来自主题的变量了。
 
@@ -5651,6 +5651,22 @@ pnpm add esbuild-loader -D
 "postcss": "^8.1.0",
 ```
 
+当然，在生产环境也可以通过esbuild-loader的ESBuildMinifyPlugin来加快构建速度10秒左右，不过因为增加gzip压缩后10多K的打包大小，所以暂时不采用。一些后台不太注重性能的场景还是可以考虑使用的。
+
+```js
+const { ESBuildMinifyPlugin } = require('esbuild-loader');
+
+webpackConfig.optimization = {
+  minimizer: [
+    new ESBuildMinifyPlugin({
+      target: 'es2015', // Syntax to compile to (see options below for possible values)
+      css: true, // Apply minification to CSS assets
+    }),
+  ],
+};
+```
+
+
 ## 修复生产环境下speed-measure-webpack-plugin与mini-css-extract-plugin的冲突报错
 
 ```js
@@ -5723,3 +5739,94 @@ dayjs.locale('zh-cn');
 ```
 ## 把lodash换成lodash-es后，打包大小无变化，说明lodash的新版本已经优化过了。故此步已不需要再做了
 
+## browserslist可以根据自己的需要修改
+
+```js
+"browserslist": {
+  "production": [
+    ">0.2%",
+    "not dead",
+    "not op_mini all"
+  ],
+  "development": [
+    "last 1 chrome version",
+    "last 1 firefox version",
+    "last 1 safari version"
+  ]
+},
+```
+
+## 用craco-alias配置路径别名，并解决使用路径别名后ESLint提示找不到模块的问题
+
+```js
+pnpm add craco-alias -D 
+```
+
+craco.config.js
+
+```js
+const CracoAlias = require('craco-alias');
+...
+
+plugins: [
+  {
+    plugin: CracoLessPlugin,
+    // 关于craco-less的详细配置，See:
+    // https://github.com/DocSpring/craco-less#configuration
+    options: {
+      lessLoaderOptions: {
+        lessOptions: {
+          modifyVars: {
+            // '@primary-color': '#1DA57A',
+            'border-radius-base': '6px',
+          },
+          javascriptEnabled: true,
+        },
+      },
+    },
+  },
++  {
++    plugin: CracoAlias,
++    options: {
++      source: 'tsconfig',
++      baseUrl: './src',
++      tsConfigPath: './tsconfig.extend.json',
++    }
++  },
+],
+```
+
+tsconfig.json
+
+```js
+{
+  "extends": "./tsconfig.extend.json",
+  "compilerOptions": {
+    "jsx": "react-jsx",
+    "esModuleInterop": true
+  },
+  "include": ["src", "test"]
+}
+```
+
+tsconfig.extend.json
+
+```js
+{
+  "compilerOptions": {
+    "baseUrl": "./src",
+    "paths": {
+      "~/*": ["/*"],
+      "~assets/*": ["./assets/*"],
+      "~components/*": ["./components/*"],
+      "~containers/*": ["./containers/*"],
+      "~features/*": ["./features/*"],
+      "~hocs/*": ["./hocs/*"],
+      "~hooks/*": ["./hooks/*"],
+      "~styles/*": ["./styles/*"],
+      "~types/*": ["./types/*"],
+      "~utils/*": ["./utils/*"]
+    }
+  }
+}
+```

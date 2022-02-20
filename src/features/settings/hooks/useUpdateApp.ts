@@ -1,6 +1,6 @@
 import { useMutation } from 'react-query';
-import request from '../../../utils/request';
-import { App } from '../../../types';
+import request from '~utils/request';
+import { App } from '~types/index';
 import { message } from 'antd';
 
 interface UpdateAppParams {
