@@ -1,12 +1,12 @@
-import { PageNotFound } from '../common/containers';
-import { MainLayout } from '../features/home';
-import homeRoute from '../features/home/route';
-import designRoute from '../features/design/route';
-import managementRoute from '../features/management/route';
-import myAppsRoute from '../features/myApps/route';
-import previewRoute from '../features/preview/route';
-import publishRoute from '../features/publish/route';
-import settingsRoute from '../features/settings/route';
+import { NotFoundPage } from './features/exception';
+import { MainLayout } from './features/home';
+import homeRoute from './features/home/route';
+import designRoute from './features/design/route';
+import managementRoute from './features/management/route';
+import myAppsRoute from './features/myApps/route';
+import previewRoute from './features/preview/route';
+import publishRoute from './features/publish/route';
+import settingsRoute from './features/settings/route';
 import _ from 'lodash';
 
 interface RouteChild {
@@ -34,7 +34,7 @@ const routes = [
       ...children,
       {
         path: '*',
-        element: <PageNotFound />,
+        element: <NotFoundPage />,
         children: [],
       },
     ].filter(

@@ -5,7 +5,7 @@ import { QueryClientProvider, QueryClient } from 'react-query';
 import { ReactQueryDevtools } from 'react-query/devtools';
 
 import App from './App';
-import store from './common/store';
+import store from './store';
 
 function Root() {
   const queryClient = new QueryClient({

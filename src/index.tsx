@@ -7,9 +7,9 @@ import dayjs from 'dayjs';
 import 'dayjs/locale/zh-cn';
 import 'antd/dist/antd.less';
 // import reportWebVitals from './reportWebVitals';
-import { ErrorFallback } from './common/containers/ErrorFallback';
+import { ErrorFallback } from './containers/ErrorFallback';
 import Root from './Root';
-import './common/styles/index.less';
+import './styles/index.less';
 
 dayjs.locale('zh-cn');
 

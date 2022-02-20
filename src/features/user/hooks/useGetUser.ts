@@ -1,7 +1,7 @@
 import { useQuery } from 'react-query';
-import request from '../../../common/utils/request';
+import request from '../../../utils/request';
 import { GetUserQueryKey } from '../keys';
-import { User } from '../../../common/types';
+import { User } from '../../../types';
 
 const getUser = async (params) => {
   const result = await request({

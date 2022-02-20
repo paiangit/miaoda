@@ -4,7 +4,7 @@
  * 2）一个有意义的 key 可以帮助你在 react-query/devtools 里快速分辨是什么请求。
  */
 import { useParams } from 'react-router-dom';
-import prefixKey from '../../common/utils/prefixKey';
+import prefixKey from '../../utils/prefixKey';
 
 const moduleName = '__myApps__';
 const prefix = (key) => prefixKey(key, moduleName);

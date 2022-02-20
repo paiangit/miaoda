@@ -1,6 +1,6 @@
 import { useCallback } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
-import { RootState } from '../../../common/store';
+import { RootState } from '../../../store';
 import { TODOS_REMOVE_TODO } from './constants';
 
 interface TodosState {

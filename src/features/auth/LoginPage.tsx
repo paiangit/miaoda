@@ -1,5 +1,5 @@
 import { Form, Button, Input } from 'antd';
-import useDocumentTitle from '../../common/hooks/useDocumentTitle';
+import useDocumentTitle from '../../hooks/useDocumentTitle';
 import useLogin from './hooks/useLogin';
 import './LoginPage.less';
 

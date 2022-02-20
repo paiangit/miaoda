@@ -15,7 +15,7 @@ export default function useUrlQueryParams<K extends string>(keys: K[]) {
       () =>
         // 下面的Object.forEntries(searchParams)是用来把实现了迭代器的对象，这里是searchParams，里面的键和值读取出来变成一个普通对象
         // 参见：https://developer.mozilla.org/zh-CN/docs/Web/JavaScript/Reference/Global_Objects/Object/fromEntries
-        subset(Object.fromEntries(searchParams), stateKeys) as {
+        subset(Object.fromEntries(searchParams as any), stateKeys) as {
           [key in K]: string;
         },
       [searchParams, stateKeys]
@@ -33,7 +33,7 @@ export const useSetUrlSearchParam = () => {
   const [searchParams, setSearchParam] = useSearchParams();
   return (params: { [key in string]: unknown }) => {
     const o = cleanObject({
-      ...Object.fromEntries(searchParams),
+      ...Object.fromEntries(searchParams as any),
       ...params,
     }) as URLSearchParamsInit;
     return setSearchParam(o);

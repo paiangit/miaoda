@@ -1,7 +1,7 @@
 import { useNavigate } from 'react-router-dom';
 import { useMutation } from 'react-query';
-import request from '../../../common/utils/request';
-import { User } from '../../../common/types';
+import request from '../../../utils/request';
+import { User } from '../../../types';
 import { message } from 'antd';
 
 // 接口封装层

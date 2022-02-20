@@ -1,5 +1,5 @@
 import { combineReducers } from 'redux';
-import todosReducer from '../features/examples/redux/reducer';
+import todosReducer from './features/examples/redux/reducer';
 
 const reducerMap = {
   todos: todosReducer,

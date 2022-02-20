@@ -1,6 +1,6 @@
 import { lazy, Suspense } from 'react';
 import { useRoutes, Navigate } from 'react-router-dom';
-import { FullPageLoading } from './common/components/FullPageLoading';
+import { FullPageLoading } from './components/FullPageLoading';
 
 const NotFoundPage = lazy(() => import('./features/exception/NotFoundPage'));
 const MainLayout = lazy(() => import('./features/home/MainLayout'));
@@ -21,7 +21,7 @@ const DesignerPage = lazy(() => import('./features/design/DesignerPage'));
 
 const PreviewLayout = lazy(() => import('./features/preview/PreviewLayout'));
 const PreviewPage = lazy(() => import('./features/preview/PreviewPage'));
-// import routeConfig from './common/routeConfig.js';
+// import routeConfig from './routeConfig.js';
 
 function App() {
   const mainRoutes = {

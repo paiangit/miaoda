@@ -1,6 +1,6 @@
 import { useQuery } from 'react-query';
-import request from '../../../common/utils/request';
-import { App } from '../../../common/types';
+import request from '../../../utils/request';
+import { App } from '../../../types';
 import { GetAppListQueryKey } from '../keys';
 
 // 类型声明

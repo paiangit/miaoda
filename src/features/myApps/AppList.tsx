@@ -1,9 +1,9 @@
 import { useCallback, useEffect } from 'react';
 import { Empty, Tag, Tooltip, Pagination } from 'antd';
 import { ChromeOutlined } from '@ant-design/icons';
-import useUrlQueryParams from '../../common/hooks/useUrlQueryParams';
-import { Loading } from '../../common/components/Loading';
-import { Retry } from '../../common/components/Retry';
+import useUrlQueryParams from '../../hooks/useUrlQueryParams';
+import { Loading } from '../../components/Loading';
+import { Retry } from '../../components/Retry';
 import AppOperationDropdown from './AppOperationDropdown';
 import useGetAppList from './hooks/useGetAppList';
 import { useGetAppListQueryKey } from './keys';
