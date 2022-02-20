@@ -5666,3 +5666,34 @@ whenProd(() => {
 
 return smpWrappedConfig;
 ```
+
+## 修改splitChunks配置来减小构建后的包大小
+
+```js
+webpackConfig.optimization = {
+  splitChunks: {
+    cacheGroups: {
+      commons: {
+        chunks: 'initial',
+        minChunks: 2,
+        maxInitialRequests: 5,
+        minSize: 0
+      },
+      vendor: {
+        test: /[\\/]node_modules[\\/]/,
+        chunks: 'initial',
+        name: 'vendor',
+        priority: 10,
+        enforce: true
+      }
+    }
+  },
+};
+
+whenDev(() => {
+  webpackConfig.output.filename = '[name].bundle.js';
+});
+whenProd(() => {
+  webpackConfig.output.filename = '[name].[contenthash].bundle.js';
+});
+```

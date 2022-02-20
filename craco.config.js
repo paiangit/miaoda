@@ -98,12 +98,32 @@ module.exports = {
 
       webpackConfig.entry = path.resolve(__dirname, './src/index.tsx');
 
-      // whenDev(() => {
-      //   webpackConfig.output.filename = '[name].bundle.js';
-      // });
-      // whenProd(() => {
-      //   webpackConfig.output.filename = '[name].[contenthash].bundle.js';
-      // });
+      webpackConfig.optimization = {
+        splitChunks: {
+          cacheGroups: {
+            commons: {
+              chunks: 'initial',
+              minChunks: 2,
+              maxInitialRequests: 5,
+              minSize: 0
+            },
+            vendor: {
+              test: /[\\/]node_modules[\\/]/,
+              chunks: 'initial',
+              name: 'vendor',
+              priority: 10,
+              enforce: true
+            }
+          }
+        },
+      };
+
+      whenDev(() => {
+        webpackConfig.output.filename = '[name].bundle.js';
+      });
+      whenProd(() => {
+        webpackConfig.output.filename = '[name].[contenthash].bundle.js';
+      });
 
       webpackConfig.resolve.extensions = [
         '.tsx',
@@ -119,7 +139,6 @@ module.exports = {
           return plugin;
         }
       }));
-
 
       const smpWrappedConfig = smp.wrap(webpackConfig);
 
@@ -142,7 +161,7 @@ module.exports = {
       // return webpackConfig;
     },
     plugins: [
-      new BundleAnalyzerPlugin({ generateStatsFile: true, openAnalyzer: false }),
+      new BundleAnalyzerPlugin({ generateStatsFile: true, openAnalyzer:  true }),
       new ProgressBarWebpackPlugin(),
       // 循环依赖检测插件
       new CircularDependencyPlugin({
