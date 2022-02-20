@@ -143,7 +143,11 @@ module.exports = {
       new ProgressBarWebpackPlugin(),
       // 循环依赖检测插件
       new CircularDependencyPlugin({
-        exclude: /node_modules/,
+        // 这里之所以要用[\\/]，它实际就是一个正则，是为了兼容Linux系统的/和windows系统给的\。
+        // 当 webpack 处理文件路径时，它们始终包含 Unix 系统中的 / 和 Windows 系统中的 \。
+        // 单纯滴使用 / 或 \ 会在跨平台使用时产生问题。
+        // 参考：https://webpack.docschina.org/plugins/split-chunks-plugin/
+        exclude: /[\\/]node_modules[\\/]/,
       }),
       // 换成esbuild-loader之后，
       // 不加这个插件页面会出现Uncaught ReferenceError: React is not defined错误
