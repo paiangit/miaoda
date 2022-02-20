@@ -1,3 +1,5 @@
+const path = require('path');
+// const fs = require('fs');
 const webpack = require('webpack');
 const {
   // addAfterLoader,
@@ -14,12 +16,10 @@ const CracoLessPlugin = require('craco-less');
 const CaseSensitivePathsPlugin = require('case-sensitive-paths-webpack-plugin');
 const CircularDependencyPlugin = require('circular-dependency-plugin');
 const MiniCssExtractPlugin = require('mini-css-extract-plugin');
-
-const path = require('path');
-// const fs = require('fs');
 const SpeedMeasurePlugin = require('speed-measure-webpack-plugin');
 const BundleAnalyzerPlugin = require('webpack-bundle-analyzer').BundleAnalyzerPlugin;
 const ProgressBarWebpackPlugin = require('progress-bar-webpack-plugin');
+const AntdDayjsWebpackPlugin = require('antd-dayjs-webpack-plugin');
 
 const smp = new SpeedMeasurePlugin({
   outputFormat: 'human',
@@ -78,6 +78,8 @@ const handleBabelLoader = (webpackConfig, loaderName) => {
   });
 }
 
+// 关于如何用craco进行详细配置的修改，See：
+// https://github.com/gsoft-inc/craco/blob/master/packages/craco/README.md#configuration-file
 module.exports = {
   webpack: {
     alias: {
@@ -176,6 +178,8 @@ module.exports = {
       new webpack.ProvidePlugin({
         'React': 'react',
       }),
+      // 时间转换工具采取dayjs替换moment
+      new AntdDayjsWebpackPlugin(),
     ],
   },
   jest: {
@@ -191,6 +195,8 @@ module.exports = {
   plugins: [
     {
       plugin: CracoLessPlugin,
+      // 关于craco-less的详细配置，See:
+      // https://github.com/DocSpring/craco-less#configuration
       options: {
         lessLoaderOptions: {
           lessOptions: {

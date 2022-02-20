@@ -19,11 +19,13 @@ specifiers:
   '@types/react-dom': ^17.0.11
   '@welldone-software/why-did-you-render': ^6.2.3
   antd: ^4.18.0
+  antd-dayjs-webpack-plugin: ^1.0.6
   autoprefixer: ^10.0.2
   axios: ^0.25.0
   circular-dependency-plugin: ^5.2.2
   craco-less: ^2.0.0
   cross-env: ^7.0.3
+  dayjs: ^1.10.7
   esbuild-loader: ^2.18.0
   eslint: ^7.0.0
   eslint-config-prettier: ^8.3.0
@@ -60,6 +62,7 @@ dependencies:
   '@testing-library/user-event': 13.5.0_@testing-library+dom@7.31.2
   antd: 4.18.4_react-dom@17.0.2+react@17.0.2
   axios: 0.25.0
+  dayjs: 1.10.7
   moment: 2.29.1
   react: 17.0.2
   react-dom: 17.0.2_react@17.0.2
@@ -86,6 +89,7 @@ devDependencies:
   '@types/react': 17.0.38
   '@types/react-dom': 17.0.11
   '@welldone-software/why-did-you-render': 6.2.3_react@17.0.2
+  antd-dayjs-webpack-plugin: 1.0.6_dayjs@1.10.7
   autoprefixer: 10.4.2_postcss@8.4.5
   circular-dependency-plugin: 5.2.2_webpack@5.69.1
   craco-less: 2.0.0_222c7290275b7dbd25ec2eceba10a634
@@ -2929,6 +2933,14 @@ packages:
     engines: {node: '>=12'}
     dev: true
 
+  /antd-dayjs-webpack-plugin/1.0.6_dayjs@1.10.7:
+    resolution: {integrity: sha512-UlK3BfA0iE2c5+Zz/Bd2iPAkT6cICtrKG4/swSik5MZweBHtgmu1aUQCHvICdiv39EAShdZy/edfP6mlkS/xXg==}
+    peerDependencies:
+      dayjs: '*'
+    dependencies:
+      dayjs: 1.10.7
+    dev: true
+
   /antd/4.18.4_react-dom@17.0.2+react@17.0.2:
     resolution: {integrity: sha512-7KCEhIyPeQJF/OenkfOTcx+5sHpiI5U6OzYmTUJn9wVPjcl07eFXu2w9teM9pJV9X7mSUWyPeM5aMFmBQo2TNQ==, registry: https://registry.npm.taobao.org/, tarball: https://registry.npm.taobao.org/antd/download/antd-4.18.4.tgz}
     peerDependencies:
@@ -4066,7 +4078,7 @@ packages:
     dev: false
 
   /dayjs/1.10.7:
-    resolution: {integrity: sha512-P6twpd70BcPK34K26uJ1KT3wlhpuOAPoMwJzpsIWUxHZ7wpmbdZL/hQqBDfz7hGurYSa5PhzdhDHtt319hL3ig==, registry: https://registry.npm.taobao.org/, tarball: https://registry.npm.taobao.org/dayjs/download/dayjs-1.10.7.tgz}
+    resolution: {integrity: sha512-P6twpd70BcPK34K26uJ1KT3wlhpuOAPoMwJzpsIWUxHZ7wpmbdZL/hQqBDfz7hGurYSa5PhzdhDHtt319hL3ig==}
     dev: false
 
   /debug/2.6.9:

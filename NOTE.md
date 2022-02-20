@@ -117,9 +117,16 @@ module.exports = override(
 参见：
 https://ant.design/docs/react/use-with-create-react-app-cn#%E9%AB%98%E7%BA%A7%E9%85%8D%E7%BD%AE
 
+关于如何用craco进行详细配置的修改，See：
+
+https://github.com/gsoft-inc/craco/blob/master/packages/craco/README.md#configuration-file
+
 ```sh
 npm i @craco/craco craco-less -D
 ```
+
+关于craco-less的详细配置参见:
+https://github.com/DocSpring/craco-less#configuration
 
 修改 package.json：
 
@@ -5696,4 +5703,21 @@ whenDev(() => {
 whenProd(() => {
   webpackConfig.output.filename = '[name].[contenthash].bundle.js';
 });
+```
+
+## 用antd-dayjs-webpack-plugin用dayjs替换moment
+
+```js
+const AntdDayjsWebpackPlugin = require('antd-dayjs-webpack-plugin');
+
+// 时间转换工具采取dayjs替换moment
+new AntdDayjsWebpackPlugin(),
+```
+
+然后移除掉页面中对于moment的引用。改成：
+
+```js
+import dayjs from 'dayjs';
+import 'dayjs/locale/zh-cn';
+dayjs.locale('zh-cn');
 ```

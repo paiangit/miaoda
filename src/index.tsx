@@ -3,17 +3,15 @@ import React from 'react';
 import ReactDOM from 'react-dom';
 import { ErrorBoundary } from 'react-error-boundary';
 // 由于 antd 组件的默认文案是英文，所以需要修改为中文
-import zhCN from 'antd/lib/locale/zh_CN';
-import moment from 'moment';
-import 'moment/locale/zh-cn';
-import { ConfigProvider } from 'antd';
+import dayjs from 'dayjs';
+import 'dayjs/locale/zh-cn';
 import 'antd/dist/antd.less';
 // import reportWebVitals from './reportWebVitals';
 import { ErrorFallback } from './common/containers/ErrorFallback';
 import Root from './Root';
 import './common/styles/index.less';
 
-moment.locale('zh-cn');
+dayjs.locale('zh-cn');
 
 const handleReset = () => {
   window.location.reload();
@@ -28,9 +26,7 @@ const handleReset = () => {
 ReactDOM.render(
   <React.StrictMode>
     <ErrorBoundary FallbackComponent={ErrorFallback} onReset={handleReset}>
-      <ConfigProvider locale={zhCN}>
-        <Root />
-      </ConfigProvider>
+      <Root />
     </ErrorBoundary>
   </React.StrictMode>,
   document.getElementById('root')
