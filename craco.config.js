@@ -95,30 +95,14 @@ module.exports = {
         webpackConfig.devtool = 'hidden-source-map';
       });
 
-      webpackConfig.entry = {
-        // 注意这里键main不能修改，这是webpack的标准配置，否则会造成应用启动不了
-        // 此外，还要配套修改下面的output.filename
-        // https://webpack.docschina.org/concepts/entry-points/#separate-app-and-vendor-entries
-        main: path.resolve(__dirname, './src/index.tsx'),
-        vendor: [
-          'axios',
-          'react',
-          'react-dom',
-          'react-error-boundary',
-          'react-query',
-          'react-router-dom',
-          'redux',
-          'react-redux',
-          'redux-thunk',
-          'moment'
-        ],
-      };
-      whenDev(() => {
-        webpackConfig.output.filename = '[name].bundle.js';
-      });
-      whenProd(() => {
-        webpackConfig.output.filename = '[name].[contenthash].bundle.js';
-      });
+      webpackConfig.entry = path.resolve(__dirname, './src/index.tsx');
+
+      // whenDev(() => {
+      //   webpackConfig.output.filename = '[name].bundle.js';
+      // });
+      // whenProd(() => {
+      //   webpackConfig.output.filename = '[name].[contenthash].bundle.js';
+      // });
 
       webpackConfig.resolve.extensions = [
         '.tsx',
