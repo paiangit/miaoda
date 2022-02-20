@@ -5721,3 +5721,5 @@ import dayjs from 'dayjs';
 import 'dayjs/locale/zh-cn';
 dayjs.locale('zh-cn');
 ```
+## 把lodash换成lodash-es后，打包大小无变化，说明lodash的新版本已经优化过了。故此步已不需要再做了
+

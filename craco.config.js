@@ -81,6 +81,10 @@ const handleBabelLoader = (webpackConfig, loaderName) => {
 // 关于如何用craco进行详细配置的修改，See：
 // https://github.com/gsoft-inc/craco/blob/master/packages/craco/README.md#configuration-file
 module.exports = {
+  // devServer: (devServerConfig, { env, paths, proxy, allowedHost }) => {
+  //   return devServerConfig;
+  // },
+
   webpack: {
     alias: {
       '~': path.resolve(__dirname, './src/'),
