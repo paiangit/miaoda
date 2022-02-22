@@ -31,6 +31,7 @@ specifiers:
   eslint: ^7.0.0
   eslint-config-prettier: ^8.3.0
   husky: ^7.0.4
+  immer: ^9.0.12
   jest: ^27.0.0
   jest-watch-typeahead: ^0.6.5
   lint-staged: ^12.3.2
@@ -100,6 +101,7 @@ devDependencies:
   eslint: 7.32.0
   eslint-config-prettier: 8.3.0_eslint@7.32.0
   husky: 7.0.4
+  immer: 9.0.12
   jest: 27.4.7
   jest-watch-typeahead: 0.6.5_jest@27.4.7
   lint-staged: 12.3.2
@@ -5616,8 +5618,7 @@ packages:
     optional: true
 
   /immer/9.0.12:
-    resolution: {integrity: sha512-lk7UNmSbAukB5B6dh9fnh5D0bJTOFKxVg2cyJWTYrWRfhLrLMBquONcUs3aFq507hNoIZEDDh8lb8UtOizSMhA==, registry: https://registry.npm.taobao.org/, tarball: https://registry.npm.taobao.org/immer/download/immer-9.0.12.tgz}
-    dev: false
+    resolution: {integrity: sha512-lk7UNmSbAukB5B6dh9fnh5D0bJTOFKxVg2cyJWTYrWRfhLrLMBquONcUs3aFq507hNoIZEDDh8lb8UtOizSMhA==}
 
   /import-fresh/3.3.0:
     resolution: {integrity: sha512-veYYhQa+D1QBKznvhUHxb8faxlrwUnxseDAbAp457E0wLNio2bOSKnjYDhMj+YiAq61xrMGhQk9iXVk5FzgQMw==}

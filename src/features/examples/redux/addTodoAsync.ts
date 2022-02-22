@@ -1,5 +1,6 @@
 import { useCallback } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
+import { produce } from 'immer';
 import { RootState } from '../../../store';
 import { TODOS_ADD_TODO_ASYNC } from './constants';
 
@@ -32,18 +33,12 @@ export function addTodoAsync(todo) {
 }
 
 // 单个reducer
-export function reducer(state, action) {
+export const reducer = produce((draft, action) => {
   switch (action.type) {
     case TODOS_ADD_TODO_ASYNC:
-      return {
-        ...state,
-        todoList: [...state.todoList, action.payload],
-      };
-
-    default:
-      return state;
+      draft.todoList.push(action.payload);
   }
-}
+})
 
 // 单个hook
 export default function useAddTodoAsync() {

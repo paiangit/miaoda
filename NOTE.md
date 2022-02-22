@@ -5935,3 +5935,64 @@ tsconfig.extend.json
   }
 }
 ```
+
+## 采用immer改造reducer
+
+简化代码，减少无意中对redux原state的误改。
+
+下面是对removeTodo.ts进行修改前后的变化，可以看出，reducer变得简单很多：
+
+```js
+import { useCallback } from 'react';
+import { useDispatch, useSelector } from 'react-redux';
++ import { produce } from 'immer';
+import { RootState } from '../../../store';
+import { TODOS_REMOVE_TODO } from './constants';
+
+interface TodosState {
+  todoList: string[];
+}
+
+// 单个action
+export function removeTodo(index) {
+  return {
+    type: TODOS_REMOVE_TODO,
+    payload: index,
+  };
+}
+
+// 单个reducer
++ export const reducer = produce((draft: TodosState, action) => {
+   switch (action.type) {
+      case TODOS_REMOVE_TODO:
+-       const todoList = [...state.todoList];
+-       todoList.splice(action.payload, 1);
+-       return {
+-         ...state,
+-         todoList,
+-       };
++       draft.todoList.splice(action.payload, 1);
+-     default:
+-      return state;
+    }
++ })
+
+// 单个hook
+export default function useRemoveTodo() {
+  const dispatch = useDispatch();
+  const todoList = useSelector((state: RootState) => state.todos.todoList);
+  const boundAction = useCallback(
+    (index) => dispatch(removeTodo(index)),
+    [dispatch]
+  );
+
+  return {
+    todoList,
+    removeTodo: boundAction,
+  };
+}
+```
+
+从中我们发现，我们不仅可以避免写那一堆返回新对象的模版代码，通过对draftState的修改，immer会给映射到newState上。另外，因为produce(fn)在fn不返回值的时候，会由fn的第一个参数，即draftState生成；而当fn返回值的时候，会基于返回值生成。所以，这里reducer也不用return了，直接让它基于draftState去生成newState就好了。代码也就简洁了很多。
+
+不足：gzipped之后，会多增加5.6kb的大小。
