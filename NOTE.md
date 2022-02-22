@@ -1144,6 +1144,111 @@ export function useRemoveTodo() {
 }
 ```
 
+#### 关于react-redux状态更新的一个深坑
+
+更新react-redux的状态时，下面这样写会导致页面不更新：
+
+```js
+const newState = {...state};
+newState.todoList.splice(action.payload, 1);
+return newState;
+```
+
+不更新的原因是，
+
+这里todoList在是通过useSelector获取的，useSelector注册了一个订阅，每当redux store更新时，该订阅就会被调用，如果这次的更新导致了被选择state的改变，就会触发一次重新render并返回一个新值。订阅是如下代码做的：
+
+```
+subscription.onStateChange = checkForUpdates
+```
+
+而在react-redux内部，useSelector.js中，有一个checkForUpdates方法，其中关于是否forceupdate，有两个判断条件：
+
+1）先判断新旧state是否相等
+
+2）然后再判断新旧state的selectedState(也就是useSelector所选择的那部分state是否相等，这里就是.todoList是否相等)
+
+如果相等，则直接return掉，否则在函数的末尾就会执行forceRender()函数进行重新渲染。这里因为我们对newState所做的是浅拷贝，所以对todoList修改的时候，原state中的todoList也被改掉了，因此，虽然在第一个条件判断的时候是不相等，但在第二个条件判断的时候是相等的，因此就不会重新渲染。
+
+源码如下：
+
+https://github.com/reduxjs/react-redux/blob/v7.2.6/src/hooks/useSelector.js#L64-L90
+
+```js
+useIsomorphicLayoutEffect(function () {
+  function checkForUpdates() {
+    try {
+      var newStoreState = store.getState(); // Avoid calling selector multiple times if the store's state has not changed
+
+      // 第一个判断条件
+      if (newStoreState === latestStoreState.current) {
+        return;
+      }
+
+      var _newSelectedState = latestSelector.current(newStoreState);
+      
+      // 第二个判断条件
+      if (equalityFn(_newSelectedState, latestSelectedState.current)) {
+        return;
+      }
+
+      latestSelectedState.current = _newSelectedState;
+      latestStoreState.current = newStoreState;
+    } catch (err) {
+      // we ignore all errors here, since when the component
+      // is re-rendered, the selectors are called again, and
+      // will throw again, if neither props nor store state
+      // changed
+      latestSubscriptionCallbackError.current = err;
+    }
+
+    // 触发重渲染
+    forceRender();
+  }
+
+  subscription.onStateChange = checkForUpdates;
+  subscription.trySubscribe();
+  checkForUpdates();
+  return function () {
+    return subscription.tryUnsubscribe();
+  };
+}, [store, subscription]);
+```
+
+上面提到判断是否相等，那么判断是否相等的函数是什么呢？默认采用的：
+
+```js
+var refEquality = function refEquality(a, b) {
+  return a === b;
+};
+```
+
+但如果你在应用中使用useSelector()的时候传入了第二个参数，那么它将用你传入的这第二个参数作为比较函数。
+
+forceRender是怎么实现的呢？它的代码就一行：
+
+```js
+const [, forceRender] = useReducer(s => s + 1, 0);
+```
+
+它是通过递增一个内部状态来实现的，这个方法有些hacky，但是很简单，每次forceRender被调用，它便会递增一下内部计数器，计数器本身没有被任何地方用到，但能达到预期效果。
+
+所以，我们要想让我们这个代码能够渲染，也就有两个办法，一个是给useSelector传入第二个参数 `() => false` ，这样不管state.todoList有没有更新，都会重新渲染，这个动作性能是非常差的，所以肯定不能这么做，但你可以试着改成这样来对上面所分析的内容有更直观的掌握，
+
+第二种办法就是，避免修改到原来的state.todoList，办法就是先把todoList拷贝到一个新的数组中，在新数组上进行splice相关操作，最后再把新数组挂到newState上进行返回，就像下面这样：
+
+```js
+const newState = {...state};
+const todoList = [...newState.todoList];
+todoList.splice(action.payload, 1);
+newState.todoList = todoList;
+return newState;
+```
+
+但是，显然，这不是一个好的实践。好的实践是采用immer，或者采用内置了immer的Redux Toolkit。永远地杜绝这类问题发生。
+
+如果你想知道手工操作react-redux的状态有多危险，看看这个感受下就知道了：https://blog.csdn.net/qq_40259641/article/details/105275819
+
 #### addTodo.ts
 
 ```ts
