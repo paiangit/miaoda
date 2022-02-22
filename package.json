@@ -24,6 +24,7 @@
   },
   "scripts": {
     "start": "craco start",
+    "start:measure": "npx cross-env MEASURE=true craco start",
     "build": "craco build",
     "test": "craco test",
     "eject": "react-scripts eject",

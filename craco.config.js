@@ -143,25 +143,28 @@ module.exports = {
         }
       }));
 
-      const smpWrappedConfig = smp.wrap(webpackConfig);
+      // 是否开启measure-speed-webpack-plugin
+      if (process.env.MEASURE === 'true') {
+        const smpWrappedConfig = smp.wrap(webpackConfig);
 
-      // 修复生产环境下speed-measure-webpack-plugin与mini-css-extract-plugin的冲突报错：
-      // Error: You forgot to add 'mini-css-extract-plugin' plugin
-      // 思路：先将经过speed-measure-webpack-plugin处理的mini-css-extract-plugin插件移除，
-      // 然后再在其之后新创建一个插件添加进去，参数还用原来的
-      // See: https://github.com/stephencookdev/speed-measure-webpack-plugin/issues/167
-      whenProd(() => {
-        let miniCssExtractPlugin;
-        smpWrappedConfig.plugins.forEach((plugin, index) => {
-          if (plugin instanceof MiniCssExtractPlugin) {
-            [ miniCssExtractPlugin ] = smpWrappedConfig.plugins.splice(index, 1);
-          }
+        // 修复生产环境下speed-measure-webpack-plugin与mini-css-extract-plugin的冲突报错：
+        // Error: You forgot to add 'mini-css-extract-plugin' plugin
+        // 思路：先将经过speed-measure-webpack-plugin处理的mini-css-extract-plugin插件移除，
+        // 然后再在其之后新创建一个插件添加进去，参数还用原来的
+        // See: https://github.com/stephencookdev/speed-measure-webpack-plugin/issues/167
+        whenProd(() => {
+          let miniCssExtractPlugin;
+          smpWrappedConfig.plugins.forEach((plugin, index) => {
+            if (plugin instanceof MiniCssExtractPlugin) {
+              [ miniCssExtractPlugin ] = smpWrappedConfig.plugins.splice(index, 1);
+            }
+          });
+          smpWrappedConfig.plugins.push(new MiniCssExtractPlugin({...miniCssExtractPlugin.options}));
         });
-        smpWrappedConfig.plugins.push(new MiniCssExtractPlugin({...miniCssExtractPlugin.options}));
-      });
 
-      return smpWrappedConfig;
-      // return webpackConfig;
+        return smpWrappedConfig;
+      }
+      return webpackConfig;
     },
     plugins: [
       new BundleAnalyzerPlugin({ generateStatsFile: true, openAnalyzer: false }),
