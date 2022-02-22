@@ -1,8 +1,7 @@
-import { combineReducers } from 'redux';
-import todosReducer from './features/examples/redux/reducer';
+import { todosSlice } from './features/examples/redux/slice';
 
-const reducerMap = {
-  todos: todosReducer,
+const rootReducer = {
+  todos: todosSlice.reducer,
 };
 
-export default combineReducers(reducerMap);
+export default rootReducer;

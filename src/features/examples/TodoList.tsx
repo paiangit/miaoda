@@ -1,7 +1,5 @@
 import { Button, Form, Input, List, Typography } from 'antd';
-import useAddTodo from './redux/addTodo';
-import useRemoveTodo from './redux/removeTodo';
-import useAddTodoAsync from './redux/addTodoAsync';
+import { useAddTodo, useRemoveTodo, useAddTodoAsync } from './redux/slice';
 import './TodoList.less';
 
 export default function TodoList() {
