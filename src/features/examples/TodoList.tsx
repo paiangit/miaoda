@@ -1,50 +1,69 @@
+import React from 'react';
 import { Button, Form, Input, List, Typography } from 'antd';
+import { useCallback, useMemo} from 'react';
 import { useAddTodo, useRemoveTodo, useAddTodoAsync } from './redux/slice';
 import './TodoList.less';
 
-export default function TodoList() {
+function TodoList() {
   const { todoList, addTodo } = useAddTodo();
   const { addTodoAsync } = useAddTodoAsync();
   const { removeTodo } = useRemoveTodo();
   const [form] = Form.useForm();
 
-  const handleFinish = (values) => {
-    console.log(values.todo, todoList);
+  const handleFinish = useCallback((values) => {
     addTodo(values.todo);
     // 清空输入框
     form.setFieldsValue({todo: ''});
-  };
+  }, [addTodo, form]);
 
-  const validateAndSubmit = (e) => {
+  const validateAndSubmit = useCallback((e) => {
     const todo = form.getFieldValue('todo');
     addTodoAsync(todo);
     // 清空输入框
     form.setFieldsValue({todo: ''});
-  };
+  }, [addTodoAsync, form]);
 
-  const handleRemove = (index) => {
+  const handleRemove = useCallback((index) => {
     return () => removeTodo(index);
-  };
+  }, [removeTodo]);
 
-  const layout = {
-    labelCol: { span: 8 },
-    wrapperCol: { span: 8 },
-  };
+  const layout = useMemo(() => {
+    return {
+      labelCol: { span: 8 },
+      wrapperCol: { span: 8 },
+    };
+  }, []);
 
-  const tailLayout = { ...layout.wrapperCol, offset: 8 };
+  const tailLayout = useMemo(() => {
+    return {
+      ...layout.wrapperCol,
+      offset: 8,
+    }
+  }, [layout]);
+
+  const todoRule = useMemo(() => [
+    {
+      required: true,
+      message: '请输入用户名',
+    },
+  ], [])
+
+  const renderItem = useCallback((item, index) => (
+    <List.Item key={index}>
+      <Typography.Text>
+        {item}
+      </Typography.Text>
+      <Button onClick={handleRemove(index)}>删除</Button>
+    </List.Item>
+  ), [handleRemove]);
 
   return (
     <div className="examples-todo-list">
-      <Form form={form} {...layout} onFinish={handleFinish}>
+      <Form form={form} labelCol={layout.labelCol} wrapperCol={layout.wrapperCol} onFinish={handleFinish}>
         <Form.Item
           label="待办"
           name="todo"
-          rules={[
-            {
-              required: true,
-              message: '请输入用户名',
-            },
-          ]}
+          rules={todoRule}
         >
           <Input/>
         </Form.Item>
@@ -65,17 +84,12 @@ export default function TodoList() {
         bordered
         dataSource={todoList}
         renderItem={
-          (item, index) => (
-            <List.Item key={index}>
-              <Typography.Text>
-                {item}
-              </Typography.Text>
-              <Button onClick={handleRemove(index)}>删除</Button>
-            </List.Item>
-          )
+          renderItem
         }
       >
       </List>
     </div>
   );
 }
+
+export default React.memo(TodoList, () => true);
