@@ -10,6 +10,7 @@ import 'antd/dist/antd.less';
 import { ErrorFallback } from './containers/ErrorFallback';
 import Root from './Root';
 import './styles/index.less';
+import './utils/sentry';
 
 dayjs.locale('zh-cn');
 

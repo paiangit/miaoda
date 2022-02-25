@@ -6129,3 +6129,25 @@ Gzip后增加了2.1KB。其中：
 换成react-toolkit后：
 - 未Gzip：778.52KB
 - Gzip后: 260.66 KB
+
+## 接入sentry
+
+```sh
+pnpm add @sentry/react @sentry/tracing 
+```
+
+新建一个 src/utils/sentry.ts 文件，并将它 import 到 src/index.tsx 中：
+
+```ts
+import * as Sentry from '@sentry/react';
+import { BrowserTracing } from '@sentry/tracing';
+
+// import and initialize the Sentry module as early as possible, before initializing React:
+Sentry.init({
+  dsn: 'http://96f9570ea6224c899074dbbd37c53874@localhost:9000/2',
+  integrations: [new BrowserTracing()],
+  tracesSampleRate: 1.0, // 采样率
+});
+```
+
+这里需要用到 Sentry 服务，你可以 Sentry 提供的在线服务 https://sentry.io/welcome/ ，也可以本地部署Sentry。

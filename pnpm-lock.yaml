@@ -9,6 +9,8 @@ specifiers:
   '@commitlint/config-conventional': ^16.0.0
   '@craco/craco': ^6.4.3
   '@reduxjs/toolkit': ^1.7.2
+  '@sentry/react': ^6.17.9
+  '@sentry/tracing': ^6.17.9
   '@testing-library/dom': ^7.21.4
   '@testing-library/jest-dom': ^5.16.1
   '@testing-library/react': ^12.1.2
@@ -60,6 +62,8 @@ specifiers:
 dependencies:
   '@ant-design/icons': 4.7.0_react-dom@17.0.2+react@17.0.2
   '@reduxjs/toolkit': 1.7.2_react-redux@7.2.6+react@17.0.2
+  '@sentry/react': 6.17.9_react@17.0.2
+  '@sentry/tracing': 6.17.9
   '@testing-library/jest-dom': 5.16.1
   '@testing-library/react': 12.1.2_react-dom@17.0.2+react@17.0.2
   '@testing-library/user-event': 13.5.0_@testing-library+dom@7.31.2
@@ -2036,6 +2040,84 @@ packages:
 
   /@rushstack/eslint-patch/1.1.0:
     resolution: {integrity: sha1-f2mCVKrfkh5I3ajAprMEAmuKkyM=, registry: https://registry.npm.taobao.org/, tarball: https://registry.npm.taobao.org/@rushstack/eslint-patch/download/@rushstack/eslint-patch-1.1.0.tgz}
+    dev: false
+
+  /@sentry/browser/6.17.9:
+    resolution: {integrity: sha512-RsC8GBZmZ3YfBTaIOJ06RlFp5zG7BkUoquNJmf4YhRUZeihT9osrn8qUYGFWSV/UduwKUIlSGJA/rATWWhwPRQ==}
+    engines: {node: '>=6'}
+    dependencies:
+      '@sentry/core': 6.17.9
+      '@sentry/types': 6.17.9
+      '@sentry/utils': 6.17.9
+      tslib: 1.14.1
+    dev: false
+
+  /@sentry/core/6.17.9:
+    resolution: {integrity: sha512-14KalmTholGUtgdh9TklO+jUpyQ/D3OGkhlH1rnGQGoJgFy2eYm+s+MnUEMxFdGIUCz5kOteuNqYZxaDmFagpQ==}
+    engines: {node: '>=6'}
+    dependencies:
+      '@sentry/hub': 6.17.9
+      '@sentry/minimal': 6.17.9
+      '@sentry/types': 6.17.9
+      '@sentry/utils': 6.17.9
+      tslib: 1.14.1
+    dev: false
+
+  /@sentry/hub/6.17.9:
+    resolution: {integrity: sha512-34EdrweWDbBV9EzEFIXcO+JeoyQmKzQVJxpTKZoJA6PUwf2NrndaUdjlkDEtBEzjuLUTxhLxtOzEsYs1O6RVcg==}
+    engines: {node: '>=6'}
+    dependencies:
+      '@sentry/types': 6.17.9
+      '@sentry/utils': 6.17.9
+      tslib: 1.14.1
+    dev: false
+
+  /@sentry/minimal/6.17.9:
+    resolution: {integrity: sha512-T3PMCHcKk6lkZq6zKgANrYJJxXBXKOe+ousV1Fas1rVBMv7dtKfsa4itqQHszcW9shusPDiaQKIJ4zRLE5LKmg==}
+    engines: {node: '>=6'}
+    dependencies:
+      '@sentry/hub': 6.17.9
+      '@sentry/types': 6.17.9
+      tslib: 1.14.1
+    dev: false
+
+  /@sentry/react/6.17.9_react@17.0.2:
+    resolution: {integrity: sha512-TYu9Yl+gsNHdt763Yh35rSHJenxXqHSfWA55bYHr8hXDWu0crI/3LDuZb1RONmCM712CaQA+M5tgApA8QbHS4Q==}
+    engines: {node: '>=6'}
+    peerDependencies:
+      react: 15.x || 16.x || 17.x
+    dependencies:
+      '@sentry/browser': 6.17.9
+      '@sentry/minimal': 6.17.9
+      '@sentry/types': 6.17.9
+      '@sentry/utils': 6.17.9
+      hoist-non-react-statics: 3.3.2
+      react: 17.0.2
+      tslib: 1.14.1
+    dev: false
+
+  /@sentry/tracing/6.17.9:
+    resolution: {integrity: sha512-5Rb/OS4ryNJLvz2nv6wyjwhifjy6veqaF9ffLrwFYij/WDy7m62ASBblxgeiI3fbPLX0aBRFWIJAq1vko26+AQ==}
+    engines: {node: '>=6'}
+    dependencies:
+      '@sentry/hub': 6.17.9
+      '@sentry/minimal': 6.17.9
+      '@sentry/types': 6.17.9
+      '@sentry/utils': 6.17.9
+      tslib: 1.14.1
+    dev: false
+
+  /@sentry/types/6.17.9:
+    resolution: {integrity: sha512-xuulX6qUCL14ayEOh/h6FUIvZtsi1Bx34dSOaWDrjXUOJHJAM7214uiqW1GZxPJ13YuaUIubjTSfDmSQ9CBzTw==}
+    engines: {node: '>=6'}
+    dev: false
+
+  /@sentry/utils/6.17.9:
+    resolution: {integrity: sha512-4eo9Z3JlJCGlGrQRbtZWL+L9NnlUXgTbfK3Lk7oO8D1ev8R5b5+iE6tZHTvU5rQRcq6zu+POT+tK5u9oxc/rnQ==}
+    engines: {node: '>=6'}
+    dependencies:
+      '@sentry/types': 6.17.9
+      tslib: 1.14.1
     dev: false
 
   /@sinonjs/commons/1.8.3:
@@ -9679,11 +9761,11 @@ packages:
     dev: false
 
   /tslib/1.14.1:
-    resolution: {integrity: sha512-Xni35NKzjgMrwevysHTCArtLDpPvye8zV/0E4EyYn43P7/7qvQwPh9BGkHewbMulVntbigmcT7rdX3BNo9wRJg==, registry: https://registry.npm.taobao.org/, tarball: https://registry.npm.taobao.org/tslib/-/tslib-1.14.1.tgz}
+    resolution: {integrity: sha512-Xni35NKzjgMrwevysHTCArtLDpPvye8zV/0E4EyYn43P7/7qvQwPh9BGkHewbMulVntbigmcT7rdX3BNo9wRJg==}
     dev: false
 
   /tslib/2.3.1:
-    resolution: {integrity: sha512-77EbyPPpMz+FRFRuAFlWMtmgUWGe9UOG2Z25NqCwiIjRhOf5iKGuzSe5P2w1laq+FkRy4p+PCuVkJSGkzTEKVw==, registry: https://registry.npm.taobao.org/, tarball: https://registry.npm.taobao.org/tslib/-/tslib-2.3.1.tgz}
+    resolution: {integrity: sha512-77EbyPPpMz+FRFRuAFlWMtmgUWGe9UOG2Z25NqCwiIjRhOf5iKGuzSe5P2w1laq+FkRy4p+PCuVkJSGkzTEKVw==}
 
   /type-check/0.3.2:
     resolution: {integrity: sha512-ZCmOJdvOWDBYJlzAoFkC+Q0+bUyEOS1ltgp1MGU03fqHG+dbi9tBFU2Rd9QKiDZFAYrhPh2JUf7rZRIuHRKtOg==}
