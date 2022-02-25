@@ -164,7 +164,7 @@ export default function ComponentList() {
     }
   ];
   return (
-    <div className="editor-component-list" >
+    <div className={ style['editor-component-list'] } >
       {loading && (<div>组件正在加载中...</div>)}
     </div >
   );

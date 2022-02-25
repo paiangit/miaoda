@@ -1,5 +1,5 @@
-import './RightArea.less';
+import style from './RightArea.module.less';
 
 export default function RightArea() {
-  return <div className="design-right-area"></div>;
+  return <div className={ style['design-right-area'] }></div>;
 }

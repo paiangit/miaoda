@@ -1,10 +1,10 @@
 import { Spin } from 'antd';
 import { FullPage } from './FullPage';
-import './FullPageLoading.less';
+import style from './FullPageLoading.module.less';
 
 export const FullPageLoading = () => {
   return (
-    <FullPage className="common-full-page-loading">
+    <FullPage className={ style['common-full-page-loading'] }>
       <Spin></Spin>
     </FullPage>
   );

@@ -1,9 +1,14 @@
 import { Layout, /* Menu */ } from 'antd';
 import { Outlet, /* Link */ } from 'react-router-dom';
-import './PreviewLayout.less';
+import style from './PreviewLayout.module.less';
 
 export default function PreviewLayout() {
-  const { Header, Content, Footer, Sider } = Layout;
+  const {
+    // Header,
+    Content,
+    Footer,
+    // Sider,
+  } = Layout;
   // const { SubMenu } = Menu;
 
   // const menu = [
@@ -50,16 +55,16 @@ export default function PreviewLayout() {
   // });
 
   return (
-    <div className="preview-preview-layout">
+    <div className={ style['preview-preview-layout'] }>
       <Layout>
-        {/* <Header className="header">
-          <div className="logo" />
+        {/* <Header className={ style['header'] }>
+          <div className={ style['logo'] } />
           <Menu theme="dark" mode="horizontal" defaultSelectedKeys={['1']}>
             { generateMenu() }
           </Menu>
         </Header> */}
         <Content>
-          <Layout className="site-layout-background">
+          <Layout>
             <Content>
               <Outlet />
             </Content>

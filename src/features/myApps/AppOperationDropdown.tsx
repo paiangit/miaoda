@@ -7,7 +7,7 @@ import {
 } from '@ant-design/icons';
 import { useNavigate } from 'react-router-dom';
 import useDeleteApp from './hooks/useDeleteApp';
-import './AppOperationDropdown.less';
+import style from './AppOperationDropdown.module.less';
 
 interface AppOperationDropDownProps {
   id: number;
@@ -55,7 +55,7 @@ export default function AppOperationDropDown({
       // 下面的overlay的内容不可以提取到单独的组件中，否则会导致Menu的部分样式丢失，如box-shadow、item的hover态等，这个问题比较奇怪
       overlay={
         <Menu
-          className="my-apps-app-operation-dropdown"
+          className={ style['my-apps-app-operation-dropdown'] }
           onClick={handleMenuClick}
         >
           <Menu.Item key={1}>

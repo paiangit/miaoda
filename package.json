@@ -78,6 +78,7 @@
     "esbuild-loader": "^2.18.0",
     "eslint": "^7.0.0",
     "eslint-config-prettier": "^8.3.0",
+    "eslint-plugin-css-modules": "^2.11.0",
     "husky": "^7.0.4",
     "jest": "^27.0.0",
     "jest-watch-typeahead": "^0.6.5",

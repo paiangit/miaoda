@@ -1,7 +1,7 @@
 import { Form, Button, Input } from 'antd';
 import useCreateUser from './hooks/useCreateUser';
 import useDocumentTitle from '~hooks/useDocumentTitle';
-import './RegisterPage.less';
+import style from './RegisterPage.module.less';
 
 export default function RegisterPage() {
   useDocumentTitle('用户注册');
@@ -34,8 +34,8 @@ export default function RegisterPage() {
   };
 
   return (
-    <div className="auth-register-page">
-      <h2 className="title">用户注册</h2>
+    <div className={ style['auth-register-page'] }>
+      <h2 className={ style['title'] }>用户注册</h2>
       <Form {...layout} form={form} onFinish={handleFinish}>
         <Form.Item
           label="用户名"

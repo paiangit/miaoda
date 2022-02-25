@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { Outlet, Link, useNavigate } from 'react-router-dom';
 import { Layout, Menu } from 'antd';
-import './MainLayout.less';
+import style from './MainLayout.module.less';
 
 function MainLayout() {
   const { Header, Content, Footer } = Layout;
@@ -89,10 +89,10 @@ function MainLayout() {
   });
 
   return (
-    <div className="home-main-layout">
+    <div className={ style['home-main-layout'] }>
       <Layout>
-        <Header className="header">
-          <div className="logo" />
+        <Header>
+          <div/>
           <Menu theme="dark" mode="horizontal" defaultSelectedKeys={['1']}>
             { generateMenu() }
           </Menu>

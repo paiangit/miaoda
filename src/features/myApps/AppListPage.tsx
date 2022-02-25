@@ -4,7 +4,7 @@ import SearchPanel from './SearchPanel';
 import CreateAppModal from './CreateAppModal';
 import useDocumentTitle from '~hooks/useDocumentTitle';
 import useUrlQueryParams from '~hooks/useUrlQueryParams';
-import './AppListPage.less';
+import style from './AppListPage.module.less';
 
 export default function AppListPage() {
   useDocumentTitle('应用列表', false);
@@ -21,7 +21,7 @@ export default function AppListPage() {
 
   return (
     <>
-      <div className="my-apps-app-list-page">
+      <div className={ style['my-apps-app-list-page'] }>
         <CreateAppModal onSuccess={handleCreateSuccess} />
         <SearchPanel keyword={params.keyword as string} setParams={setParams} />
         <AppList keyword={params.keyword as string} setRefetch={setRefetchRef} />

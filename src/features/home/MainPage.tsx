@@ -1,10 +1,10 @@
 import CheckLogin from '~hocs/CheckLogin';
 import useDocumentTitle from '~hooks/useDocumentTitle';
-import './MainPage.less';
+import style from './MainPage.module.less';
 
 function MainPageRaw() {
   return (
-    <div className="home-main-page">秒搭，助您轻松搭建企业级前端应用。</div>
+    <div className={ style['home-main-page'] }>秒搭，助您轻松搭建企业级前端应用。</div>
   );
 }
 

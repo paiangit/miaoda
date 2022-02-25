@@ -1,6 +1,6 @@
 import React from 'react';
-import './FullPage.less';
+import style from './FullPage.module.less';
 
 export const FullPage = (props) => {
-  return <div className="common-full-page">{props.children}</div>;
+  return <div className={ style['common-full-page'] }>{props.children}</div>;
 };

@@ -1,7 +1,7 @@
 import { Form, Button, Input } from 'antd';
 import useDocumentTitle from '~hooks/useDocumentTitle';
 import useLogin from './hooks/useLogin';
-import './LoginPage.less';
+import style from './LoginPage.module.less';
 
 export default function LoginPage() {
   useDocumentTitle('用户登录');
@@ -19,8 +19,8 @@ export default function LoginPage() {
   };
 
   return (
-    <div className="auth-sign-in-page">
-      <h2 className="title">用户登录</h2>
+    <div className={ style['auth-sign-in-page'] }>
+      <h2 className={ style['title'] }>用户登录</h2>
       <Form form={form} {...layout} onFinish={handleFinish}>
         <Form.Item
           label="用户名"

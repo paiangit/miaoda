@@ -6151,3 +6151,81 @@ Sentry.init({
 ```
 
 这里需要用到 Sentry 服务，你可以 Sentry 提供的在线服务 https://sentry.io/welcome/ ，也可以本地部署Sentry。
+
+## 转成使用CSS Modules
+
+第一步，把所有的页面和组件用到的.less文件改名为.module.less
+
+第二步，通过VS Code的正则搜索替换功能，将所有 `import './xxx.module.less';` 替换成 `import style from './xxx.module.less';`
+
+替换用的正则可以参考：
+
+查找：import '(\.\/[\S]*).less';
+替换成：import style from '$1.module.less';
+
+整个项目进行替换后，后会出现一个问题：
+
+**VS Code里面，ESLint会报错，提示找不到模块 xxx.module.less。这个时候怎么办呢？**
+
+有两种办法：
+
+一种是将 `import style from './xxx.module.less';` 改成 `const style = require('./xxx.module.less');`
+
+另一种是在项目根目录新建一个typings.d.ts文件，内容如下：
+
+```ts
+declare module '*.module.less' {
+  const classes: {
+    readonly [ key: string ]: string
+  };
+
+  export default classes;
+}
+```
+
+这样问题就可以得到解决。
+
+第三步，通过VS Code的正则搜索替换功能，将 className="xxx" 形式的内容都改成 className={ style['xxx'] }
+
+替换正则可以参考：
+
+查找：className="([a-zA-Z0-9-\s]*)"
+
+替换成：className="style['$1']"
+
+对于未能通过正则匹配到的部分，需要单独手工修改，例如，像下面这样的场景：
+
+```tsx
+className={activeIndex === index ? `${style['nav-item']} ${style['active']}` : style['nav-item']}
+```
+
+第四步，因为项目中用到了一些 Ant Design 三方库的样式，我们需要对其样式进行一些层叠覆盖，因为CSS Modules默认是:local的，在构建后会改变class名，所以会导致对外部库的样式覆盖失效，怎么办呢？可以通过如下方式进行修改，让它成为被:global()包裹的样式，从而在构建时class名可以保持不变。
+
+我们同样可以用VS Code进行批量查找替换，限定在.less、.md文件中查找：
+
+查找：(.ant-[\S]*)\s\{
+
+替换成：:global($1) {
+
+第五步，通过 eslint-plugin-css-modules 来检查CSS Modules中的哪些CSS class用到了却没有定义，而哪些定义了确没有用到，在构建时抛出错误提示：
+
+```
+pnpm add eslint-plugin-css-modules -D
+```
+
+然后在.eslintrc.js中做如下配置：
+
+```js
+const { camelCase } = require("lodash");
+
+module.exports = {
+  plugins: ['css-modules'],
+  extends: [
+    'plugin:css-modules/recommended'
+  ],
+  rules: {
+    'css-modules/no-unused-class': [2, { camelCase: true }],
+    'css-modules/no-undef-class': [2, { camelCase: true }]
+  }
+}
+```

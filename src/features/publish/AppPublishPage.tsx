@@ -1,6 +1,6 @@
 import { useParams } from 'react-router-dom';
 import useDocumentTitle from '~hooks/useDocumentTitle';
-import './AppPublishPage.less';
+import style from './AppPublishPage.module.less';
 
 export default function AppPublish() {
   useDocumentTitle('发布应用');
@@ -8,6 +8,6 @@ export default function AppPublish() {
   const params = useParams();
 
   return (
-    <div className="publish-app-publish-page">Publish app {params.appId}</div>
+    <div className={ style['publish-app-publish-page'] }>Publish app {params.appId}</div>
   );
 }

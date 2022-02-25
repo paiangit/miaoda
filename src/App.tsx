@@ -120,11 +120,9 @@ function App() {
   // const routing = useRoutes([routeConfig]);
 
   return (
-    <div className="app">
-      <Suspense fallback={<FullPageLoading></FullPageLoading>}>
-        {routing}
-      </Suspense>
-    </div>
+    <Suspense fallback={<FullPageLoading></FullPageLoading>}>
+      {routing}
+    </Suspense>
   );
 }
 

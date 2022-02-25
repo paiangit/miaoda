@@ -1,5 +1,5 @@
 {
-  "extends": "./tsconfig.extend.json",
+  "extends": ".tsconfig.extend.json",
   "compilerOptions": {
     "jsx": "react-jsx",
     "esModuleInterop": true
