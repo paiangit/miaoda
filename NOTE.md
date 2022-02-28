@@ -122,7 +122,7 @@ https://ant.design/docs/react/use-with-create-react-app-cn#%E9%AB%98%E7%BA%A7%E9
 https://github.com/gsoft-inc/craco/blob/master/packages/craco/README.md#configuration-file
 
 ```sh
-npm i @craco/craco craco-less -D
+pnpm add @craco/craco craco-less -D
 ```
 
 关于craco-less的详细配置参见:
@@ -163,7 +163,7 @@ module.exports = {
 };
 ```
 
-然后我们将 src 目录下的 index.css 和 App.css 的后缀都修改成.less。并在 App.less 中做如下修改，以验证配置是否生效：
+然后我们将 src 目录下的 index.css 和 App.css 的后缀都修改成.less，对这两个文件引用的地方也相应做一下文件名修改。并在 App.less 中做如下修改，以验证配置是否生效：
 
 ```css
 .App-header {
@@ -184,9 +184,9 @@ module.exports = {
 npm install --save typescript @types/node @types/react @types/react-dom @types/jest
 ```
 
-做完这一步之后，会发现 index.js、App.js 文件转变成了 index.jsx、App.jsx 文件。
+将 index.js、App.js 文件转变成了 index.tsx、App.tsx 文件。
 
-我们接着想把它修改成.tsx 文件，但是看了 CRA 的文档（https://create-react-app.bootcss.com/docs/folder-structure/）居然说不能改：
+但是看了 CRA 的文档（https://create-react-app.bootcss.com/docs/folder-structure/）居然说不能改：
 
 > For the project to build, these files must exist with exact filenames:
 > public/index.html is the page template;
@@ -205,7 +205,7 @@ https://github.com/gsoft-inc/craco/blob/master/packages/craco/README.md#configur
 module.exports = {
 +  webpack: {
 +    configure: {
-+      entry: path.resolve(__dirname, './src/index.tsx')
++      entry: path.resolve(__dirname, './src/index.tsx'),
 +    },
 +  },
 ```
@@ -227,9 +227,9 @@ module.exports = {
     alias: {
       '~': path.resolve(__dirname, './src/'),
     },
-    configure: {
-      entry: path.resolve(__dirname, './src/index.tsx'),
-    },
+    // configure: {
+    //   entry: path.resolve(__dirname, './src/index.tsx'),
+    // },
     configure: (webpackConfig, { env, paths }) => {
        webpackConfig.entry = path.resolve(__dirname, './src/index.tsx');
 +      webpackConfig.resolve.extensions = [
@@ -292,7 +292,7 @@ npm i react-router-dom -S
 
 比如，
 
-```ts
+```tsx
 function App() {
   return (
     <Routes>
@@ -306,7 +306,7 @@ function App() {
 
 当访问 projects/123 时，组件树将是渲染成这样：
 
-```
+```tsx
 <App>
   <Projects>
     <Project/>
@@ -388,7 +388,7 @@ const params = useParams();
 
 - useNavigate 代替了 useHistory
 
-### 2. 新建 Root.js
+### 2. 新建 Root.tsx
 
 全局路由有常用两种路由模式可选：HashRouter 和 BrowserRouter。HashRouter：URL 中采用的是 hash 去创建路由。这里我们采用 BrowserRouter 来创建路由。
 
@@ -5283,6 +5283,135 @@ trim_trailing_whitespace = false
   "files.autoSave": "afterDelay",
   "files.autoSaveDelay": 2000,
 }
+```
+
+## 提取AppProviders，便于测试时获得与代码一致的上下文
+
+我们将原本的Root.tsx修改成src/context/AppProviders.tsx，将初始样式的引入，dayjs语言包的注册逻辑，ErrorBoundery等通通都移入这个组件中，以使它获得比较完整的上下文，此外，对它简单封装了一下，支持渲染props。children，以方便包裹其它组件，为其提供上下文：
+
+```tsx
+import React, { ReactNode } from 'react';
+import { BrowserRouter } from 'react-router-dom';
+import { Provider } from 'react-redux';
+import { QueryClientProvider, QueryClient } from 'react-query';
+import { ReactQueryDevtools } from 'react-query/devtools';
++ import { ErrorBoundary } from 'react-error-boundary';
+// 由于 antd 组件的默认文案是英文，所以需要修改为中文
++ import dayjs from 'dayjs';
++ import 'dayjs/locale/zh-cn';
++ import 'antd/dist/antd.less';
++ import '../styles/index.less';
+
++ import { ErrorFallback } from '../containers/ErrorFallback';
+import store from '../store';
+
++ dayjs.locale('zh-cn');
+
++ function AppProviders({ children }: { children: ReactNode }) {
++   const handleReset = () => {
++     window.location.reload();
++   };
+
+  const queryClient = new QueryClient({
+    defaultOptions: {
+      // 作用于useQuery（Get方法）
+      queries: {
+        // React 节点挂载时是否重新请求
+        refetchOnMount: true,
+        // 系统网络重连之后是否重新请求
+        refetchOnReconnect: false,
+        // 当浏览器窗口重新获取焦点时，重新向服务器端发送请求同步最新状态。
+        refetchOnWindowFocus: false,
+        // 请求是否需要在固定间隔时间内再次发起，默认false
+        refetchInterval: false,
+        // react-query中Get请求的缓存时间。在这个时间之内，再次执行这个Query请求时，会先直接返回缓存的结果，同时再向服务器发出真实请求（会不会向服务器，取决于下面的staleTime的配置），请求得到的新数据回来后，有更新的话会更新UI上的数据呈现。单位，毫秒。
+        cacheTime: +process.env.REACT_APP_CACHE_TIME,
+        // 请求结果的保质期。如果请求结果仍然在保质期内，直接从缓存中获取结果，不会在后台发送真实的请求来更新请求结果的缓存。单位，毫秒。
+        staleTime: +process.env.REACT_APP_STALE_TIME,
+        // 请求失败后重试次数。注意，修改此值时需要考虑重试次数对服务器QPS的影响！
+        retry: +process.env.REACT_APP_RETRY_TIMES,
+        // 请求失败后过多久再重试。单位，毫秒。
+        retryDelay: +process.env.REACT_APP_RETRY_DELAY,
+        /**
+         * Query results by default are structurally shared to detect if data has actually changed and if not,
+         * the data reference remains unchanged to better help with value stabilization with regards to
+         * useMemo and useCallback. If this concept sounds foreign, then don't worry about it! 99.9%
+         * of the time you will not need to disable this and it makes your app more performant at zero cost to you.
+         */
+        structuralSharing: true,
+        // 统一报错入口
+        onError(error) {
+          if (error) {
+            console.error(error as Error);
+          }
+          // 可以在这里做错误的统一拦截处理
+        },
+      },
+      // 作用域useMutate（作用域Post、Put、Patch、Delete方法）
+      mutations: {
+        // 请求失败后重试次数。注意，修改此值时需要考虑重试次数对服务器QPS的影响！
+        retry: +process.env.REACT_APP_RETRY_TIMES,
+        // 请求失败后过多久再重试。单位，毫秒。
+        retryDelay: +process.env.REACT_APP_RETRY_DELAY,
+        // 统一报错入口
+        onError(error) {
+          if (error) {
+            console.error(error as Error);
+          }
+          // 可以在这里做错误的统一拦截处理
+        },
+      },
+    },
+  });
+
+  return (
++     <ErrorBoundary FallbackComponent={ErrorFallback} onReset={handleReset}>
+      <Provider store={store}>
+        {/* 将 queryClient 对象传递到下层组件 */}
+        <QueryClientProvider client={queryClient}>
++           <BrowserRouter>
++             {children}
++           </BrowserRouter>
+          <ReactQueryDevtools initialIsOpen={false} position="bottom-right" />
+        </QueryClientProvider>
+      </Provider>
++     </ErrorBoundary>
+  );
+}
+
++ export default AppProviders;
+```
+
+相应地，修改src/index.tsx，其逻辑相应减少，并在其中引入了AppProviders来包裹APP组件，这样，这三个组件之间的关系就理顺了：
+
+```tsx
+import './wdyr';
+import React from 'react';
+import ReactDOM from 'react-dom';
+// import reportWebVitals from './reportWebVitals';
+import AppProviders from './context/AppProviders';
+import App from './App';
+import './utils/sentry';
+
+/**
+ * StrictMode 是一个用以标记出应用中潜在问题的工具。
+ * 就像 Fragment ，StrictMode 不会渲染任何真实的UI。
+ * 它为其后代元素触发额外的检查和警告。
+ * 注意: 严格模式检查只在开发模式下运行，不会与生产模式冲突。
+ */
+ReactDOM.render(
+  <React.StrictMode>
+    <AppProviders>
+      <App/>
+    </AppProviders>
+  </React.StrictMode>,
+  document.getElementById('root')
+);
+
+// If you want to start measuring performance in your app, pass a function
+// to log results (for example: reportWebVitals(console.log))
+// or send to an analytics endpoint. Learn more: https://bit.ly/CRA-vitals
+// reportWebVitals();
 ```
 
 ## 解决报错： validateDOMNesting(...): <button> cannot appear as a descendant of <button>

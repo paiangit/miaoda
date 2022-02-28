@@ -1,4 +1,3 @@
-import React from 'react';
 import style from './FullPage.module.less';
 
 export const FullPage = (props) => {

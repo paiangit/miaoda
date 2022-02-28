@@ -1,22 +1,10 @@
 import './wdyr';
 import React from 'react';
 import ReactDOM from 'react-dom';
-import { ErrorBoundary } from 'react-error-boundary';
-// 由于 antd 组件的默认文案是英文，所以需要修改为中文
-import dayjs from 'dayjs';
-import 'dayjs/locale/zh-cn';
-import 'antd/dist/antd.less';
 // import reportWebVitals from './reportWebVitals';
-import { ErrorFallback } from './containers/ErrorFallback';
-import Root from './Root';
-import './styles/index.less';
+import AppProviders from './context/AppProviders';
+import App from './App';
 import './utils/sentry';
-
-dayjs.locale('zh-cn');
-
-const handleReset = () => {
-  window.location.reload();
-};
 
 /**
  * StrictMode 是一个用以标记出应用中潜在问题的工具。
@@ -26,9 +14,9 @@ const handleReset = () => {
  */
 ReactDOM.render(
   <React.StrictMode>
-    <ErrorBoundary FallbackComponent={ErrorFallback} onReset={handleReset}>
-      <Root />
-    </ErrorBoundary>
+    <AppProviders>
+      <App/>
+    </AppProviders>
   </React.StrictMode>,
   document.getElementById('root')
 );

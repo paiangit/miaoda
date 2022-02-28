@@ -1,13 +1,25 @@
-import React from 'react';
+import React, { ReactNode } from 'react';
 import { BrowserRouter } from 'react-router-dom';
 import { Provider } from 'react-redux';
 import { QueryClientProvider, QueryClient } from 'react-query';
 import { ReactQueryDevtools } from 'react-query/devtools';
+import { ErrorBoundary } from 'react-error-boundary';
+// 由于 antd 组件的默认文案是英文，所以需要修改为中文
+import dayjs from 'dayjs';
+import 'dayjs/locale/zh-cn';
+import 'antd/dist/antd.less';
+import '../styles/index.less';
 
-import App from './App';
-import store from './store';
+import { ErrorFallback } from '../containers/ErrorFallback';
+import store from '../store';
 
-function Root() {
+dayjs.locale('zh-cn');
+
+function AppProviders({ children }: { children: ReactNode }) {
+  const handleReset = () => {
+    window.location.reload();
+  };
+
   const queryClient = new QueryClient({
     defaultOptions: {
       // 作用于useQuery（Get方法）
@@ -61,16 +73,18 @@ function Root() {
   });
 
   return (
-    <Provider store={store}>
-      {/* 将 queryClient 对象传递到下层组件 */}
-      <QueryClientProvider client={queryClient}>
-        <BrowserRouter>
-          <App />
-        </BrowserRouter>
-        <ReactQueryDevtools initialIsOpen={false} position="bottom-right" />
-      </QueryClientProvider>
-    </Provider>
+    <ErrorBoundary FallbackComponent={ErrorFallback} onReset={handleReset}>
+      <Provider store={store}>
+        {/* 将 queryClient 对象传递到下层组件 */}
+        <QueryClientProvider client={queryClient}>
+          <BrowserRouter>
+            {children}
+          </BrowserRouter>
+          <ReactQueryDevtools initialIsOpen={false} position="bottom-right" />
+        </QueryClientProvider>
+      </Provider>
+    </ErrorBoundary>
   );
 }
 
-export default Root;
+export default AppProviders;
