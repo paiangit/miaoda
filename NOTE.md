@@ -5285,6 +5285,14 @@ trim_trailing_whitespace = false
 }
 ```
 
+## 如何获得测试覆盖率
+
+在package.json中的scripts中添加一行：
+
+```json
+"test:coverage": "craco test --coverage --watchAll=false",
+```
+
 ## 提取AppProviders，便于测试时获得与代码一致的上下文
 
 我们将原本的Root.tsx修改成src/context/AppProviders.tsx，将初始样式的引入，dayjs语言包的注册逻辑，ErrorBoundery等通通都移入这个组件中，以使它获得比较完整的上下文，此外，对它简单封装了一下，支持渲染props。children，以方便包裹其它组件，为其提供上下文：
