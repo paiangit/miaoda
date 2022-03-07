@@ -6366,3 +6366,178 @@ module.exports = {
   }
 }
 ```
+
+## 原生事件拖拽传递数据
+
+在被拖拽的元素上，绑定如下两个事件处理函数：
+
+```tsx
+const onDragOver = (e) => {
+  // 注意：这里必须要preventDefault()，才能走到onDrop()中，相当于是让元素可以被drop到其上
+  e.preventDefault();
+};
+
+const onDragStart = (lottieUrl) => {
+  return (e) => {
+    e.dataTransfer.setData('lottieUrl', lottieUrl);
+  };
+};
+```
+
+特别注意：这里onDragOver必须要用阻止默认事件，才能走到onDrop()中，相当于是让元素可以被drop到其上。
+
+在被放置（drop）的元素上，绑定如下事件处理函数：
+
+```tsx
+const onDrop = (e) => {
+  const lottieUrl = e.dataTransfer.getData('lottieUrl');
+  if (!lottieUrl) return;
+};
+```
+
+## react-dnd的使用
+
+被拖拽的内容：
+
+```tsx
+import type { CSSProperties, FC, ReactNode } from 'react';
+import { useDrag } from 'react-dnd';
+import { DraggableTypes } from './types';
+
+export interface DraggableBoxProps {
+  left: number;
+  top: number;
+  width?: number;
+  height?: number;
+  hideSourceOnDrag?: boolean;
+  children?: ReactNode
+}
+
+const style: CSSProperties = {
+  position: 'absolute',
+  zIndex: 1,
+  border: '1px dashed gray',
+  cursor: 'move',
+};
+
+const DraggableBox: FC<DraggableBoxProps> = ({
+  left,
+  top,
+  width,
+  height,
+  hideSourceOnDrag,
+  children,
+}: DraggableBoxProps) => {
+  const [{ isDragging }, drag] = useDrag(() => {
+    debugger;
+    return {
+      type: DraggableTypes.NEW_ANIMATION,
+      item: { left, top },
+      collect: (monitor) => ({
+        isDragging: monitor.isDragging(),
+      }),
+    };
+  }, [left, top]);
+
+  if (isDragging && hideSourceOnDrag) {
+    return (
+      <div ref={drag}></div>
+    )
+  }
+
+  return (
+    <div ref={drag} style={{...style, left, top, width: width || 100, height: height || 100 }}>
+      {children}
+    </div>
+  )
+};
+
+export default DraggableBox;
+```
+
+拖入的容器：
+```tsx
+import { useRef, useState, FC, useMemo, useEffect } from 'react';
+import { useDrop, XYCoord } from 'react-dnd';
+import DraggableBox from './DraggableBox';
+import { DraggableTypes } from './types';
+import style from './Container.module.less';
+
+const Container: FC<{}> = () => {
+  const [coor, setCoor] = useState<{
+    top: number;
+    left: number;
+  }>({
+    left: 0,
+    top: 0,
+  });
+
+  const moveBox = (left: number, top: number) => {
+    setCoor({
+      left,
+      top,
+    });
+  };
+
+  const [, drop] = useDrop(() => ({
+    accept: [DraggableTypes.NEW_ANIMATION, DraggableTypes.TEMPLATE],
+    drop(item, monitor) {
+      const itemType = monitor.getItemType();
+      if (itemType === DraggableTypes.NEW_ANIMATION) {
+        const delta = monitor.getDifferenceFromInitialOffset() as XYCoord;
+        const left = Math.round(item.left + delta.x);
+        const top = Math.round(item.top + delta.y);
+        moveBox(left, top);
+      }
+    },
+  }), []);
+
+  return (
+    <div ref={drop} className={style.container}>
+      <DraggableBox
+        left={coor.left}
+        top={coor.top}
+        width={width}
+        height={width}
+        hideSourceOnDrag={true}
+      >
+        这是被拖拽的内容
+      </DraggableBox>
+    </div>
+  );
+}
+
+export default Container;
+```
+
+最外层需要用Provider包裹，useDrop必须在DndProvider这个Provider内才能使用，否则会报错：
+
+```tsx
+<DragAndDropProvider>
+  <Container></Container>
+</DragAndDropProvider>
+```
+
+为方便使用，我们将Provider单独包装一下，方便拆分业务逻辑：
+
+```tsx
+import type { FC, ReactNode } from 'react';
+import { DndProvider } from 'react-dnd';
+import { HTML5Backend } from 'react-dnd-html5-backend';
+
+interface DragAndDropProps {
+  children: ReactNode;
+}
+
+/**
+ * 因为react-dnd的useDrag必须在DndProvider中使用，否则会报如下错误，因此封装一层
+ * Uncaught Invariant Violation: Expected drag drop context
+ */
+const DragAndDropProvider: FC<DragAndDropProps> = ({ children }) => {
+  return (
+    <DndProvider backend={HTML5Backend}>{children}</DndProvider>
+  );
+}
+
+export default DragAndDropProvider;
+```

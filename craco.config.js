@@ -13,7 +13,7 @@ const {
   whenProd,
 } = require('@craco/craco');
 const CracoLessPlugin = require('craco-less');
-const CracoAlias = require('craco-alias');
+const CracoAliasPlugin = require('craco-alias');
 const CaseSensitivePathsPlugin = require('case-sensitive-paths-webpack-plugin');
 const CircularDependencyPlugin = require('circular-dependency-plugin');
 const MiniCssExtractPlugin = require('mini-css-extract-plugin');
@@ -214,11 +214,11 @@ module.exports = {
       },
     },
     {
-      plugin: CracoAlias,
+      plugin: CracoAliasPlugin,
       options: {
         source: 'tsconfig',
         baseUrl: './src',
-        tsConfigPath: '.tsconfig.extend.json',
+        tsConfigPath: '.tsconfig.path.json',
       }
     },
   ],
