@@ -6032,7 +6032,7 @@ plugins: [
 +    options: {
 +      source: 'tsconfig',
 +      baseUrl: './src',
-+      tsConfigPath: './tsconfig.extend.json',
++      tsConfigPath: './tsconfig.path.json',
 +    }
 +  },
 ],
@@ -6040,9 +6040,13 @@ plugins: [
 
 tsconfig.json
 
+！！注意，这个文件名需要是tsconfig.json，而不能是.tsconfig.json，否则会导致VS Code找不到模块，从而在command + 点击代码中文件路径的时候，不能正确跳转。报错：Unable to open alias
+
+参加：https://stackoverflow.com/questions/47181037/vscode-intellisense-does-not-work-with-webpack-alias
+
 ```js
 {
-  "extends": "./tsconfig.extend.json",
+  "extends": "./tsconfig.path.json",
   "compilerOptions": {
     "jsx": "react-jsx",
     "esModuleInterop": true
@@ -6051,14 +6055,14 @@ tsconfig.json
 }
 ```
 
-tsconfig.extend.json
+tsconfig.path.json
 
 ```js
 {
   "compilerOptions": {
     "baseUrl": "./src",
     "paths": {
-      "~/*": ["/*"],
+      "~/*": ["./*"], // 注意./*这里的.号不能少
       "~assets/*": ["./assets/*"],
       "~components/*": ["./components/*"],
       "~containers/*": ["./containers/*"],
@@ -6293,12 +6297,12 @@ Sentry.init({
 
 第一步，把所有的页面和组件用到的.less文件改名为.module.less
 
-第二步，通过VS Code的正则搜索替换功能，将所有 `import './xxx.module.less';` 替换成 `import style from './xxx.module.less';`
+第二步，通过VS Code的正则搜索替换功能，将所有 `import './xxx.module.less';` 替换成 `import styles from './xxx.module.less';`
 
 替换用的正则可以参考：
 
 查找：import '(\.\/[\S]*).less';
-替换成：import style from '$1.module.less';
+替换成：import styles from '$1.module.less';
 
 整个项目进行替换后，后会出现一个问题：
 
@@ -6306,7 +6310,7 @@ Sentry.init({
 
 有两种办法：
 
-一种是将 `import style from './xxx.module.less';` 改成 `const style = require('./xxx.module.less');`
+一种是将 `import styles from './xxx.module.less';` 改成 `const style = require('./xxx.module.less');`
 
 另一种是在项目根目录新建一个typings.d.ts文件，内容如下：
 
@@ -6322,18 +6326,18 @@ declare module '*.module.less' {
 
 这样问题就可以得到解决。
 
-第三步，通过VS Code的正则搜索替换功能，将 className="xxx" 形式的内容都改成 className={ style['xxx'] }
+第三步，通过VS Code的正则搜索替换功能，将 className="xxx" 形式的内容都改成 className={ styles['xxx'] }
 
 替换正则可以参考：
 
 查找：className="([a-zA-Z0-9-\s]*)"
 
-替换成：className="style['$1']"
+替换成：className="styles['$1']"
 
 对于未能通过正则匹配到的部分，需要单独手工修改，例如，像下面这样的场景：
 
 ```tsx
-className={activeIndex === index ? `${style['nav-item']} ${style['active']}` : style['nav-item']}
+className={activeIndex === index ? `${styles['nav-item']} ${styles['active']}` : styles['nav-item']}
 ```
 
 第四步，因为项目中用到了一些 Ant Design 三方库的样式，我们需要对其样式进行一些层叠覆盖，因为CSS Modules默认是:local的，在构建后会改变class名，所以会导致对外部库的样式覆盖失效，怎么办呢？可以通过如下方式进行修改，让它成为被:global()包裹的样式，从而在构建时class名可以保持不变。
@@ -6461,7 +6465,7 @@ import { useRef, useState, FC, useMemo, useEffect } from 'react';
 import { useDrop, XYCoord } from 'react-dnd';
 import DraggableBox from './DraggableBox';
 import { DraggableTypes } from './types';
-import style from './Container.module.less';
+import styles from './Container.module.less';
 
 const Container: FC<{}> = () => {
   const [coor, setCoor] = useState<{
