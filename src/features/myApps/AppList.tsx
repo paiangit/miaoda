@@ -8,7 +8,7 @@ import AppOperationDropdown from './AppOperationDropdown';
 import useGetAppList from './hooks/useGetAppList';
 import { useGetAppListQueryKey } from './keys';
 import { defaultCurrentPage, defaultPageSize } from './const';
-import style from './AppList.module.less';
+import styles from './AppList.module.less';
 
 interface AppListProps {
   keyword: string;
@@ -62,9 +62,9 @@ export default function AppList({ keyword, setRefetch }: AppListProps) {
 
     const listContent = appList.data.map((item) => {
       const tagMap = {
-        '0': <Tag className={ style['deleted'] }>已删除</Tag>,
-        '1': <Tag className={ style['offline'] }>未启用</Tag>,
-        '2': <Tag className={ style['online'] }>已启用</Tag>,
+        '0': <Tag className={ styles['deleted'] }>已删除</Tag>,
+        '1': <Tag className={ styles['offline'] }>未启用</Tag>,
+        '2': <Tag className={ styles['online'] }>已启用</Tag>,
       };
       const tag = tagMap[item.status];
 
@@ -74,17 +74,17 @@ export default function AppList({ keyword, setRefetch }: AppListProps) {
 
       return (
         <a
-          className={ style['app-card'] }
+          className={ styles['app-card'] }
           key={item.id}
           href={`/app/${item.id}/admin/123`}
         >
-          <div className={ style['header'] }>
-            <div className={ style['icon'] }>
+          <div className={ styles['header'] }>
+            <div className={ styles['icon'] }>
               <ChromeOutlined />
             </div>
-            <div className={ style['title'] }>{item.title}</div>
+            <div className={ styles['title'] }>{item.title}</div>
           </div>
-          <p className={ style['description'] }>
+          <p className={ styles['description'] }>
             <Tooltip
               title={item.description}
               placement="bottom"
@@ -94,7 +94,7 @@ export default function AppList({ keyword, setRefetch }: AppListProps) {
             </Tooltip>
           </p>
 
-          <div className={ style['footer'] }>
+          <div className={ styles['footer'] }>
             {tag}
             <AppOperationDropdown
               id={item.id}
@@ -106,7 +106,7 @@ export default function AppList({ keyword, setRefetch }: AppListProps) {
     });
 
     return (
-      <div className={ style['list'] }>{listContent}</div>
+      <div className={ styles['list'] }>{listContent}</div>
     );
   };
 
@@ -128,9 +128,9 @@ export default function AppList({ keyword, setRefetch }: AppListProps) {
   };
 
   return (
-    <div className={ style['my-apps-app-list'] }>
+    <div className={ styles['my-apps-app-list'] }>
       {generateApps()}
-      <div className={ style['pagination'] }>{genPagination()}</div>
+      <div className={ styles['pagination'] }>{genPagination()}</div>
     </div>
   );
 }

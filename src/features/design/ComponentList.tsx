@@ -1,4 +1,5 @@
 import { useState } from 'react';
+import styles from './ComponentList.module.less';
 
 export default function ComponentList() {
   const [loading, setLoading] = useState(false);
@@ -164,7 +165,7 @@ export default function ComponentList() {
     }
   ];
   return (
-    <div className={ style['editor-component-list'] } >
+    <div className={ styles['editor-component-list'] } >
       {loading && (<div>组件正在加载中...</div>)}
     </div >
   );

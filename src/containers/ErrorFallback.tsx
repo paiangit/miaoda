@@ -1,13 +1,13 @@
 import { Button } from 'antd';
-import style from './ErrorFallback.module.less';
+import styles from './ErrorFallback.module.less';
 
 export function ErrorFallback({ error, resetErrorBoundary }) {
   return (
-    <div className={ style['common-error-fallback'] }>
-      <div className={ style['inner'] }>
-        <p className={ style['title'] }>出错了</p>
-        <pre className={ style['message'] }>{error.message}</pre>
-        <Button className={ style['button'] } type="primary" onClick={resetErrorBoundary}>
+    <div className={ styles['common-error-fallback'] }>
+      <div className={ styles['inner'] }>
+        <p className={ styles['title'] }>出错了</p>
+        <pre className={ styles['message'] }>{error.message}</pre>
+        <Button className={ styles['button'] } type="primary" onClick={resetErrorBoundary}>
           重试
         </Button>
       </div>

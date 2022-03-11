@@ -6308,6 +6308,8 @@ Sentry.init({
 
 **VS Code里面，ESLint会报错，提示找不到模块 xxx.module.less。这个时候怎么办呢？**
 
+实际上，这背后是TypeScript找不到这个模块。
+
 有两种办法：
 
 一种是将 `import styles from './xxx.module.less';` 改成 `const style = require('./xxx.module.less');`
@@ -6316,15 +6318,32 @@ Sentry.init({
 
 ```ts
 declare module '*.module.less' {
-  const classes: {
+  const styles: {
     readonly [ key: string ]: string
   };
 
-  export default classes;
+  export default styles;
 }
 ```
 
-这样问题就可以得到解决。
+并把它添加到tsconfig.json的include配置项中，如下所示：
+
+```
+{
+  "extends": "./tsconfig.path.json",
+  "compilerOptions": {
+    "jsx": "react-jsx",
+    "esModuleInterop": true,
+  },
+  "include": [
+    "src",
+    "test",
++   "./typed-css.d.ts"
+  ]
+}
+```
+
+重启VS Code，这样问题就可以得到解决。
 
 第三步，通过VS Code的正则搜索替换功能，将 className="xxx" 形式的内容都改成 className={ styles['xxx'] }
 

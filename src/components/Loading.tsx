@@ -1,9 +1,9 @@
 import { Spin } from 'antd';
-import style from './Loading.module.less';
+import styles from './Loading.module.less';
 
 export const Loading = () => {
   return (
-    <div className={ style['common-loading'] }>
+    <div className={ styles['common-loading'] }>
       <Spin></Spin>
     </div>
   );

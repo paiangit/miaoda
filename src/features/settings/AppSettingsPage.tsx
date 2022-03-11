@@ -7,7 +7,7 @@ import { Retry } from '~components/Retry';
 import useGetApp from './hooks/useGetApp';
 import useUpdateApp from './hooks/useUpdateApp';
 import { useGetAppQueryKey } from './keys';
-import style from './AppSettingsPage.module.less';
+import styles from './AppSettingsPage.module.less';
 
 export default function AppSettingsPage() {
   useDocumentTitle('设置应用');
@@ -60,7 +60,7 @@ export default function AppSettingsPage() {
   }
 
   return (
-    <div className={ style['settings-app-settings'] }>
+    <div className={ styles['settings-app-settings'] }>
       <Form form={form} {...layout} onFinish={handleFinish}>
         <Form.Item label="应用名称" name="title" rules={[{ required: true }]}>
           <Input />
@@ -81,7 +81,7 @@ export default function AppSettingsPage() {
           <Button type="primary" htmlType="submit">
             保存
           </Button>
-          <Button className={ style['reset'] } htmlType="button" onClick={handleReset}>
+          <Button className={ styles['reset'] } htmlType="button" onClick={handleReset}>
             重置
           </Button>
         </Form.Item>

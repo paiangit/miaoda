@@ -1,7 +1,8 @@
-declare module '*.module.less' {
-  const classes: {
+/// <reference types="react-scripts" />
+declare module "*.module.less" {
+  const styles: {
     readonly [ key: string ]: string
   };
 
-  export default classes;
+  export default styles;
 }

@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { Outlet, Link, useNavigate } from 'react-router-dom';
 import { Layout, Menu } from 'antd';
-import style from './MainLayout.module.less';
+import styles from './MainLayout.module.less';
 
 function MainLayout() {
   const { Header, Content, Footer } = Layout;
@@ -89,7 +89,7 @@ function MainLayout() {
   });
 
   return (
-    <div className={ style['home-main-layout'] }>
+    <div className={ styles['home-main-layout'] }>
       <Layout>
         <Header>
           <div/>

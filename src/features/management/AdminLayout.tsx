@@ -1,6 +1,6 @@
 import { Layout, Menu } from 'antd';
 import { Outlet, Link } from 'react-router-dom';
-import style from './AdminLayout.module.less';
+import styles from './AdminLayout.module.less';
 
 export default function AdminLayout() {
   const { Header, Content, Footer, Sider } = Layout;
@@ -50,7 +50,7 @@ export default function AdminLayout() {
   });
 
   return (
-    <div className={ style['management-admin-layout'] }>
+    <div className={ styles['management-admin-layout'] }>
       <Layout>
         <Header>
           <div/>

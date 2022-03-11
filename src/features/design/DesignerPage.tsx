@@ -4,7 +4,7 @@ import LeftArea from './LeftArea';
 import CenterArea from './CenterArea';
 import RightArea from './RightArea';
 import useDocumentTitle from '~hooks/useDocumentTitle';
-import style from './DesignerPage.module.less';
+import styles from './DesignerPage.module.less';
 
 export default function DesignerPage() {
   useDocumentTitle('编辑应用');
@@ -32,12 +32,12 @@ export default function DesignerPage() {
   };
 
   return (
-    <div className={ style['design-designer-page'] }>
-      <div className={ style['designer-header'] }>
+    <div className={ styles['design-designer-page'] }>
+      <div className={ styles['designer-header'] }>
         <Button onClick={ handlePreview }>预览</Button>
         <Button onClick={ handleSave } type="primary">保存</Button>
       </div>
-      <div className={ style['designer-body'] }>
+      <div className={ styles['designer-body'] }>
         <LeftArea></LeftArea>
         <CenterArea></CenterArea>
         <RightArea></RightArea>

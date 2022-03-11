@@ -5,7 +5,7 @@ import useDocumentTitle from '~hooks/useDocumentTitle';
 import { Loading } from '~components/Loading';
 import useGetUser from './hooks/useGetUser';
 import { useGetUserQueryKey } from './keys';
-import style from './ProfilePage.module.less';
+import styles from './ProfilePage.module.less';
 
 export default function ProfilePage() {
   const navigate = useNavigate();
@@ -68,8 +68,8 @@ export default function ProfilePage() {
   }
 
   return (
-    <div className={ style['user-profile-page'] }>
-      <h2 className={ style['title'] }>我的档案</h2>
+    <div className={ styles['user-profile-page'] }>
+      <h2 className={ styles['title'] }>我的档案</h2>
       { generateForm() }
     </div>
   );

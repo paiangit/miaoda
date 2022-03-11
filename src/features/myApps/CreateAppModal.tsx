@@ -1,7 +1,7 @@
 import { Button, Modal, Form, Input, Radio } from 'antd';
 import { useState } from 'react';
 import useCreateApp from './hooks/useCreateApp';
-import style from './CreateAppModal.module.less';
+import styles from './CreateAppModal.module.less';
 
 interface CreateAppModalParams {
   onSuccess: () => void;
@@ -45,7 +45,7 @@ export default function CreateAppModal({ onSuccess }: CreateAppModalParams) {
   };
 
   return (
-    <div className={ style['my-apps-create-app-modal'] }>
+    <div className={ styles['my-apps-create-app-modal'] }>
       <Button type="primary" onClick={showModal}>
         创建应用
       </Button>

@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { Form, Input } from 'antd';
 import useDebounce from '~hooks/useDebounce';
-import style from './SearchPanel.module.less';
+import styles from './SearchPanel.module.less';
 
 interface SearchPanelProps {
   keyword: string;
@@ -28,9 +28,9 @@ export default function SearchPanel({ keyword, setParams }: SearchPanelProps) {
   }, [debounceValue]); // 注意这里不能把 setParams 加进来，否则会造成循环渲染
 
   return (
-    <Form className={ style['my-apps-search-panel'] }>
+    <Form className={ styles['my-apps-search-panel'] }>
       <Input.Search
-        className={ style['search-input'] }
+        className={ styles['search-input'] }
         placeholder="请输入应用名称"
         allowClear
         size="middle"

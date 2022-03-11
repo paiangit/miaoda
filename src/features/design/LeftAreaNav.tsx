@@ -1,7 +1,7 @@
 import { useState } from 'react';
 import { Tooltip } from 'antd';
 import { BarsOutlined, AppstoreOutlined } from '@ant-design/icons';
-import style from './LeftAreaNav.module.less';
+import styles from './LeftAreaNav.module.less';
 
 export default function LeftAreaNav() {
   const [activeIndex, setActiveIndex] = useState(0);
@@ -25,12 +25,12 @@ export default function LeftAreaNav() {
   function generateList(data) {
     return data.map((item, index) => (
       <li
-        className={activeIndex === index ? `${style['nav-item']} ${style['active']}` : style['nav-item']}
+        className={activeIndex === index ? `${styles['nav-item']} ${styles['active']}` : styles['nav-item']}
         onClick={clickHandler(index)}
         key={index}
         >
         <Tooltip title={item.title} placement="right">
-          <button className={ style['btn'] }>
+          <button className={ styles['btn'] }>
             {item.icon}
           </button>
         </Tooltip>
@@ -39,7 +39,7 @@ export default function LeftAreaNav() {
   }
 
   return (
-    <ul className={ style['design-left-area-nav'] }>
+    <ul className={ styles['design-left-area-nav'] }>
       { generateList(data) }
     </ul>
   );

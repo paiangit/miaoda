@@ -2,7 +2,7 @@ import React from 'react';
 import { Button, Form, Input, List, Typography } from 'antd';
 import { useCallback, useMemo} from 'react';
 import { useAddTodo, useRemoveTodo, useAddTodoAsync } from './redux/slice';
-import style from './TodoList.module.less';
+import styles from './TodoList.module.less';
 
 function TodoList() {
   const { todoList, addTodo } = useAddTodo();
@@ -58,7 +58,7 @@ function TodoList() {
   ), [handleRemove]);
 
   return (
-    <div className={ style['examples-todo-list'] }>
+    <div className={ styles['examples-todo-list'] }>
       <Form form={form} labelCol={layout.labelCol} wrapperCol={layout.wrapperCol} onFinish={handleFinish}>
         <Form.Item
           label="待办"
@@ -72,14 +72,14 @@ function TodoList() {
           <Button type="primary" htmlType="submit">
             添加
           </Button>
-          <Button className={ style['validate-and-submit'] } type="primary" onClick={validateAndSubmit}>
+          <Button className={ styles['validate-and-submit'] } type="primary" onClick={validateAndSubmit}>
             先校验再添加
           </Button>
         </Form.Item>
       </Form>
 
       <List
-        className={ style['list'] }
+        className={ styles['list'] }
         header={<div>待办列表</div>}
         bordered
         dataSource={todoList}

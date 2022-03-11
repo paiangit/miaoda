@@ -1,6 +1,6 @@
 import { useParams } from 'react-router-dom';
 import useDocumentTitle from '~hooks/useDocumentTitle';
-import style from './ManagementPage.module.less';
+import styles from './ManagementPage.module.less';
 
 export default function ManagementPage() {
   useDocumentTitle('应用管理');
@@ -8,7 +8,7 @@ export default function ManagementPage() {
   const params = useParams();
 
   return (
-    <div className={ style['management-management-page'] }>
+    <div className={ styles['management-management-page'] }>
       Page management for app {params.appId} page {params.pageId}
     </div>
   );

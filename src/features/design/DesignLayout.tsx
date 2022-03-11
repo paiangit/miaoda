@@ -1,6 +1,6 @@
 import { Layout, Menu } from 'antd';
 import { Outlet, Link } from 'react-router-dom';
-import style from './DesignLayout.module.less';
+import styles from './DesignLayout.module.less';
 
 export default function DesignLayout() {
   const { Header, Content, Footer, Sider } = Layout;
@@ -50,10 +50,10 @@ export default function DesignLayout() {
   // });
 
   return (
-    <div className={ style['design-design-layout'] }>
+    <div className={ styles['design-design-layout'] }>
       <Layout>
-        {/* <Header className={ style['header'] }>
-          <div className={ style['logo'] } />
+        {/* <Header className={ styles['header'] }>
+          <div className={ styles['logo'] } />
           <Menu theme="dark" mode="horizontal" defaultSelectedKeys={['1']}>
             { generateMenu() }
           </Menu>

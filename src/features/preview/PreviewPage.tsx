@@ -1,6 +1,6 @@
 import { useParams } from 'react-router-dom';
 import useDocumentTitle from '~hooks/useDocumentTitle';
-import style from './PreviewPage.module.less';
+import styles from './PreviewPage.module.less';
 
 export default function PreviewPage() {
   useDocumentTitle('预览应用');
@@ -19,7 +19,7 @@ export default function PreviewPage() {
   const params = usePreviewParams();
 
   return (
-    <div className={ style['preview-preview-page'] }>
+    <div className={ styles['preview-preview-page'] }>
       Preview app {params.appId} page {params.pageId}
     </div>
   );
